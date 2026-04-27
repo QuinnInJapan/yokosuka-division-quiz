@@ -1,6 +1,6 @@
 /* ── Type reveal banner ── */
 .type-banner {
-  background: #1C2340;
+  background: var(--hall-indigo);
   color: white;
   padding: var(--sp-2xl) var(--sp-xl);
   text-align: center;

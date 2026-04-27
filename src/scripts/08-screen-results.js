@@ -73,14 +73,15 @@ function renderMatchBrowse() {
   const items = all.map((d, i) => {
     const dfc = fitColor(d.fit);
     const on = i === S.sel ? 'on' : '';
-    return `<div class="all-item ${on}" onclick="go('SEL',${i})">
+    const pressed = i === S.sel ? 'true' : 'false';
+    return `<button type="button" class="all-item ${on}" onclick="go('SEL',${i})" aria-pressed="${pressed}">
       <span class="all-rn">${i + 1}</span>
       <div class="all-info">
         <div class="all-name">${d.name}</div>
         <div class="all-dept">${d.dept}</div>
       </div>
       <span class="all-fit" style="color:${dfc.text}">${d.fit}%</span>
-    </div>`;
+    </button>`;
   }).join('');
 
   return `
@@ -92,8 +93,8 @@ function renderMatchBrowse() {
       <div class="detail-col">${renderDetailCard()}</div>
     </div>
     <div class="bottom-actions">
-      <button class="btn-share" onclick="go('SHARE')">🔗 結果をシェアする</button>
-      <button class="btn-retake" onclick="go('RETAKE')">↺ もう一度やってみる</button>
+      <button class="btn-share" type="button" onclick="go('SHARE')">結果をシェアする</button>
+      <button class="btn-retake" type="button" onclick="go('RETAKE')">もう一度やってみる</button>
     </div>
   </div>`;
 }
@@ -128,7 +129,9 @@ function patchSel() {
 
   // Update list highlight
   document.querySelectorAll('.all-item').forEach((el, i) => {
-    el.classList.toggle('on', i === S.sel);
+    const isOn = i === S.sel;
+    el.classList.toggle('on', isOn);
+    el.setAttribute('aria-pressed', isOn ? 'true' : 'false');
   });
 }
 
@@ -137,7 +140,9 @@ function patchTrait() {
   if (tc) tc.innerHTML = traitCarouselDesc();
   // Update active highlight on bars
   document.querySelectorAll('.trait').forEach((el, i) => {
-    el.classList.toggle('trait--active', i === S.traitIdx);
+    const isActive = i === S.traitIdx;
+    el.classList.toggle('trait--active', isActive);
+    el.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
 }
 

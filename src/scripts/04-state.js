@@ -94,7 +94,7 @@ function go(action, payload) {
       } else {
         navigator.clipboard.writeText(url).then(() => {
           const btn = document.querySelector('.btn-share');
-          if (btn) { btn.textContent = '✓ コピーしました'; setTimeout(() => { btn.textContent = '🔗 結果をシェア'; }, 2000); }
+          if (btn) { btn.textContent = 'コピーしました'; setTimeout(() => { btn.textContent = '結果をシェアする'; }, 2000); }
         });
       }
       return;

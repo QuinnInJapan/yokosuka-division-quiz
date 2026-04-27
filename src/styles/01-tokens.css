@@ -22,6 +22,12 @@
   /* ── Focus ── */
   --focus-ring:   #2E6DB4;
 
+  /* ── Wash & tint ── */
+  --hover-wash:        #FAFBFC;
+  --hover-wash-list:   #F6F7FB;
+  --indigo-tint:       #DCE4F8;  /* selected list row */
+  --indigo-tint-soft:  #F0F3FF;  /* trait active highlight */
+
   /* ── Typography ── */
   --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',
           Meiryo,-apple-system,sans-serif;

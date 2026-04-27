@@ -8,18 +8,24 @@
 }
 .all-item {
   display: flex; align-items: center;
+  width: 100%;
   padding: 12px var(--sp-md);
+  background: var(--card);
+  border: none;
   border-bottom: 1px solid var(--border);
   cursor: pointer; gap: 12px;
-  transition: background .1s;
+  transition: background .1s ease-out;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 .all-item:last-child { border-bottom: none; }
-.all-item:hover { background: #f6f7fb; }
+.all-item:hover { background: var(--hover-wash-list); }
 .all-item.on {
-  background: #dce4f8;
+  background: var(--indigo-tint);
 }
 .all-item:focus-visible {
-  outline: 2px solid #2E6DB4;
+  outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
 .all-rn { font-size: var(--fs-xs); font-weight: var(--fw-black); color: var(--sub); width: 26px; text-align: right; flex-shrink: 0; }
@@ -37,18 +43,24 @@
 .btn-share, .btn-retake {
   flex: 1;
   padding: 14px;
-  border: 2px solid #1C2340;
+  border: 2px solid var(--hall-indigo);
   border-radius: 12px;
   font-size: 14px; font-weight: var(--fw-bold);
+  font-family: inherit;
   cursor: pointer;
   text-align: center;
-  transition: background .15s, color .15s;
+  transition: background .15s ease-out, color .15s ease-out;
 }
 .btn-share {
-  background: #1C2340; color: white;
+  background: var(--hall-indigo); color: white;
 }
-.btn-share:hover { background: #2a3558; }
+.btn-share:hover { background: var(--hall-indigo-hover); }
 .btn-retake {
-  background: white; color: #1C2340;
+  background: var(--card); color: var(--hall-indigo);
 }
-.btn-retake:hover { background: #1C2340; color: white; }
+.btn-retake:hover { background: var(--hall-indigo); color: white; }
+.btn-share:focus-visible,
+.btn-retake:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}

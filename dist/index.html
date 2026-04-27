@@ -30,6 +30,12 @@
   /* ── Focus ── */
   --focus-ring:   #2E6DB4;
 
+  /* ── Wash & tint ── */
+  --hover-wash:        #FAFBFC;
+  --hover-wash-list:   #F6F7FB;
+  --indigo-tint:       #DCE4F8;  /* selected list row */
+  --indigo-tint-soft:  #F0F3FF;  /* trait active highlight */
+
   /* ── Typography ── */
   --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',
           Meiryo,-apple-system,sans-serif;
@@ -310,7 +316,7 @@ body {
 /* ── 06-results-type.css ── */
 /* ── Type reveal banner ── */
 .type-banner {
-  background: #1C2340;
+  background: var(--hall-indigo);
   color: white;
   padding: var(--sp-2xl) var(--sp-xl);
   text-align: center;
@@ -467,6 +473,10 @@ body {
   transition: border-color .15s, color .15s;
 }
 .tc-nav:hover { border-color: #aaa; color: var(--text); }
+.tc-nav:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 .tc-dots {
   display: flex;
   gap: 6px;
@@ -486,16 +496,27 @@ body {
   padding: var(--sp-md) var(--sp-lg);
 }
 .trait {
-  padding: var(--sp-sm) var(--sp-sm);
+  display: block;
+  width: 100%;
+  padding: var(--sp-sm);
+  background: var(--card);
+  border: none;
   border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background .15s;
   border-radius: 6px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease-out;
 }
 .trait:last-child { border-bottom: none; }
-.trait:hover { background: #fafbfc; }
+.trait:hover { background: var(--hover-wash); }
+.trait:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 .trait--active {
-  background: #f0f3ff;
+  background: var(--indigo-tint-soft);
   border-bottom-color: transparent;
 }
 
@@ -674,6 +695,9 @@ body {
   z-index: 2;
   transition: left .4s ease-out;
 }
+@media (prefers-reduced-motion: reduce) {
+  .comp-dot { transition: none; }
+}
 .comp-ends {
   display: flex;
   justify-content: space-between;
@@ -695,18 +719,24 @@ body {
 }
 .all-item {
   display: flex; align-items: center;
+  width: 100%;
   padding: 12px var(--sp-md);
+  background: var(--card);
+  border: none;
   border-bottom: 1px solid var(--border);
   cursor: pointer; gap: 12px;
-  transition: background .1s;
+  transition: background .1s ease-out;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 .all-item:last-child { border-bottom: none; }
-.all-item:hover { background: #f6f7fb; }
+.all-item:hover { background: var(--hover-wash-list); }
 .all-item.on {
-  background: #dce4f8;
+  background: var(--indigo-tint);
 }
 .all-item:focus-visible {
-  outline: 2px solid #2E6DB4;
+  outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
 .all-rn { font-size: var(--fs-xs); font-weight: var(--fw-black); color: var(--sub); width: 26px; text-align: right; flex-shrink: 0; }
@@ -724,21 +754,27 @@ body {
 .btn-share, .btn-retake {
   flex: 1;
   padding: 14px;
-  border: 2px solid #1C2340;
+  border: 2px solid var(--hall-indigo);
   border-radius: 12px;
   font-size: 14px; font-weight: var(--fw-bold);
+  font-family: inherit;
   cursor: pointer;
   text-align: center;
-  transition: background .15s, color .15s;
+  transition: background .15s ease-out, color .15s ease-out;
 }
 .btn-share {
-  background: #1C2340; color: white;
+  background: var(--hall-indigo); color: white;
 }
-.btn-share:hover { background: #2a3558; }
+.btn-share:hover { background: var(--hall-indigo-hover); }
 .btn-retake {
-  background: white; color: #1C2340;
+  background: var(--card); color: var(--hall-indigo);
 }
-.btn-retake:hover { background: #1C2340; color: white; }
+.btn-retake:hover { background: var(--hall-indigo); color: white; }
+.btn-share:focus-visible,
+.btn-retake:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
 
 
 /* ── 10-utilities.css ── */
@@ -1596,7 +1632,7 @@ function go(action, payload) {
       } else {
         navigator.clipboard.writeText(url).then(() => {
           const btn = document.querySelector('.btn-share');
-          if (btn) { btn.textContent = '✓ コピーしました'; setTimeout(() => { btn.textContent = '🔗 結果をシェア'; }, 2000); }
+          if (btn) { btn.textContent = 'コピーしました'; setTimeout(() => { btn.textContent = '結果をシェアする'; }, 2000); }
         });
       }
       return;
@@ -1652,7 +1688,7 @@ function traitBar(ax, score, active) {
   const dotLeft = ((score + 2) / 4 * 100).toFixed(0);
 
   return `
-  <div class="trait${active ? ' trait--active' : ''}" onclick="go('TAXS','${ax}')">
+  <button type="button" class="trait${active ? ' trait--active' : ''}" onclick="go('TAXS','${ax}')" aria-pressed="${active}">
     <div class="trait-header">
       <span class="trait-pct" style="color:${a.dark}">${pct}%</span>
       <span class="trait-win" style="color:${a.dark}">${winLabel}</span>
@@ -1664,7 +1700,7 @@ function traitBar(ax, score, active) {
       </div>
       <span class="trait-end">${a.kanji_plus}</span>
     </div>
-  </div>`;
+  </button>`;
 }
 
 /* ── Axis description carousel (left panel) ── */
@@ -1893,14 +1929,15 @@ function renderMatchBrowse() {
   const items = all.map((d, i) => {
     const dfc = fitColor(d.fit);
     const on = i === S.sel ? 'on' : '';
-    return `<div class="all-item ${on}" onclick="go('SEL',${i})">
+    const pressed = i === S.sel ? 'true' : 'false';
+    return `<button type="button" class="all-item ${on}" onclick="go('SEL',${i})" aria-pressed="${pressed}">
       <span class="all-rn">${i + 1}</span>
       <div class="all-info">
         <div class="all-name">${d.name}</div>
         <div class="all-dept">${d.dept}</div>
       </div>
       <span class="all-fit" style="color:${dfc.text}">${d.fit}%</span>
-    </div>`;
+    </button>`;
   }).join('');
 
   return `
@@ -1912,8 +1949,8 @@ function renderMatchBrowse() {
       <div class="detail-col">${renderDetailCard()}</div>
     </div>
     <div class="bottom-actions">
-      <button class="btn-share" onclick="go('SHARE')">🔗 結果をシェアする</button>
-      <button class="btn-retake" onclick="go('RETAKE')">↺ もう一度やってみる</button>
+      <button class="btn-share" type="button" onclick="go('SHARE')">結果をシェアする</button>
+      <button class="btn-retake" type="button" onclick="go('RETAKE')">もう一度やってみる</button>
     </div>
   </div>`;
 }
@@ -1948,7 +1985,9 @@ function patchSel() {
 
   // Update list highlight
   document.querySelectorAll('.all-item').forEach((el, i) => {
-    el.classList.toggle('on', i === S.sel);
+    const isOn = i === S.sel;
+    el.classList.toggle('on', isOn);
+    el.setAttribute('aria-pressed', isOn ? 'true' : 'false');
   });
 }
 
@@ -1957,7 +1996,9 @@ function patchTrait() {
   if (tc) tc.innerHTML = traitCarouselDesc();
   // Update active highlight on bars
   document.querySelectorAll('.trait').forEach((el, i) => {
-    el.classList.toggle('trait--active', i === S.traitIdx);
+    const isActive = i === S.traitIdx;
+    el.classList.toggle('trait--active', isActive);
+    el.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
 }
 

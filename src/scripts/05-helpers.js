@@ -39,7 +39,7 @@ function traitBar(ax, score, active) {
   const dotLeft = ((score + 2) / 4 * 100).toFixed(0);
 
   return `
-  <div class="trait${active ? ' trait--active' : ''}" onclick="go('TAXS','${ax}')">
+  <button type="button" class="trait${active ? ' trait--active' : ''}" onclick="go('TAXS','${ax}')" aria-pressed="${active}">
     <div class="trait-header">
       <span class="trait-pct" style="color:${a.dark}">${pct}%</span>
       <span class="trait-win" style="color:${a.dark}">${winLabel}</span>
@@ -51,7 +51,7 @@ function traitBar(ax, score, active) {
       </div>
       <span class="trait-end">${a.kanji_plus}</span>
     </div>
-  </div>`;
+  </button>`;
 }
 
 /* ── Axis description carousel (left panel) ── */

@@ -109,6 +109,10 @@
   transition: border-color .15s, color .15s;
 }
 .tc-nav:hover { border-color: #aaa; color: var(--text); }
+.tc-nav:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 .tc-dots {
   display: flex;
   gap: 6px;
@@ -128,16 +132,27 @@
   padding: var(--sp-md) var(--sp-lg);
 }
 .trait {
-  padding: var(--sp-sm) var(--sp-sm);
+  display: block;
+  width: 100%;
+  padding: var(--sp-sm);
+  background: var(--card);
+  border: none;
   border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background .15s;
   border-radius: 6px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease-out;
 }
 .trait:last-child { border-bottom: none; }
-.trait:hover { background: #fafbfc; }
+.trait:hover { background: var(--hover-wash); }
+.trait:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 .trait--active {
-  background: #f0f3ff;
+  background: var(--indigo-tint-soft);
   border-bottom-color: transparent;
 }
 
