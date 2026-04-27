@@ -6,14 +6,21 @@
   --D:      #7B3F9E; --D-mid: #9B59B6; --D-tint: #F5EDF8;
   --E:      #9C6310; --E-mid: #F5A623; --E-tint: #FFF6E6;
 
+  /* ── Brand anchor ── */
+  --hall-indigo:  #1C2340;
+  --hall-indigo-hover: #2A3558;
+
   /* ── Neutrals ── */
   --bg:           #F0F2F7;
   --card:         #FFFFFF;
-  --text:         #1C2340;
+  --text:         var(--hall-indigo);
   --text-sec:     #4A5568;
   --sub:          #6B7280;
   --border:       #E4E7ED;
   --border-light: #F0F2F7;
+
+  /* ── Focus ── */
+  --focus-ring:   #2E6DB4;
 
   /* ── Typography ── */
   --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',

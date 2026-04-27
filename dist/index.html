@@ -14,14 +14,21 @@
   --D:      #7B3F9E; --D-mid: #9B59B6; --D-tint: #F5EDF8;
   --E:      #9C6310; --E-mid: #F5A623; --E-tint: #FFF6E6;
 
+  /* ── Brand anchor ── */
+  --hall-indigo:  #1C2340;
+  --hall-indigo-hover: #2A3558;
+
   /* ── Neutrals ── */
   --bg:           #F0F2F7;
   --card:         #FFFFFF;
-  --text:         #1C2340;
+  --text:         var(--hall-indigo);
   --text-sec:     #4A5568;
   --sub:          #6B7280;
   --border:       #E4E7ED;
   --border-light: #F0F2F7;
+
+  /* ── Focus ── */
+  --focus-ring:   #2E6DB4;
 
   /* ── Typography ── */
   --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',
@@ -105,7 +112,7 @@ body {
 /* ── 04-welcome.css ── */
 /* ── Welcome header ── */
 .w-header {
-  background: #1C2340;
+  background: var(--hall-indigo);
   color: white;
   padding: 56px var(--sp-xl) 48px;
   text-align: center;
@@ -114,7 +121,8 @@ body {
 }
 .w-city {
   font-size: var(--fs-xs);
-  letter-spacing: .14em;
+  font-weight: var(--fw-bold);
+  letter-spacing: .12em;
   opacity: .6;
   margin-bottom: 10px;
   text-transform: uppercase;
@@ -148,8 +156,21 @@ body {
   margin: var(--sp-lg) 0;
 }
 .stat { text-align: center; }
-.stat-n { font-size: var(--fs-2xl); font-weight: var(--fw-black); }
-.stat-l { font-size: var(--fs-xs); color: var(--sub); margin-top: 2px; }
+.stat-n { font-size: var(--fs-2xl); font-weight: var(--fw-black); line-height: 1; }
+.stat-l {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--sub);
+  margin-top: 6px;
+}
+
+/* ── Intro paragraph ── */
+.w-intro {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-sec);
+  margin-bottom: var(--sp-md);
+}
 
 /* ── How it works ── */
 .w-steps {
@@ -185,15 +206,23 @@ body {
   display: block; width: 100%;
   padding: 18px;
   border: none; border-radius: 14px;
-  background: var(--text);
+  background: var(--hall-indigo);
   color: white;
   font-size: var(--fs-base);
   font-weight: var(--fw-bold);
   cursor: pointer;
-  transition: opacity .15s, transform .15s;
+  transition: opacity .15s ease-out, transform .15s ease-out;
   letter-spacing: .02em;
 }
 .btn-start:hover { opacity: .88; transform: translateY(-1px); }
+.btn-start:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-start { transition: opacity .15s ease-out; }
+  .btn-start:hover { transform: none; }
+}
 
 
 /* ── 05-quiz.css ── */
@@ -1718,7 +1747,7 @@ function renderWelcome() {
   </div>
   <div class="card">
     <div class="axis-pills">${pills}</div>
-    <p style="font-size:14px;color:var(--text-sec);line-height:1.75;margin-bottom:var(--sp-md)">
+    <p class="w-intro">
       5つの視点からあなたの「働き方タイプ」を診断し、全102課の中から相性の高い部署をランキングでご紹介します。
     </p>
     <div class="w-steps">

@@ -13,7 +13,7 @@ function renderWelcome() {
   </div>
   <div class="card">
     <div class="axis-pills">${pills}</div>
-    <p style="font-size:14px;color:var(--text-sec);line-height:1.75;margin-bottom:var(--sp-md)">
+    <p class="w-intro">
       5つの視点からあなたの「働き方タイプ」を診断し、全102課の中から相性の高い部署をランキングでご紹介します。
     </p>
     <div class="w-steps">
