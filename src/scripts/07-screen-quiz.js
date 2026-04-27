@@ -25,6 +25,13 @@ function renderQuiz() {
     ? `<button class="btn-back" onclick="go('BACK')">← 戻る</button>`
     : '';
 
+  const total = ORDER.length;
+  const remaining = total - S.step - 1;
+  let flourish = '';
+  if (S.step === 0) flourish = 'ゆっくり考えて大丈夫です';
+  else if (remaining === 1) flourish = 'あと2問';
+  else if (remaining === 0) flourish = 'ラスト1問！';
+
   return `
   <div class="quiz-content">
     <div class="prog-wrap">
@@ -38,7 +45,7 @@ function renderQuiz() {
       >${segs}</div>
     </div>
     <div class="quiz-meta">
-      <span class="q-num">Q.${S.step + 1} <span aria-hidden="true">/</span> ${ORDER.length}</span>
+      <span class="q-num">Q.${S.step + 1} <span aria-hidden="true">/</span> ${ORDER.length}${flourish ? `<span class="q-flourish">${flourish}</span>` : ''}</span>
       <span class="axis-tag" style="background:${ax.tint};color:${ax.dark}">${ax.label}</span>
     </div>
     <h1 class="scenario" style="color:${ax.dark}">${q.scenario}</h1>
