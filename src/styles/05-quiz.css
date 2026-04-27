@@ -51,12 +51,18 @@
   text-align: left;
   cursor: pointer;
   margin-bottom: var(--sp-sm);
-  transition: border-color .12s, background .12s;
+  transition: border-color .12s ease-out, background .12s ease-out;
   color: var(--text);
   line-height: 1.5;
   min-height: 48px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
-.opt:hover { border-color: #b0b4be; background: #fafbfc; }
+.opt:hover { border-color: #b0b4be; background: var(--hover-wash); }
+.opt:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 .opt-num { font-weight: var(--fw-bold); margin-right: 10px; }
 
 /* ── Back button ── */
@@ -72,6 +78,10 @@
   min-height: 44px;
 }
 .btn-back:hover { border-color: #aaa; color: var(--text); }
+.btn-back:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 
 .quiz-content {
   max-width: var(--content-max);

@@ -43,4 +43,6 @@
   line-height: var(--lh-body);
   max-width: 480px;
   margin: 0 auto;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }

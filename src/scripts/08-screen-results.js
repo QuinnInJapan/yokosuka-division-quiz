@@ -16,7 +16,7 @@ function renderTypeReveal() {
   <div class="type-banner">
     <div class="type-pre">あなたのタイプ</div>
     <div class="type-chips">${chips}</div>
-    <div class="type-name">「${t.name}」型</div>
+    <h1 class="type-name">「${t.name}」型</h1>
     <div class="type-code">${t.code}</div>
     <div class="type-desc">${t.desc}</div>
   </div>`;

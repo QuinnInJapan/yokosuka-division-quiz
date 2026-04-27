@@ -85,6 +85,15 @@ body {
 
 button { font-family: inherit; }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 
 /* ── 03-layout.css ── */
 body {
@@ -285,12 +294,18 @@ body {
   text-align: left;
   cursor: pointer;
   margin-bottom: var(--sp-sm);
-  transition: border-color .12s, background .12s;
+  transition: border-color .12s ease-out, background .12s ease-out;
   color: var(--text);
   line-height: 1.5;
   min-height: 48px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
-.opt:hover { border-color: #b0b4be; background: #fafbfc; }
+.opt:hover { border-color: #b0b4be; background: var(--hover-wash); }
+.opt:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 .opt-num { font-weight: var(--fw-bold); margin-right: 10px; }
 
 /* ── Back button ── */
@@ -306,6 +321,10 @@ body {
   min-height: 44px;
 }
 .btn-back:hover { border-color: #aaa; color: var(--text); }
+.btn-back:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
 
 .quiz-content {
   max-width: var(--content-max);
@@ -359,6 +378,8 @@ body {
   line-height: var(--lh-body);
   max-width: 480px;
   margin: 0 auto;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ── 07-results-axes.css ── */
@@ -449,6 +470,8 @@ body {
   line-height: var(--lh-body);
   color: var(--text-sec);
   flex: 1;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* Nav row at bottom */
@@ -651,6 +674,8 @@ body {
   font-size: var(--fs-sm);
   line-height: var(--lh-body);
   color: var(--text-sec);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ── Comparison breakdown ── */
@@ -1625,17 +1650,32 @@ function go(action, payload) {
       S.traitIdx = AX.indexOf(payload);
       patchTrait();
       return;
-    case 'SHARE':
+    case 'SHARE': {
+      const btn = document.querySelector('.btn-share');
+      if (btn && btn.disabled) return; // Block double-fire while sharing
       const url = getShareUrl();
+      const flash = (msg) => {
+        if (!btn) return;
+        const orig = '結果をシェアする';
+        btn.disabled = true;
+        btn.textContent = msg;
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.disabled = false;
+        }, 2000);
+      };
       if (navigator.share) {
-        navigator.share({ title: '横須賀市 課 相性診断', url });
+        navigator.share({ title: '横須賀市 課 相性診断', url })
+          .catch(() => { /* user dismissed share sheet — nothing to do */ });
+      } else if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url)
+          .then(() => flash('コピーしました'))
+          .catch(() => flash('コピーできませんでした'));
       } else {
-        navigator.clipboard.writeText(url).then(() => {
-          const btn = document.querySelector('.btn-share');
-          if (btn) { btn.textContent = 'コピーしました'; setTimeout(() => { btn.textContent = '結果をシェアする'; }, 2000); }
-        });
+        flash('コピーできませんでした');
       }
       return;
+    }
     case 'RETAKE':
       S.screen = 'welcome'; S.step = 0; S.resp = {};
       S.results = []; S.type = null; S.userScores = null;
@@ -1840,14 +1880,23 @@ function renderQuiz() {
 
   return `
   <div class="quiz-content">
-    <div class="prog-wrap"><div class="prog-bar">${segs}</div></div>
+    <div class="prog-wrap">
+      <div
+        class="prog-bar"
+        role="progressbar"
+        aria-valuemin="1"
+        aria-valuemax="${ORDER.length}"
+        aria-valuenow="${S.step + 1}"
+        aria-label="進捗 ${S.step + 1} / ${ORDER.length}"
+      >${segs}</div>
+    </div>
     <div class="quiz-meta">
-      <span class="q-num">Q.${S.step + 1} <span>/</span> ${ORDER.length}</span>
+      <span class="q-num">Q.${S.step + 1} <span aria-hidden="true">/</span> ${ORDER.length}</span>
       <span class="axis-tag" style="background:${ax.tint};color:${ax.dark}">${ax.label}</span>
     </div>
-    <div class="scenario" style="color:${ax.dark}">${q.scenario}</div>
-    <p class="opts-label">この場面、あなたにはどのくらい合っていますか？</p>
-    ${opts}
+    <h1 class="scenario" style="color:${ax.dark}">${q.scenario}</h1>
+    <p class="opts-label" id="opts-label-${S.step}">この場面、あなたにはどのくらい合っていますか？</p>
+    <div role="group" aria-labelledby="opts-label-${S.step}">${opts}</div>
     ${back}
   </div>`;
 }
@@ -1872,7 +1921,7 @@ function renderTypeReveal() {
   <div class="type-banner">
     <div class="type-pre">あなたのタイプ</div>
     <div class="type-chips">${chips}</div>
-    <div class="type-name">「${t.name}」型</div>
+    <h1 class="type-name">「${t.name}」型</h1>
     <div class="type-code">${t.code}</div>
     <div class="type-desc">${t.desc}</div>
   </div>`;
@@ -2020,6 +2069,17 @@ function render() {
   else                              app.innerHTML = renderResults();
 
   window.scrollTo(0, 0);
+  manageFocus();
+}
+
+function manageFocus() {
+  // Move focus to the screen's primary heading so keyboard + screen-reader users
+  // know the page changed. Headings get tabindex=-1 to be focusable without a tab stop.
+  const target = document.querySelector('h1');
+  if (target) {
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  }
 }
 
 restoreFromUrl();

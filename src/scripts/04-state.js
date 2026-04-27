@@ -87,17 +87,32 @@ function go(action, payload) {
       S.traitIdx = AX.indexOf(payload);
       patchTrait();
       return;
-    case 'SHARE':
+    case 'SHARE': {
+      const btn = document.querySelector('.btn-share');
+      if (btn && btn.disabled) return; // Block double-fire while sharing
       const url = getShareUrl();
+      const flash = (msg) => {
+        if (!btn) return;
+        const orig = '結果をシェアする';
+        btn.disabled = true;
+        btn.textContent = msg;
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.disabled = false;
+        }, 2000);
+      };
       if (navigator.share) {
-        navigator.share({ title: '横須賀市 課 相性診断', url });
+        navigator.share({ title: '横須賀市 課 相性診断', url })
+          .catch(() => { /* user dismissed share sheet — nothing to do */ });
+      } else if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url)
+          .then(() => flash('コピーしました'))
+          .catch(() => flash('コピーできませんでした'));
       } else {
-        navigator.clipboard.writeText(url).then(() => {
-          const btn = document.querySelector('.btn-share');
-          if (btn) { btn.textContent = 'コピーしました'; setTimeout(() => { btn.textContent = '結果をシェアする'; }, 2000); }
-        });
+        flash('コピーできませんでした');
       }
       return;
+    }
     case 'RETAKE':
       S.screen = 'welcome'; S.step = 0; S.resp = {};
       S.results = []; S.type = null; S.userScores = null;
