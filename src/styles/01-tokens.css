@@ -1,0 +1,49 @@
+:root {
+  /* ── Axis colors: dark (text) / mid (fills) / tint (backgrounds) ── */
+  --A:      #C0392B; --A-mid: #E8534A; --A-tint: #FFF0EE;
+  --B:      #2E6DB4; --B-mid: #4A90D9; --B-tint: #EBF3FC;
+  --C:      #1E7345; --C-mid: #4CAF7D; --C-tint: #ECF8F1;
+  --D:      #7B3F9E; --D-mid: #9B59B6; --D-tint: #F5EDF8;
+  --E:      #9C6310; --E-mid: #F5A623; --E-tint: #FFF6E6;
+
+  /* ── Neutrals ── */
+  --bg:           #F0F2F7;
+  --card:         #FFFFFF;
+  --text:         #1C2340;
+  --text-sec:     #4A5568;
+  --sub:          #6B7280;
+  --border:       #E4E7ED;
+  --border-light: #F0F2F7;
+
+  /* ── Typography ── */
+  --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',
+          Meiryo,-apple-system,sans-serif;
+  --fw-normal:  400;
+  --fw-medium:  500;
+  --fw-bold:    700;
+  --fw-black:   800; /* numerals & short labels ONLY */
+  --lh-body:    1.75;
+  --lh-tight:   1.3;
+  --fs-xs:  12px;
+  --fs-sm:  14px;
+  --fs-base: 16px;
+  --fs-lg:  20px;
+  --fs-xl:  24px;
+  --fs-2xl: 30px;
+
+  /* ── Spacing ── */
+  --sp-xs: 4px;  --sp-sm: 8px;  --sp-md: 16px;
+  --sp-lg: 24px; --sp-xl: 32px; --sp-2xl: 48px;
+
+  /* ── Layout ── */
+  --app-max:     1040px;
+  --content-max: 640px;
+  --card-pad:    28px;
+  --card-r:      16px;
+  --card-shadow: 0 2px 20px rgba(0,0,0,0.08);
+
+  /* ── Data vis ── */
+  --bar-h:     12px;
+  --mkr-size:  16px;
+  --mkr-user:  13px;
+}

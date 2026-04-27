@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-27T00:00:00Z",
+  "title": "Design System: Yokosuka Division Quiz",
+  "extensions": {
+    "colorMeta": {
+      "hall-indigo": {
+        "role": "primary",
+        "displayName": "Hall Indigo",
+        "canonical": "oklch(22% 0.05 270)",
+        "tonalRamp": ["#0E1224", "#141930", "#1C2340", "#2A3558", "#3D4A78", "#5A6699", "#8089BB", "#B4BAD6"]
+      },
+      "cool-paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(95.5% 0.005 260)",
+        "tonalRamp": ["#1C2340", "#3D4A78", "#6B7280", "#9CA3AF", "#C1C7D0", "#D8DCE3", "#E4E7ED", "#F0F2F7"]
+      },
+      "card-white": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": ["#1C2340", "#4A5568", "#6B7280", "#9CA3AF", "#C1C7D0", "#E4E7ED", "#F0F2F7", "#FFFFFF"]
+      },
+      "frame-mist": {
+        "role": "neutral",
+        "displayName": "Frame Mist",
+        "canonical": "oklch(92% 0.005 260)",
+        "tonalRamp": ["#1C2340", "#4A5568", "#6B7280", "#9CA3AF", "#B7BCC6", "#CDD2DA", "#E4E7ED", "#F0F2F7"]
+      },
+      "quiet-slate": {
+        "role": "neutral",
+        "displayName": "Quiet Slate",
+        "canonical": "oklch(45% 0.02 255)",
+        "tonalRamp": ["#1A2030", "#2C3445", "#3A4459", "#4A5568", "#65707F", "#828B98", "#A6ADB6", "#CCD1D7"]
+      },
+      "hush-slate": {
+        "role": "neutral",
+        "displayName": "Hush Slate",
+        "canonical": "oklch(55% 0.015 255)",
+        "tonalRamp": ["#22272F", "#363D48", "#4A5260", "#5C6370", "#6B7280", "#8A919B", "#ABB1B9", "#D0D4D9"]
+      },
+      "inquiry-crimson": {
+        "role": "tertiary",
+        "displayName": "Inquiry Crimson",
+        "canonical": "oklch(50% 0.16 28)",
+        "tonalRamp": ["#5A1810", "#7A2218", "#992C20", "#C0392B", "#D04539", "#E8534A", "#F7948B", "#FFF0EE"]
+      },
+      "inquiry-crimson-mid": {
+        "role": "tertiary",
+        "displayName": "Inquiry Crimson — Mid",
+        "canonical": "oklch(64% 0.18 28)",
+        "tonalRamp": ["#7A2218", "#992C20", "#C0392B", "#D04539", "#E8534A", "#EE7A72", "#F7A8A1", "#FFF0EE"]
+      },
+      "inquiry-crimson-tint": {
+        "role": "tertiary",
+        "displayName": "Inquiry Crimson — Tint",
+        "canonical": "oklch(96% 0.025 28)",
+        "tonalRamp": ["#992C20", "#C0392B", "#E8534A", "#EE7A72", "#F4A8A1", "#FAC9C4", "#FDDDD9", "#FFF0EE"]
+      },
+      "field-cobalt": {
+        "role": "tertiary",
+        "displayName": "Field Cobalt",
+        "canonical": "oklch(50% 0.13 252)",
+        "tonalRamp": ["#102C52", "#1A4078", "#2E6DB4", "#3F7EC5", "#4A90D9", "#7BAEE3", "#B0CDF0", "#EBF3FC"]
+      },
+      "field-cobalt-mid": {
+        "role": "tertiary",
+        "displayName": "Field Cobalt — Mid",
+        "canonical": "oklch(63% 0.13 252)",
+        "tonalRamp": ["#1A4078", "#2E6DB4", "#3F7EC5", "#4A90D9", "#7BAEE3", "#A4C4EC", "#C9DCF3", "#EBF3FC"]
+      },
+      "field-cobalt-tint": {
+        "role": "tertiary",
+        "displayName": "Field Cobalt — Tint",
+        "canonical": "oklch(96% 0.02 252)",
+        "tonalRamp": ["#2E6DB4", "#4A90D9", "#7BAEE3", "#A4C4EC", "#C2D7F0", "#D4E2F5", "#E0EBF8", "#EBF3FC"]
+      },
+      "care-forest": {
+        "role": "tertiary",
+        "displayName": "Care Forest",
+        "canonical": "oklch(48% 0.11 152)",
+        "tonalRamp": ["#0B3A1F", "#13522E", "#1E7345", "#2A8A55", "#4CAF7D", "#7FC79B", "#B5DEC4", "#ECF8F1"]
+      },
+      "care-forest-mid": {
+        "role": "tertiary",
+        "displayName": "Care Forest — Mid",
+        "canonical": "oklch(66% 0.12 152)",
+        "tonalRamp": ["#13522E", "#1E7345", "#2A8A55", "#4CAF7D", "#7FC79B", "#A4D7B6", "#C7E5D2", "#ECF8F1"]
+      },
+      "care-forest-tint": {
+        "role": "tertiary",
+        "displayName": "Care Forest — Tint",
+        "canonical": "oklch(96% 0.02 152)",
+        "tonalRamp": ["#1E7345", "#4CAF7D", "#7FC79B", "#A4D7B6", "#C2E2CD", "#D5EBDD", "#E0F2E6", "#ECF8F1"]
+      },
+      "steady-plum": {
+        "role": "tertiary",
+        "displayName": "Steady Plum",
+        "canonical": "oklch(45% 0.15 310)",
+        "tonalRamp": ["#3A1A4D", "#5A2B7A", "#7B3F9E", "#8B4DAE", "#9B59B6", "#B786C9", "#D2B3DE", "#F5EDF8"]
+      },
+      "steady-plum-mid": {
+        "role": "tertiary",
+        "displayName": "Steady Plum — Mid",
+        "canonical": "oklch(58% 0.13 310)",
+        "tonalRamp": ["#5A2B7A", "#7B3F9E", "#8B4DAE", "#9B59B6", "#B786C9", "#C9A4D6", "#DCC2E4", "#F5EDF8"]
+      },
+      "steady-plum-tint": {
+        "role": "tertiary",
+        "displayName": "Steady Plum — Tint",
+        "canonical": "oklch(96% 0.02 310)",
+        "tonalRamp": ["#7B3F9E", "#9B59B6", "#B786C9", "#C9A4D6", "#DABFE0", "#E5D2EA", "#EEDFF1", "#F5EDF8"]
+      },
+      "generalist-bronze": {
+        "role": "tertiary",
+        "displayName": "Generalist Bronze",
+        "canonical": "oklch(48% 0.11 70)",
+        "tonalRamp": ["#3F2705", "#62410A", "#9C6310", "#BC7A14", "#F5A623", "#F8C26B", "#FBDBA8", "#FFF6E6"]
+      },
+      "generalist-bronze-mid": {
+        "role": "tertiary",
+        "displayName": "Generalist Bronze — Mid",
+        "canonical": "oklch(75% 0.14 70)",
+        "tonalRamp": ["#62410A", "#9C6310", "#BC7A14", "#F5A623", "#F8C26B", "#FAD295", "#FCE2BB", "#FFF6E6"]
+      },
+      "generalist-bronze-tint": {
+        "role": "tertiary",
+        "displayName": "Generalist Bronze — Tint",
+        "canonical": "oklch(97% 0.025 70)",
+        "tonalRamp": ["#9C6310", "#F5A623", "#F8C26B", "#FAD295", "#FCDFB2", "#FDE9C8", "#FEF0D8", "#FFF6E6"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Welcome title and result type name. The biggest moments." },
+      "headline": { "displayName": "Headline", "purpose": "Scenario question on quiz screen and matched-課 names. Generous line-height." },
+      "title": { "displayName": "Title", "purpose": "Section titles and trait carousel labels." },
+      "body": { "displayName": "Body", "purpose": "Running copy and option text. Weight 500 for interactive, 400 for prose." },
+      "label": { "displayName": "Label", "purpose": "Uppercased Latin tags, axis labels, stat labels, counters." },
+      "numeral": { "displayName": "Numeral", "purpose": "Stat numbers, percentages, type-code letters. The only place weight 800 is allowed." }
+    },
+    "shadows": [
+      { "name": "card-lift", "value": "0 2px 20px rgba(0, 0, 0, 0.08)", "purpose": "Single ambient shadow on cards and scrolling lists. The only allowed surface elevation." },
+      { "name": "marker-punch", "value": "0 1px 3px rgba(0, 0, 0, 0.15)", "purpose": "Tight contact shadow under axis-bar markers to lift them off the colored track." }
+    ],
+    "motion": [
+      { "name": "ease-quick", "value": "120ms ease", "purpose": "Border and color transitions on options and back button." },
+      { "name": "ease-standard", "value": "150ms ease", "purpose": "Primary CTA opacity + transform, list-row backgrounds." },
+      { "name": "ease-slide", "value": "400ms ease-out", "purpose": "Trait-marker left position slide. The only choreographed motion in the system." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "840px", "purpose": "Trait grid and match-browse switch from single-column to 300px + 1fr two-column." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary CTA Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The 診断をはじめる button on the welcome card. The system's anchor CTA.",
+      "html": "<button class=\"ds-btn-primary\">診断をはじめる →</button>",
+      "css": ".ds-btn-primary { display: block; width: 100%; padding: 18px 24px; background: #1C2340; color: #FFFFFF; border: none; border-radius: 14px; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.02em; cursor: pointer; transition: opacity 150ms ease, transform 150ms ease; } .ds-btn-primary:hover { opacity: 0.88; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid #2E6DB4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Share Button",
+      "kind": "button",
+      "refersTo": "button-share",
+      "description": "Filled indigo share button. Pairs with Retake at equal width on the result screen.",
+      "html": "<button class=\"ds-btn-share\">結果をシェアする</button>",
+      "css": ".ds-btn-share { padding: 14px 16px; background: #1C2340; color: #FFFFFF; border: 2px solid #1C2340; border-radius: 12px; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; } .ds-btn-share:hover { background: #2A3558; }"
+    },
+    {
+      "name": "Retake Button",
+      "kind": "button",
+      "refersTo": "button-retake",
+      "description": "White outline echo of Share. Inverts to filled indigo on hover.",
+      "html": "<button class=\"ds-btn-retake\">もう一度診断する</button>",
+      "css": ".ds-btn-retake { padding: 14px 16px; background: #FFFFFF; color: #1C2340; border: 2px solid #1C2340; border-radius: 12px; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; } .ds-btn-retake:hover { background: #1C2340; color: #FFFFFF; }"
+    },
+    {
+      "name": "Quiz Option",
+      "kind": "button",
+      "refersTo": "option",
+      "description": "One of five answer rows on each quiz question. Border-only at rest, faint background on hover.",
+      "html": "<button class=\"ds-opt\"><span class=\"ds-opt-num\">3.</span>特に好きでも嫌いでもない</button>",
+      "css": ".ds-opt { display: block; width: 100%; min-height: 48px; padding: 16px 20px; background: #FFFFFF; color: #1C2340; border: 2px solid #E4E7ED; border-radius: 10px; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; font-size: 16px; font-weight: 500; line-height: 1.5; text-align: left; cursor: pointer; transition: border-color 120ms ease, background 120ms ease; } .ds-opt:hover { border-color: #B0B4BE; background: #FAFBFC; } .ds-opt:focus-visible { outline: 2px solid #2E6DB4; outline-offset: 2px; } .ds-opt-num { font-weight: 700; margin-right: 10px; }"
+    },
+    {
+      "name": "Axis Pill — Inquiry",
+      "kind": "chip",
+      "refersTo": "axis-pill",
+      "description": "Functional axis tag. Inquiry Crimson example shown; pattern repeats per axis with its own dark/tint pair.",
+      "html": "<span class=\"ds-axis-pill ds-axis-A\">人と接する</span>",
+      "css": ".ds-axis-pill { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 999px; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; } .ds-axis-A { background: #FFF0EE; color: #C0392B; } .ds-axis-B { background: #EBF3FC; color: #2E6DB4; } .ds-axis-C { background: #ECF8F1; color: #1E7345; } .ds-axis-D { background: #F5EDF8; color: #7B3F9E; } .ds-axis-E { background: #FFF6E6; color: #9C6310; }"
+    },
+    {
+      "name": "Welcome Banner",
+      "kind": "custom",
+      "refersTo": "banner",
+      "description": "Hall Indigo bulletin pinned at the top of the welcome and result screens. Square top corners, 28px bottom corners — the project's signature shape.",
+      "html": "<header class=\"ds-banner\"><div class=\"ds-banner-pre\">YOKOSUKA CITY HALL</div><h1 class=\"ds-banner-title\">横須賀市役所<br>部署タイプ診断</h1><p class=\"ds-banner-sub\">20の質問に答えるだけで、<br>あなたにぴったりの課が見つかります</p></header>",
+      "css": ".ds-banner { background: #1C2340; color: #FFFFFF; padding: 56px 32px 48px; text-align: center; border-radius: 0 0 28px 28px; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; } .ds-banner-pre { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; opacity: 0.6; margin-bottom: 10px; text-transform: uppercase; } .ds-banner-title { font-size: 30px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; } .ds-banner-sub { font-size: 14px; line-height: 1.75; opacity: 0.78; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard white surface. One ambient shadow, 16px radius, 28px padding. Never nested.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">おすすめの部署</div><p class=\"ds-card-body\">5つの軸からあなたの働き方タイプを診断し、全102課の中から相性の高い部署をランキングでご紹介します。</p></div>",
+      "css": ".ds-card { background: #FFFFFF; border-radius: 16px; padding: 28px; box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08); font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; color: #1C2340; } .ds-card-title { font-size: 20px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; } .ds-card-body { font-size: 14px; font-weight: 400; line-height: 1.75; color: #4A5568; }"
+    },
+    {
+      "name": "Trait Bar",
+      "kind": "custom",
+      "refersTo": "trait-bar",
+      "description": "Signature axis-score visualization. White marker rides a tinted track with axis-dark border. The only animated element in the system.",
+      "html": "<div class=\"ds-trait\"><div class=\"ds-trait-row\"><span class=\"ds-trait-end\">人</span><div class=\"ds-trait-track\" style=\"background:#FFF0EE\"><span class=\"ds-trait-dot\" style=\"left:78%;border-color:#C0392B\"></span></div><span class=\"ds-trait-end\">仕組</span></div></div>",
+      "css": ".ds-trait { font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; padding: 8px; } .ds-trait-row { display: flex; align-items: center; gap: 8px; } .ds-trait-end { font-size: 12px; color: #6B7280; width: 40px; text-align: center; flex-shrink: 0; } .ds-trait-track { position: relative; flex: 1; height: 12px; border-radius: 999px; } .ds-trait-dot { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF; border: 2.5px solid; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); transition: left 400ms ease-out; }"
+    },
+    {
+      "name": "List Row",
+      "kind": "custom",
+      "refersTo": "list-item",
+      "description": "Row in the all-102-課 ranking list. Compact, hairline-divided, indigo-tint active state.",
+      "html": "<button class=\"ds-row\"><span class=\"ds-row-rn\">07</span><span class=\"ds-row-info\"><span class=\"ds-row-name\">福祉総務課</span><span class=\"ds-row-dept\">福祉部</span></span><span class=\"ds-row-fit\">82%</span></button>",
+      "css": ".ds-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 16px; background: #FFFFFF; border: none; border-bottom: 1px solid #E4E7ED; cursor: pointer; transition: background 100ms ease; font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,-apple-system,sans-serif; text-align: left; color: #1C2340; } .ds-row:hover { background: #F6F7FB; } .ds-row.is-active { background: #DCE4F8; } .ds-row:focus-visible { outline: 2px solid #2E6DB4; outline-offset: -2px; } .ds-row-rn { font-size: 12px; font-weight: 800; color: #6B7280; width: 26px; text-align: right; flex-shrink: 0; } .ds-row-info { flex: 1; min-width: 0; display: flex; flex-direction: column; } .ds-row-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-row-dept { font-size: 12px; color: #6B7280; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-row-fit { font-size: 16px; font-weight: 800; flex-shrink: 0; margin-left: 8px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Staff Room Bulletin",
+    "overview": "This is a quiz the staff room made for itself, not a thing City Hall published outward. Imagine a friendly note pinned to the bulletin board between the coffee machine and the leave-request form: clear typography, a single confident anchor color, a small allowance for play. The quiz takes its content seriously — 32 archetypes and 102 課 are real, researched, useful — but the wrapper around that content is light, internal, slightly handmade. It should feel like a colleague made it for colleagues.\n\nThe system commits to one dominant identity color (Hall Indigo, deep enough to read as ink rather than corporate navy) and uses the five axis colors as a strict functional encoding for the work-style axes (人/現場/支援/安定/専門), never as decoration. Surfaces are predominantly Cool Paper (a tinted near-white) with full white cards riding above. There are no gradients, no glass, no faceted panels, and there is no second accent: confidence comes from typographic hierarchy and the indigo.\n\nThe system explicitly rejects the safe defaults that the category invites. Not the standard 役所 PDF (navy + serif headers + bordered tables + cherry blossoms): we don't dress like the org that made us. Not the SaaS landing template (gradient hero, three feature cards, stock illustration): nothing here is selling. Not Buzzfeed-quiz chaos (loud color, all-caps clickbait, confetti): playful does not mean carnival. Not the enterprise dashboard (KPI tiles, dense charts, cold gray): this is not a performance review.",
+    "keyCharacteristics": [
+      "One committed accent (Hall Indigo) carries banners, primary buttons, and the dark surface that frames hero moments.",
+      "Five axis colors as functional encoding only — each owns its axis everywhere it appears (pill, marker, bar dot) and never wanders.",
+      "Generous Japanese line-height (1.75 body) with a tight 1.3 reserved for big headlines.",
+      "Cards float on Cool Paper with one ambient shadow — flat by default, no nested cards.",
+      "Banners use a 0/0/28/28 radius (only the bottom corners are round) — a Staff Room Bulletin signature.",
+      "Calm interaction motion: 120–250ms color/border transitions, no choreography."
+    ],
+    "rules": [
+      { "name": "The One Indigo Rule", "body": "Hall Indigo is the only non-axis color allowed to carry meaningful surface. If a CTA, banner, or anchor element needs identity weight, it gets indigo. Do not introduce a second non-axis brand color. Do not tint the indigo blue, black, or purple.", "section": "colors" },
+      { "name": "The Axis Lockup Rule", "body": "A color belongs to its axis. Crimson is Axis A everywhere — pill, bar, marker, kanji chip, active row tint. Never use Care Forest because 'green felt right here.' If a screen has no axis context, it has no axis color.", "section": "colors" },
+      { "name": "The No Pure Black, No Pure White Rule", "body": "#000 is forbidden — body indigo (#1C2340) is the floor. Pure #FFFFFF is the only white in the system and is reserved for elevated surfaces; backgrounds use Cool Paper (#F0F2F7).", "section": "colors" },
+      { "name": "The Weight-Not-Family Rule", "body": "All hierarchy comes from Hiragino Sans at 400 / 500 / 700 / 800. Do not introduce a serif, a display face, or a second sans (Inter, Noto, etc.) for variety. The system's voice is one face spoken at five volumes.", "section": "typography" },
+      { "name": "The 800-For-Numerals Rule", "body": "Weight 800 is reserved for short, glanceable values: stat numerals, percentages, type-code letters, step numbers. Never set running Japanese text in 800 — it reads as shouting and breaks the staff-room tone.", "section": "typography" },
+      { "name": "The Air-For-Japanese Rule", "body": "Body line-height is 1.75. Headlines that wrap (24px scenario, 30px display) get 1.3–1.7. Never compress below 1.3 — Japanese without breathing room reads as a contract, not a quiz.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces do not gain shadow on hover. Hover changes color and border, never elevation. If you reach for a deeper shadow to signal interactivity, you've picked the wrong language — change the border to #B0B4BE or shift the background to #FAFBFC instead.", "section": "elevation" },
+      { "name": "The No Glass Rule", "body": "No backdrop-filter, no semi-transparent panels, no frosted overlays. Cards are opaque white on Cool Paper. Banners are opaque indigo. Translucency is not in this system's vocabulary.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do anchor every screen with Hall Indigo (#1C2340) on a Cool Paper (#F0F2F7) page. One indigo, one ground.",
+      "Do use the five axis colors as a strict functional encoding — A=Crimson, B=Cobalt, C=Forest, D=Plum, E=Bronze — and use all three tones (dark / mid / tint) for their assigned roles.",
+      "Do keep banners with the 0 0 28px 28px radius. The pinned-bulletin shape is the project's signature.",
+      "Do set body Japanese at 16px / line-height 1.75 / weight 500 for interactive text and 400 for prose. Cap descriptions around 38–42 zenkaku characters per line.",
+      "Do earn hierarchy through weight contrast (400 / 500 / 700 / 800), not through font swaps or color changes.",
+      "Do use the Card Lift shadow once per surface and stop. Flat-by-default everywhere else.",
+      "Do keep motion calm — 120–250ms color and border transitions. The trait-marker slide is the one allowed choreographed move.",
+      "Do write copy like a colleague making something for the office: warm, knowing, slightly playful, never preachy."
+    ],
+    "donts": [
+      "Don't import the 役所-PDF template — no navy headers with serif accents, no cherry-blossom banners, no bordered government tables, no committee mascots. The whole point is that this does NOT look like the org that made it.",
+      "Don't dress this as a SaaS landing — no gradient heroes, no three-up feature cards, no 'Get started for free', no stock illustrations of diverse teammates pointing at laptops.",
+      "Don't lean into Buzzfeed-quiz chaos — no all-caps clickbait, no confetti, no rainbow gradients, no emoji-anchored CTAs. Playful is not carnival.",
+      "Don't stage this like an enterprise dashboard — no KPI tiles, no metric grids, no chart-heavy result page that reads as a performance review.",
+      "Don't introduce a sixth color, a second accent, or a 'fun' decorative hue. The palette is closed.",
+      "Don't use an axis color outside its axis. Crimson is never decorative; Forest is not 'supportive green for friendly cards.'",
+      "Don't use pure #000 or pure #FFF for typography or page backgrounds. Body color is #1C2340; backgrounds are #F0F2F7. Pure white is for elevated surfaces only.",
+      "Don't add border-left or border-right greater than 1px as a colored stripe on cards, alerts, or list items. Side-stripe accents are forbidden.",
+      "Don't apply background-clip: text with a gradient. Gradient text is banned. Emphasis comes from weight or size.",
+      "Don't use backdrop-filter or any glassmorphism. No frosted nav, no translucent panels.",
+      "Don't nest cards. A panel inside a card uses a Cool Paper fill, not a second elevated white surface.",
+      "Don't animate layout properties (width, height, margin, padding). Only opacity, transform, color, and the explicit left slide on trait markers.",
+      "Don't introduce a second typeface. No Inter, no Noto, no serif display, no monospace for 'code feel.'",
+      "Don't use weight 800 for running Japanese text. It is reserved for numerals and short codes.",
+      "Don't add an em dash or double-hyphen to copy. Use commas, colons, semicolons, periods, or parentheses instead."
+    ]
+  }
+}

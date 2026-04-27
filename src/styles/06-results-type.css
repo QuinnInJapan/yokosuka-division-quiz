@@ -1,0 +1,46 @@
+/* ── Type reveal banner ── */
+.type-banner {
+  background: #1C2340;
+  color: white;
+  padding: var(--sp-2xl) var(--sp-xl);
+  text-align: center;
+  border-radius: 0 0 28px 28px;
+  margin-bottom: var(--sp-lg);
+}
+.type-pre {
+  font-size: var(--fs-sm);
+  opacity: .6;
+  letter-spacing: .12em;
+  margin-bottom: var(--sp-md);
+}
+.type-chips {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: var(--sp-lg);
+}
+.type-chip {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+}
+.type-name {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  margin-bottom: var(--sp-xs);
+}
+.type-code {
+  font-size: var(--fs-sm);
+  opacity: .5;
+  margin-bottom: var(--sp-md);
+}
+.type-desc {
+  font-size: var(--fs-base);
+  opacity: .82;
+  line-height: var(--lh-body);
+  max-width: 480px;
+  margin: 0 auto;
+}

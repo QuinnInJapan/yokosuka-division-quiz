@@ -1,0 +1,54 @@
+/* ── Full list ── */
+.all-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  background: var(--card);
+  border-radius: var(--card-r);
+  box-shadow: var(--card-shadow);
+}
+.all-item {
+  display: flex; align-items: center;
+  padding: 12px var(--sp-md);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; gap: 12px;
+  transition: background .1s;
+}
+.all-item:last-child { border-bottom: none; }
+.all-item:hover { background: #f6f7fb; }
+.all-item.on {
+  background: #dce4f8;
+}
+.all-item:focus-visible {
+  outline: 2px solid #2E6DB4;
+  outline-offset: -2px;
+}
+.all-rn { font-size: var(--fs-xs); font-weight: var(--fw-black); color: var(--sub); width: 26px; text-align: right; flex-shrink: 0; }
+.all-info { flex: 1; min-width: 0; }
+.all-name { font-size: 14px; font-weight: var(--fw-bold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.all-dept { font-size: var(--fs-xs); color: var(--sub); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.all-fit { font-size: var(--fs-base); font-weight: var(--fw-black); flex-shrink: 0; margin-left: var(--sp-sm); }
+
+/* ── Bottom actions ── */
+.bottom-actions {
+  display: flex;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-md);
+}
+.btn-share, .btn-retake {
+  flex: 1;
+  padding: 14px;
+  border: 2px solid #1C2340;
+  border-radius: 12px;
+  font-size: 14px; font-weight: var(--fw-bold);
+  cursor: pointer;
+  text-align: center;
+  transition: background .15s, color .15s;
+}
+.btn-share {
+  background: #1C2340; color: white;
+}
+.btn-share:hover { background: #2a3558; }
+.btn-retake {
+  background: white; color: #1C2340;
+}
+.btn-retake:hover { background: #1C2340; color: white; }
