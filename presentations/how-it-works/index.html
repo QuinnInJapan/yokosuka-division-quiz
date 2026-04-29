@@ -685,18 +685,25 @@
   .s4-bars { display: flex; flex-direction: column; gap: 14px; }
   .s4-bar {
     display: grid;
-    grid-template-columns: 200px 1fr 72px;
-    gap: 24px; align-items: center;
+    grid-template-columns: 140px 1fr 140px 72px;
+    gap: 18px; align-items: center;
   }
   .s4-bar.A { color: var(--A-mid); }
   .s4-bar.B { color: var(--B-mid); }
   .s4-bar.C { color: var(--C-mid); }
   .s4-bar.D { color: var(--D-mid); }
   .s4-bar.E { color: var(--E-mid); }
-  .s4-bar .label {
-    font-size: 17px; font-weight: 600;
+  .s4-bar .pole {
+    font-size: 15px; font-weight: 700;
     color: var(--text);
   }
+  .s4-bar .pole.lo { text-align: right; }
+  .s4-bar .pole.hi { text-align: left; }
+  .s4-bar.A .pole { color: var(--A); }
+  .s4-bar.B .pole { color: var(--B); }
+  .s4-bar.C .pole { color: var(--C); }
+  .s4-bar.D .pole { color: var(--D); }
+  .s4-bar.E .pole { color: var(--E); }
   .s4-bar .track {
     position: relative;
     height: 18px;
@@ -1351,28 +1358,33 @@
           </div>
           <div class="s4-bars" id="s4-bars">
             <div class="s4-bar A" data-axis="A">
-              <span class="label">人との関わり方</span>
+              <span class="pole lo">制度・仕組み</span>
               <span class="track"><span class="fill-dept" data-bar="dept-A"></span><span class="fill-user" data-bar="user-A"></span></span>
+              <span class="pole hi">市民対話</span>
               <span class="delta" data-delta="A">Δ 1.4</span>
             </div>
             <div class="s4-bar B" data-axis="B">
-              <span class="label">仕事の進め方</span>
+              <span class="pole lo">政策立案</span>
               <span class="track"><span class="fill-dept" data-bar="dept-B"></span><span class="fill-user" data-bar="user-B"></span></span>
+              <span class="pole hi">現場対応</span>
               <span class="delta" data-delta="B">Δ 1.5</span>
             </div>
             <div class="s4-bar C" data-axis="C">
-              <span class="label">担う役割</span>
+              <span class="pole lo">ルール管理</span>
               <span class="track"><span class="fill-dept" data-bar="dept-C"></span><span class="fill-user" data-bar="user-C"></span></span>
+              <span class="pole hi">市民支援</span>
               <span class="delta" data-delta="C">Δ 0.8</span>
             </div>
             <div class="s4-bar D" data-axis="D">
-              <span class="label">変化への姿勢</span>
+              <span class="pole lo">革新推進</span>
               <span class="track"><span class="fill-dept" data-bar="dept-D"></span><span class="fill-user" data-bar="user-D"></span></span>
+              <span class="pole hi">安定運営</span>
               <span class="delta" data-delta="D">Δ 0.3</span>
             </div>
             <div class="s4-bar E" data-axis="E">
-              <span class="label">知識のスタイル</span>
+              <span class="pole lo">専門追求</span>
               <span class="track"><span class="fill-dept" data-bar="dept-E"></span><span class="fill-user" data-bar="user-E"></span></span>
+              <span class="pole hi">幅広対応</span>
               <span class="delta" data-delta="E">Δ 0.1</span>
             </div>
           </div>
@@ -1445,7 +1457,7 @@
 
         <div class="s5-card">
           <div class="s5-card-head">
-            <div class="s5-card-label">5軸プロファイル</div>
+            <div class="s5-card-label">プロファイル</div>
             <div class="s5-card-meta">
               <span class="s5-card-num">5軸</span>
               <span class="s5-card-note">／ あなたの傾向</span>
