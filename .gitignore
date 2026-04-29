@@ -10,3 +10,4 @@ build/
 .superpowers/
 test-results/
 playwright-report/
+.worktrees/
