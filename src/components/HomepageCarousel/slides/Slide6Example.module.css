@@ -1,15 +1,16 @@
 /*
-  Slide 5 (Example)
-  Focal point: ONE concrete persona's filled-in result page — archetype name
-  + 5-character code on top (the largest type on the slide), 5-axis profile
-  in the middle (axis colors as signal), top-5 ranked divisions at the
-  bottom (grayscale list with one indigo focal row).
-  Eliminated: the previous version's two-card split (archetype card +
-  ranking card with shadows), the per-axis colored bar fills used as
-  decoration, and the gradient/border focal row.
-  Color discipline: axis colors only on the 5 profile rows. Indigo on the
-  archetype code chips and the #1 rank chip. Everything else grayscale +
-  hairline borders, matching Slides 1–4 and the outer chrome.
+  Slide 5 (Example) — full-fidelity result page.
+
+  Three primitives, rendered as close to the real components as the carousel
+  viewport allows:
+    1. .hero      ← TypeReveal (dark indigo banner, kanji chips, 「name」型, code, desc)
+    2. .traits    ← TraitBar list (fat axis-color tracks, 16px white dots, kanji ends)
+    3. .ranking   ← MatchList (numbered rows with green fit% via fitColor)
+
+  Composition strategy: an outer .result frame (rounded, shadowed, indigo-headed)
+  imitates a literal slice of the result page. Hero is the focal point — it sits
+  flush at the top of the frame with its own bottom-rounded corners, exactly
+  like TypeReveal's `border-radius: 0 0 28px 28px`.
 */
 
 .slide {
@@ -18,7 +19,7 @@
   gap: var(--sp-lg);
 }
 
-/* ── Title block (matches Slides 1–4) ────────────────────────── */
+/* ── Title block (matches Slides 1–4) ────────────────────────────── */
 .head {
   display: flex;
   flex-direction: column;
@@ -44,338 +45,256 @@
   line-height: var(--lh-tight);
 }
 
-/* ── The single focal card ──────────────────────────────────── */
-.card {
+/* ── Outer result frame ──────────────────────────────────────────── */
+.result {
+  background: var(--card);
+  border-radius: var(--card-r);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 1. Hero (TypeReveal) ────────────────────────────────────────── */
+.hero {
+  background: var(--hall-indigo);
+  color: white;
+  padding: var(--sp-xl) var(--sp-xl) var(--sp-2xl);
+  text-align: center;
+  /* Echoes TypeReveal's "0 0 28px 28px" but adapted for the framed slice. */
+  border-radius: 0 0 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.heroPre {
+  font-size: var(--fs-sm);
+  opacity: 0.6;
+  letter-spacing: 0.12em;
+  margin-bottom: var(--sp-md);
+}
+.heroChips {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: var(--sp-lg);
+}
+.heroChip {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+}
+.heroName {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--sp-xs);
+  letter-spacing: -0.01em;
+}
+.heroCode {
+  font-size: var(--fs-sm);
+  opacity: 0.5;
+  letter-spacing: 0.18em;
+  margin-bottom: var(--sp-md);
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.heroDesc {
+  font-size: var(--fs-base);
+  opacity: 0.82;
+  line-height: var(--lh-body);
+  max-width: 480px;
+  margin: 0 auto;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 2. Traits (TraitBar list) ───────────────────────────────────── */
+.traits {
+  padding: var(--sp-lg) var(--sp-xl) var(--sp-md);
+}
+.traitList {
+  list-style: none;
   margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.trait {
+  padding: var(--sp-sm);
+  border-bottom: 1px solid var(--border);
+}
+.trait:last-child {
+  border-bottom: none;
+}
+.traitHeader {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-sm);
+  margin-bottom: 4px;
+}
+.traitPct {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+}
+.traitWin {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+.traitBarRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.traitEnd {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  width: 28px;
+  flex-shrink: 0;
+  text-align: center;
+  font-weight: var(--fw-bold);
+}
+.traitTrack {
+  position: relative;
+  flex: 1;
+  height: var(--bar-h); /* 12px fat track */
+  border-radius: 999px;
+  overflow: visible;
+}
+.traitDot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--mkr-size); /* 16px */
+  height: var(--mkr-size);
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  transition: left 0.4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .traitDot { transition: none; }
+}
+
+/* ── 3. Ranking (MatchList) ──────────────────────────────────────── */
+.ranking {
+  padding: var(--sp-md) var(--sp-xl) var(--sp-xl);
+}
+.rankingHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-md);
+  padding: 0 var(--sp-sm);
+  margin-bottom: var(--sp-sm);
+}
+.rankingTitle {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+.rankingMeta {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.allList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--card-r);
-  padding: var(--sp-2xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-lg);
-}
-
-.caption {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-md);
-}
-.captionLabel {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sub);
-}
-.captionMeta {
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.08em;
-  color: var(--text-sec);
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Block 01: archetype hero (the slide's focal point) ─────── */
-.arch {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-sm);
-  padding-bottom: var(--sp-lg);
-  border-bottom: 1px solid var(--border);
-}
-.archCode {
-  display: inline-flex;
-  gap: 4px;
-  align-self: flex-start;
-}
-.archChip {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 13px;
-  font-weight: var(--fw-black);
-  color: var(--card);
-  background: var(--hall-indigo);
-  letter-spacing: 0;
-}
-.archName {
-  margin: 0;
-  font-size: 32px;
-  font-weight: var(--fw-black);
-  color: var(--hall-indigo);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-}
-.archDesc {
-  margin: 0;
-  font-size: var(--fs-base);
-  font-weight: var(--fw-normal);
-  color: var(--text-sec);
-  line-height: 1.7;
-  letter-spacing: 0.005em;
-  max-width: 56ch;
-}
-
-/* ── Generic block header (used by profile + rank blocks) ───── */
-.blockHead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-md);
-  margin-bottom: var(--sp-sm);
-}
-.blockLabel {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.04em;
-  color: var(--text);
-  line-height: var(--lh-tight);
-}
-.blockMeta {
-  font-size: 12px;
-  color: var(--sub);
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Block 02: 5-axis profile ───────────────────────────────── */
-.profile {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: var(--sp-lg);
-  border-bottom: 1px solid var(--border);
-}
-.axisList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.axisRow {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 96px) minmax(0, 1fr) minmax(0, 76px);
-  align-items: center;
-  gap: 10px;
-}
-.axisChip {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
-}
-.axisName {
-  font-size: 13px;
-  font-weight: var(--fw-medium);
-  color: var(--text-sec);
-  letter-spacing: 0.01em;
-  line-height: var(--lh-tight);
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
-.axisLine {
-  position: relative;
-  height: 16px;
-  display: block;
-}
-.axisRail {
-  position: absolute;
-  left: 0; right: 0; top: 50%;
-  height: 1px;
-  background: var(--border);
-  transform: translateY(-50%);
-}
-.axisMid {
-  position: absolute;
-  left: 50%;
-  top: 4px;
-  bottom: 4px;
-  width: 1px;
-  background: var(--border);
-}
-.axisMark {
-  position: absolute;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid var(--card);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 1px var(--border);
-  transition: left 360ms ease;
-}
-@media (prefers-reduced-motion: reduce) {
-  .axisMark { transition: none; }
-}
-.axisSide {
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.02em;
-  text-align: right;
-  line-height: var(--lh-tight);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ── Block 03: ranked divisions ─────────────────────────────── */
-.rank {
+.allItem {
   display: flex;
-  flex-direction: column;
-}
-.rankList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-.rankRow {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1.4fr) minmax(0, 1fr) 44px;
   align-items: center;
-  gap: var(--sp-sm) var(--sp-md);
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border-light);
+  width: 100%;
+  padding: 12px var(--sp-md);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
 }
-.rankRow:last-child {
+.allItem:last-child {
   border-bottom: none;
 }
-.rankNum {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--hover-wash-list);
-  color: var(--text-sec);
-  font-size: 12px;
-  font-weight: var(--fw-bold);
+.allRn {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-black);
+  color: var(--sub);
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
 }
-.rankFocal .rankNum {
-  background: var(--hall-indigo);
-  color: var(--card);
-}
-.rankName {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+.allInfo {
+  flex: 1;
   min-width: 0;
 }
-.rankDept {
-  font-size: 11px;
-  font-weight: var(--fw-medium);
-  color: var(--sub);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.rankDiv {
+.allName {
   font-size: 14px;
   font-weight: var(--fw-bold);
   color: var(--text);
-  letter-spacing: 0.005em;
-  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rankFocal .rankDiv {
-  color: var(--hall-indigo);
-}
-.rankBarWrap {
-  height: 5px;
-  background: var(--border-light);
-  border-radius: 3px;
-  position: relative;
+.allDept {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  margin-top: 1px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
-.rankBar {
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  background: var(--text-sec);
-  border-radius: 3px;
-  transition: width 360ms ease;
-}
-.rankFocal .rankBar {
-  background: var(--hall-indigo);
-}
-@media (prefers-reduced-motion: reduce) {
-  .rankBar { transition: none; }
-}
-.rankPct {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
+.allFit {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-black);
+  flex-shrink: 0;
+  margin-left: var(--sp-sm);
   font-variant-numeric: tabular-nums;
-  color: var(--text);
-  text-align: right;
-  letter-spacing: -0.01em;
-}
-.rankFocal .rankPct {
-  color: var(--hall-indigo);
 }
 
-/* ── Footer caption ─────────────────────────────────────────── */
-.foot {
-  margin: 0;
-  font-size: 12px;
-  color: var(--sub);
-  text-align: center;
-  letter-spacing: 0.04em;
-  line-height: var(--lh-tight);
-}
-
-/* ── Mobile collapse (<900px) ───────────────────────────────── */
+/* ── Mobile collapse (<900px) ────────────────────────────────────── */
 @media (max-width: 900px) {
-  .card {
-    padding: var(--sp-lg);
-    gap: var(--sp-md);
+  .hero {
+    padding: var(--sp-lg) var(--sp-md) var(--sp-xl);
+    border-radius: 0 0 20px 20px;
   }
-  .archName {
-    font-size: 26px;
+  .heroChip {
+    width: 32px;
+    height: 32px;
+    font-size: var(--fs-base);
   }
-  .archDesc {
+  .heroName {
+    font-size: var(--fs-xl);
+  }
+  .heroDesc {
     font-size: var(--fs-sm);
     line-height: 1.65;
   }
-  .axisRow {
-    grid-template-columns: 22px minmax(0, 1fr) minmax(0, 80px);
-    grid-template-areas:
-      'chip name side'
-      '.    line line';
-    gap: 4px 10px;
+  .traits {
+    padding: var(--sp-md) var(--sp-md) var(--sp-sm);
   }
-  .axisChip { grid-area: chip; }
-  .axisName { grid-area: name; }
-  .axisSide { grid-area: side; }
-  .axisLine { grid-area: line; }
-  .rankRow {
-    grid-template-columns: 22px minmax(0, 1fr) 44px;
-    grid-template-areas:
-      'num name pct'
-      '.   bar  bar';
-    gap: 4px var(--sp-sm);
+  .ranking {
+    padding: var(--sp-sm) var(--sp-md) var(--sp-md);
   }
-  .rankNum     { grid-area: num; }
-  .rankName    { grid-area: name; }
-  .rankBarWrap { grid-area: bar; }
-  .rankPct     { grid-area: pct; }
+  .traitEnd {
+    width: 20px;
+  }
+  .allItem {
+    padding: 10px var(--sp-sm);
+  }
 }

@@ -1,10 +1,9 @@
 /*
-  Slide 1 (Input)
-  Focal point: ONE real question rendered at body+ scale.
-  Supporting: a 5-step likert scale that teaches the answer format by affordance.
-  Eliminated: axis selector, axis pills, per-axis examples — this slide is about the
-  question *format*, not about axes. Axis colors are reserved (principle 7) for
-  axis-tagged content elsewhere.
+  Slide 1 (Input) — visual primitives borrowed from the real app:
+    - Card: var(--card-shadow) + var(--card-r)             (MatchDetail.card)
+    - Chip: 36×36 rounded, tint bg + dark text             (TypeReveal.type-chip)
+    - Likert bar: var(--bar-h) track, axis color, 16px     (TraitBar.trait-track
+      white dot w/ 2.5px axis-dark border + soft shadow     + .trait-dot)
 */
 
 .slide {
@@ -13,7 +12,7 @@
   gap: var(--sp-lg);
 }
 
-/* ── Title block (unchanged register) ─────────────────────────── */
+/* ── Title block ─────────────────────────────────────────────── */
 .head {
   display: flex;
   flex-direction: column;
@@ -43,24 +42,61 @@
 .card {
   margin: 0;
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--card-r);
+  box-shadow: var(--card-shadow);
   padding: var(--sp-2xl);
   display: flex;
   flex-direction: column;
   gap: var(--sp-lg);
 }
 
-.qLabel {
-  font-size: 14px;
+/* ── Axis tag (TypeReveal echo: chip + pre-label) ────────────── */
+.tag {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-md);
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--border);
+}
+.chip {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  flex-shrink: 0;
+}
+.tagText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.tagPre {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  letter-spacing: 0.08em;
+  font-weight: var(--fw-medium);
+}
+.tagLabel {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+.qIndex {
+  font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--sub);
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
-/* The scenario IS the focal point — largest, heaviest item on the slide. */
+/* ── Focal: the scenario ─────────────────────────────────────── */
 .scenario {
   margin: 0;
   font-size: 22px;
@@ -68,94 +104,115 @@
   line-height: 1.6;
   color: var(--text);
   letter-spacing: 0.005em;
-  /* Hanging indent feel without quote glyphs */
-  border-left: 3px solid var(--hall-indigo);
-  padding-left: var(--sp-lg);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
-/* ── Scale: poles + 5 dots ───────────────────────────────────── */
+/* ── Scale (TraitBar echo) ───────────────────────────────────── */
 .scale {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
-  gap: var(--sp-lg);
-  margin-top: var(--sp-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-xs);
 }
-.poleMin,
-.poleMax {
+.scaleHeader {
+  display: flex;
+  justify-content: space-between;
   font-size: var(--fs-sm);
   color: var(--text-sec);
+  font-weight: var(--fw-medium);
   line-height: var(--lh-tight);
 }
-.poleMin { text-align: right; }
-.poleMax { text-align: left; }
+.pole { white-space: nowrap; }
 
-.dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
+.barRow {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+  padding-top: 2px;
 }
-/* hairline rail through the dot row */
-.dots::before {
-  content: '';
+
+/* ── The fat axis-color track — TraitBar.trait-track ─────────── */
+.track {
+  position: relative;
+  height: var(--bar-h);
+  border-radius: 999px;
+  overflow: visible;
+}
+
+/* tick dots sitting ON the track */
+.tick {
   position: absolute;
-  left: 8px;
-  right: 8px;
   top: 50%;
-  height: 1px;
-  background: var(--border);
-  z-index: 0;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 1;
 }
 
-.dot {
-  position: relative;
-  z-index: 1;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  margin: 0;
+/* white circular marker — TraitBar.trait-dot, exact dimensions */
+.marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--card);
-  cursor: pointer;
-  font-family: inherit;
+  background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  transition: left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marker { transition: none; }
+}
+
+/* ── Hit targets (the 5 buttons, sit BELOW the track) ────────── */
+.hits {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+}
+.hit {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 150ms ease, background 150ms ease;
-}
-.dotInner {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  height: 28px;
+  padding: 0;
+  margin: 0;
   background: transparent;
-  transition: background 150ms ease;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--sub);
+  border-radius: 6px;
+  transition: color 150ms ease, background 150ms ease;
+}
+.hitNum {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+.hit[aria-checked='true'] {
+  color: var(--text);
 }
 @media (hover: hover) {
-  .dot:not(.dotActive):hover {
-    border-color: var(--hall-indigo);
-  }
-  .dot:not(.dotActive):hover .dotInner {
-    background: var(--indigo-tint);
+  .hit:not([aria-checked='true']):hover {
+    background: var(--hover-wash);
+    color: var(--text);
   }
 }
-.dot:focus-visible {
+.hit:focus-visible {
   outline: 2px solid var(--focus-ring);
-  outline-offset: 3px;
-}
-.dotActive {
-  border-color: var(--hall-indigo);
-  background: var(--hall-indigo);
-}
-.dotActive .dotInner {
-  background: var(--card);
+  outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .dot,
-  .dotInner {
-    transition: none;
-  }
+  .hit { transition: none; }
 }
 
 /* ── Caption (footnote tier) ─────────────────────────────────── */
@@ -176,19 +233,7 @@
   }
   .scenario {
     font-size: 18px;
-    padding-left: var(--sp-md);
   }
-  .scale {
-    grid-template-columns: 1fr;
-    gap: var(--sp-sm);
-    text-align: center;
-  }
-  .poleMin,
-  .poleMax {
-    text-align: center;
-  }
-  .dots {
-    justify-content: center;
-    gap: 18px;
-  }
+  .tagPre { font-size: 11px; }
+  .qIndex { font-size: 11px; }
 }

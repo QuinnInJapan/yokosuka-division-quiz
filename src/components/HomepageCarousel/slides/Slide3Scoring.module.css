@@ -1,13 +1,13 @@
 /*
-  Slide 2 (Scoring)
-  Focal point: ONE axis-score transformation, rendered at data-number scale.
-  Supporting: a tight 4-row table that shows the four contributing answers
-  and their signed deltas (the math being averaged).
-  Eliminated: the right-hand "selected question full text" panel — Slide 1
-  already shows what one question looks like in detail.
-  Color discipline: axis-A color appears ONLY on A-tagged content (the chip,
-  the score sign, and the marker on the A axis line). The rest is grayscale +
-  indigo for structural emphasis.
+  Slide 2 (Scoring) — visual primitives borrowed from the real app:
+    - Card: var(--card-shadow) + var(--card-r)              (MatchDetail.card)
+    - Chip: 36×36 rounded, tint bg + dark text              (TypeReveal.type-chip)
+    - Mini feeder bar: var(--bar-h) axis-color track + 16px (TraitBar.trait-track
+      white dot w/ 2.5px axis-dark border + soft shadow      + .trait-dot, scaled
+      down to row density)
+    - Focal trait block: header (pct in axis-dark fw-black + win label fw-bold)
+      above a fat axis-color track with kanji ends + 16px white dot — verbatim
+      structure from TraitBar.tsx + .module.css.
 */
 
 .slide {
@@ -16,7 +16,7 @@
   gap: var(--sp-lg);
 }
 
-/* ── Title block (matches Slide 1 register) ────────────────────── */
+/* ── Title block (matches Slide 1 register) ──────────────────── */
 .head {
   display: flex;
   flex-direction: column;
@@ -42,234 +42,219 @@
   line-height: var(--lh-tight);
 }
 
-/* ── Single focal card ─────────────────────────────────────────── */
+/* ── The single focal card ───────────────────────────────────── */
 .card {
   margin: 0;
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--card-r);
+  box-shadow: var(--card-shadow);
   padding: var(--sp-2xl);
   display: flex;
   flex-direction: column;
   gap: var(--sp-lg);
 }
 
-.caption {
+/* ── Axis tag (TypeReveal echo: chip + pre-label) ────────────── */
+.tag {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--sp-md);
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--border);
 }
-.captionLabel {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sub);
-}
-.captionAxis {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.axisChip {
-  display: inline-flex;
+.chip {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  font-size: 13px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
-.axisName {
-  font-size: var(--fs-sm);
+.tagText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.tagPre {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
-  color: var(--text);
-  letter-spacing: 0.01em;
+}
+.tagLabel {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+.qIndex {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
-/* ── Contribution table ────────────────────────────────────────── */
+/* ── Feeder rows: 4 mini TraitBars ───────────────────────────── */
 .rows {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--border);
+  gap: 14px;
 }
 .row {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto 64px;
+  grid-template-columns: 36px minmax(0, 1fr) 180px 44px;
   align-items: center;
   gap: var(--sp-md);
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
 }
 .rowId {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   color: var(--sub);
   font-variant-numeric: tabular-nums;
 }
 .rowLabel {
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   font-weight: var(--fw-normal);
   color: var(--text);
   line-height: var(--lh-tight);
   min-width: 0;
-}
-.rowScale {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
-.tick {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border);
-}
-.tickPick {
-  background: var(--hall-indigo);
-}
-.rowDelta {
-  font-family: inherit;
-  font-size: var(--fs-base);
-  font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  letter-spacing: 0.02em;
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 4px;
-}
-.deltaPos { color: var(--text); }
-.deltaNeg { color: var(--text); }
-.deltaZero { color: var(--sub); }
 .revFlag {
-  font-size: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   color: var(--sub);
   border: 1px solid var(--border);
   border-radius: 3px;
-  padding: 1px 3px;
+  padding: 1px 4px;
   line-height: 1;
 }
 
-/* ── Sum-line (visual bridge from rows → score) ────────────────── */
-.totalRow {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto 64px;
-  align-items: center;
-  gap: var(--sp-md);
-  padding-top: 4px;
+/* mini track — exact TraitBar.trait-track recipe */
+.miniBar {
+  position: relative;
+  height: var(--bar-h);
+  border-radius: 999px;
+  display: block;
+  width: 100%;
 }
-.totalLabel {
-  grid-column: 1 / 3;
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sub);
+/* mini dot — exact TraitBar.trait-dot recipe */
+.miniDot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--mkr-size);
+  height: var(--mkr-size);
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 2;
 }
-.totalDots {
-  grid-column: 3;
-  height: 1px;
-  width: 60px;
-  background: var(--border);
-}
-.totalValue {
-  grid-column: 4;
-  font-size: 20px;
+
+.rowDelta {
+  font-size: var(--fs-base);
   font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
-  color: var(--text);
   text-align: right;
   letter-spacing: 0.01em;
 }
 
-/* ── Score block: BIG number + axis line ───────────────────────── */
-.scoreBlock {
-  margin-top: var(--sp-sm);
+/* ── Aggregator divider ──────────────────────────────────────── */
+.divider {
   display: flex;
-  flex-direction: column;
-  gap: var(--sp-md);
-  align-items: center;
-}
-.scoreNumber {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2px;
-  line-height: 1;
-}
-.scoreSign {
-  font-size: 28px;
-  font-weight: var(--fw-black);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
-.scoreDigits {
-  font-size: 56px;
-  font-weight: var(--fw-black);
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
-  letter-spacing: -0.02em;
-}
-
-.axisLine {
-  width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
   align-items: center;
   gap: var(--sp-md);
+  margin-top: 2px;
 }
-.poleLabel {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  color: var(--text-sec);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-.axis {
-  position: relative;
-  height: 22px;
-  display: block;
-}
-.axisRail {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
+.dividerLine {
+  flex: 1;
   height: 1px;
   background: var(--border);
-  transform: translateY(-50%);
 }
-.axisMid {
-  position: absolute;
-  left: 50%;
-  top: 6px;
-  bottom: 6px;
-  width: 1px;
-  background: var(--border);
+.dividerLabel {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sub);
+  white-space: nowrap;
 }
-.axisMarker {
+
+/* ── Focal: the real TraitBar shape ──────────────────────────── */
+.trait {
+  display: block;
+}
+.traitHeader {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-sm);
+  margin-bottom: 8px;
+}
+.traitPct {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.traitWin {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+.traitBarRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.traitEnd {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--text-sec);
+  width: 32px;
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1;
+}
+.traitTrack {
+  position: relative;
+  flex: 1;
+  height: var(--bar-h);
+  border-radius: 999px;
+  overflow: visible;
+}
+.traitDot {
   position: absolute;
   top: 50%;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--card);
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 1px var(--border);
-  transition: left 360ms ease;
+  width: var(--mkr-size);
+  height: var(--mkr-size);
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  transition: left 0.36s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (prefers-reduced-motion: reduce) {
-  .axisMarker { transition: none; }
+  .traitDot { transition: none; }
 }
 
 .foot {
@@ -280,42 +265,30 @@
   letter-spacing: 0.04em;
 }
 
-/* ── Mobile collapse (<900px) ──────────────────────────────────── */
+/* ── Mobile collapse (<900px) ────────────────────────────────── */
 @media (max-width: 900px) {
   .card {
     padding: var(--sp-lg);
     gap: var(--sp-md);
   }
-  .caption {
-    flex-direction: column;
-    align-items: flex-start;
+  .tag {
     gap: var(--sp-sm);
   }
+  .rows {
+    gap: 12px;
+  }
   .row {
-    grid-template-columns: 28px minmax(0, 1fr) auto;
+    grid-template-columns: 28px minmax(0, 1fr) 36px;
     grid-template-areas:
-      'id label delta'
-      '.  scale scale';
-    gap: 8px var(--sp-sm);
-    padding: 10px 0;
+      'id   label delta'
+      '.    bar   bar';
+    gap: 6px var(--sp-sm);
   }
   .rowId    { grid-area: id; }
   .rowLabel { grid-area: label; font-size: var(--fs-sm); }
   .rowDelta { grid-area: delta; font-size: var(--fs-sm); }
-  .rowScale { grid-area: scale; gap: 5px; }
-  .totalRow {
-    grid-template-columns: 1fr auto;
-  }
-  .totalLabel { grid-column: 1; }
-  .totalDots  { display: none; }
-  .totalValue { grid-column: 2; font-size: 18px; }
-  .scoreDigits { font-size: 44px; }
-  .scoreSign { font-size: 22px; }
-  .axisLine {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-  .poleLabel:first-child  { text-align: left; }
-  .poleLabel:last-child   { text-align: right; order: 3; }
-  .axis { order: 2; }
+  .miniBar  { grid-area: bar; }
+  .traitPct { font-size: var(--fs-xl); }
+  .traitWin { font-size: var(--fs-sm); }
+  .traitEnd { font-size: var(--fs-base); width: 24px; }
 }

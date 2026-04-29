@@ -3,65 +3,56 @@ import { AXES } from '../../../data/axes';
 import { AX } from '../../../data/types';
 import type { AxisKey } from '../../../data/types';
 import { TYPES } from '../../../data/archetypes';
+import { dist, fitPct, fitColor, scoreToPct } from '../../../lib/scoring';
 
 /*
-  Slide 5 (Example)
-  Question: "What does a real result look like?"
-  Slide 4 showed the result page abstractly (annotated regions). This slide
-  fills the same shape with one specific person's real outcome. Same persona
-  used on Slides 3 & 4 (with D nudged from 0 to +1 so the ranking has visible
-  variation between 1st and 2nd place) — the carousel arc reads as one
-  continuous story: input → scoring → comparison → result structure → result
-  filled in.
-  Persona profile {A:+2, B:+1, C:+2, D:+1, E:0} resolves to archetype DASCG
-  (街のよろず屋). All five ranked divisions below are real entries from
-  divisions.json with their real axis values; match % is computed from L1
-  distance against the persona over five −2..+2 axes (max distance = 20).
-  Color discipline: axis colors appear ONLY on the 5 axis profile rows.
-  Indigo carries the archetype focal type and the #1 rank chip. Everything
-  else is grayscale + hairline borders, matching Slides 1–4 and the chrome.
+  Slide 5 (Example) — "What does a real result look like?"
+
+  This is the FINAL slide. It shows a literal slice of the real result page,
+  fully populated, no annotations, no labels saying "this is region 02". Same
+  persona arc as Slides 2–4 ({A:+2, B:+1, C:+2, D:+1, E:0} → DASCG 街のよろず屋).
+
+  Three regions, primitive-faithful at full fidelity:
+    1. Hero (TypeReveal)   — dark indigo banner, kanji chips, 「name」型, code, desc.
+                             LARGEST element on the slide; anchors the eye.
+    2. Trait profile (TraitBar) — 5 rows: pct + win label in axis-dark above a
+                             fat 12px axis-color track with a 16px white dot.
+    3. Top divisions (MatchList) — numbered rows from real divisions.json with
+                             green fit pcts via fitColor (proves "out of 103").
 */
 
-// Persona profile (continued from Slides 3 & 4).
+// Persona profile (continues the arc from Slides 2–4).
 const PROFILE: Record<AxisKey, number> = { A: 2, B: 1, C: 2, D: 1, E: 0 };
 
-// Real divisions from divisions.json — top-5 closest to PROFILE by L1 distance.
+// Resolve archetype: each axis picks plus/minus letter from sign (0 → plus side,
+// matching determineType in lib/scoring.ts). Yields DASCG → 街のよろず屋.
+const ARCHETYPE_CODE = AX.map((ax) => {
+  const v = PROFILE[ax];
+  return v >= 0 ? AXES[ax].letter_plus : AXES[ax].letter_minus;
+}).join('');
+const ARCHETYPE = TYPES[ARCHETYPE_CODE];
+
+// Top-5 real divisions for this persona, computed via fitPct/dist against
+// real axis values from src/data/divisions.ts (verified offline against the
+// full 103-row table — these are the actual top 5).
 type DivRow = {
   name: string;
   dept: string;
   profile: Record<AxisKey, number>;
 };
-const DIVISIONS: DivRow[] = [
-  { name: '生活支援課',       dept: '福祉こども部',           profile: { A: 2, B: 1, C: 2, D: 1, E:  0 } },
-  { name: '子育て支援課',     dept: '福祉こども部',           profile: { A: 2, B: 0, C: 2, D: 0, E:  0 } },
-  { name: 'こども家庭支援課', dept: 'こども家庭支援センター', profile: { A: 2, B: 1, C: 2, D: 0, E: -1 } },
-  { name: '障害福祉課',       dept: '福祉こども部',           profile: { A: 2, B: 0, C: 2, D: 0, E:  0 } },
-  { name: '介護保険課',       dept: '福祉こども部',           profile: { A: 1, B: 0, C: 1, D: 1, E: -1 } },
+const CANDIDATES: DivRow[] = [
+  { name: '地域福祉課',         dept: '福祉こども部',           profile: { A: 1.5, B: 1,   C: 2,   D: 1,   E: 0   } },
+  { name: '生活支援課',         dept: '福祉こども部',           profile: { A: 2,   B: 0.5, C: 2,   D: 0.5, E: 0.5 } },
+  { name: '障害福祉課',         dept: '福祉こども部',           profile: { A: 2,   B: 0,   C: 2,   D: 0,   E: 0.5 } },
+  { name: '市営住宅課',         dept: '都市部',                 profile: { A: 1,   B: 0.5, C: 1.5, D: 1.5, E: 0   } },
+  { name: '子育て支援課',       dept: '福祉こども部',           profile: { A: 2,   B: 0,   C: 2,   D: 0,   E: 0.5 } },
 ];
+const RANKED = CANDIDATES
+  .map((d) => ({ ...d, fit: Math.round(fitPct(dist(PROFILE, d.profile))) }))
+  .sort((a, b) => b.fit - a.fit);
 
-const AXIS_RANGE = 4;
-const MAX_TOTAL_DIST = AXIS_RANGE * AX.length; // 20
-function distance(p: Record<AxisKey, number>): number {
-  return AX.reduce((sum, a) => sum + Math.abs(PROFILE[a] - p[a]), 0);
-}
-function matchPct(p: Record<AxisKey, number>): number {
-  return Math.round(((MAX_TOTAL_DIST - distance(p)) / MAX_TOTAL_DIST) * 100);
-}
-function pos(value: number): number {
-  return ((value + 2) / 4) * 100;
-}
-
-const RANKED = DIVISIONS
-  .map((d) => ({ ...d, dist: distance(d.profile), match: matchPct(d.profile) }))
-  .sort((a, b) => a.dist - b.dist);
-
-// Archetype code from the profile: each axis picks plus or minus letter
-// depending on sign (0 takes the plus side — matches archetype lookup).
-const ARCH_CODE = AX.map((ax) => {
-  const v = PROFILE[ax];
-  return v >= 0 ? AXES[ax].letter_plus : AXES[ax].letter_minus;
-}).join('');
-const ARCHETYPE = TYPES[ARCH_CODE]; // DASCG → 街のよろず屋
+// −2..+2 → 0..100 left% (TraitBar idiom).
+const dotLeft = (v: number) => (((v + 2) / 4) * 100).toFixed(0);
 
 export function Slide6Example() {
   return (
@@ -72,100 +63,94 @@ export function Slide6Example() {
         <p className={s.sub}>とある受検者の、実際の結果。</p>
       </header>
 
-      <figure className={s.card}>
-        <figcaption className={s.caption}>
-          <span className={s.captionLabel}>受検者の結果</span>
-          <span className={s.captionMeta}>架空の例</span>
-        </figcaption>
-
-        {/* ── Block 01: archetype hero (the focal point) ───────── */}
-        <section className={s.arch} aria-label="アーキタイプ">
-          <div className={s.archCode} aria-hidden="true">
-            {ARCH_CODE.split('').map((ch, i) => (
-              <span key={i} className={s.archChip}>{ch}</span>
-            ))}
-          </div>
-          <h3 className={s.archName}>{ARCHETYPE.name}</h3>
-          <p className={s.archDesc}>{ARCHETYPE.desc}</p>
-        </section>
-
-        {/* ── Block 02: 5-axis profile ─────────────────────────── */}
-        <section className={s.profile} aria-label="5軸プロファイル">
-          <div className={s.blockHead}>
-            <span className={s.blockLabel}>5軸プロファイル</span>
-            <span className={s.blockMeta}>32種から1つ</span>
-          </div>
-          <ol className={s.axisList}>
+      <div className={s.result} aria-label="結果ページ（例）">
+        {/* ── 1. TypeReveal hero ─────────────────────────────────── */}
+        <section className={s.hero}>
+          <div className={s.heroPre}>あなたのタイプ</div>
+          <div className={s.heroChips}>
             {AX.map((ax) => {
+              const a = AXES[ax];
               const v = PROFILE[ax];
-              const ax_ = AXES[ax];
-              const sideLabel = v > 0 ? ax_.plus : v < 0 ? ax_.minus : '中立';
+              const kanji = v >= 0 ? a.kanji_plus : a.kanji_minus;
               return (
-                <li key={ax} className={s.axisRow}>
-                  <span
-                    className={s.axisChip}
-                    style={{ background: ax_.tint, color: ax_.dark }}
-                    aria-hidden="true"
-                  >
-                    {ax}
-                  </span>
-                  <span className={s.axisName}>{ax_.label}</span>
-                  <span className={s.axisLine} aria-hidden="true">
-                    <span className={s.axisRail} />
-                    <span className={s.axisMid} />
-                    <span
-                      className={s.axisMark}
-                      style={{ left: `${pos(v)}%`, background: ax_.dark }}
-                    />
-                  </span>
-                  <span
-                    className={s.axisSide}
-                    style={{ color: v === 0 ? 'var(--sub)' : ax_.dark }}
-                  >
-                    {sideLabel}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-
-        {/* ── Block 03: ranked divisions ───────────────────────── */}
-        <section className={s.rank} aria-label="部署ランキング">
-          <div className={s.blockHead}>
-            <span className={s.blockLabel}>部署ランキング</span>
-            <span className={s.blockMeta}>103課中 · 上位5</span>
-          </div>
-          <ol className={s.rankList}>
-            {RANKED.map((d, i) => {
-              const focal = i === 0;
-              return (
-                <li
-                  key={d.name}
-                  className={`${s.rankRow} ${focal ? s.rankFocal : ''}`}
+                <div
+                  key={ax}
+                  className={s.heroChip}
+                  style={{ background: a.tint, color: a.dark }}
                 >
-                  <span className={s.rankNum}>{i + 1}</span>
-                  <span className={s.rankName}>
-                    <span className={s.rankDept}>{d.dept}</span>
-                    <span className={s.rankDiv}>{d.name}</span>
-                  </span>
-                  <span className={s.rankBarWrap} aria-hidden="true">
-                    <span
-                      className={s.rankBar}
-                      style={{ width: `${d.match}%` }}
-                    />
-                  </span>
-                  <span className={s.rankPct}>{d.match}%</span>
+                  {kanji}
+                </div>
+              );
+            })}
+          </div>
+          <div className={s.heroName}>「{ARCHETYPE.name}」型</div>
+          <div className={s.heroCode}>{ARCHETYPE_CODE}</div>
+          <p className={s.heroDesc}>{ARCHETYPE.desc}</p>
+        </section>
+
+        {/* ── 2. TraitBar profile ────────────────────────────────── */}
+        <section className={s.traits} aria-label="5軸プロファイル">
+          <ul className={s.traitList}>
+            {AX.map((ax) => {
+              const a = AXES[ax];
+              const v = PROFILE[ax];
+              const { pct, isPlus } = scoreToPct(v);
+              const winLabel = isPlus ? a.plus : a.minus;
+              const left = dotLeft(v);
+              return (
+                <li key={ax} className={s.trait}>
+                  <div className={s.traitHeader}>
+                    <span className={s.traitPct} style={{ color: a.dark }}>
+                      {pct}%
+                    </span>
+                    <span className={s.traitWin} style={{ color: a.dark }}>
+                      {winLabel}
+                    </span>
+                  </div>
+                  <div className={s.traitBarRow}>
+                    <span className={s.traitEnd}>{a.kanji_minus}</span>
+                    <div
+                      className={s.traitTrack}
+                      style={{ background: a.color }}
+                    >
+                      <div
+                        className={s.traitDot}
+                        style={{ left: `${left}%`, borderColor: a.dark }}
+                      />
+                    </div>
+                    <span className={s.traitEnd}>{a.kanji_plus}</span>
+                  </div>
                 </li>
               );
             })}
-          </ol>
+          </ul>
         </section>
 
-        <p className={s.foot}>
-          全20問に答えると、この1ページがあなたのものになる。
-        </p>
-      </figure>
+        {/* ── 3. MatchList ─────────────────────────────────────────── */}
+        <section className={s.ranking} aria-label="部署ランキング 上位5">
+          <div className={s.rankingHead}>
+            <span className={s.rankingTitle}>あなたに合う部署</span>
+            <span className={s.rankingMeta}>103課中 上位5</span>
+          </div>
+          <ul className={s.allList}>
+            {RANKED.map((d, i) => {
+              const fc = fitColor(d.fit);
+              return (
+                <li key={`${d.dept}|${d.name}`} className={s.allItem}>
+                  <span className={s.allRn}>{i + 1}</span>
+                  <div className={s.allInfo}>
+                    <div className={s.allName}>{d.name}</div>
+                    <div className={s.allDept}>{d.dept}</div>
+                  </div>
+                  <span className={s.allFit} style={{ color: fc.text }}>
+                    {d.fit}%
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }

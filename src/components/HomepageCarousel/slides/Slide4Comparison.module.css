@@ -1,12 +1,12 @@
 /*
   Slide 3 (Comparison)
-  Focal point: ONE concrete head-to-head — visitor profile vs the closest
-  division across 5 axes, plus a big match number.
-  Supporting: top-3 ranked list (real divisions from divisions.json) so the
-  visitor sees the comparison runs across all 103 candidates.
-  Color discipline: each axis line gets ONLY its own axis tint as the gap
-  between markers. Indigo only for the visitor's marker. The rest is
-  grayscale + hairline borders to match Slides 1 and 2.
+  Visual contract: echoes MatchDetail + ComparisonBars + MatchList from the
+  real quiz so this preview reads as a snapshot of the same product.
+    - Card: var(--card-shadow) + var(--card-r), no hairline-only chrome
+    - Top: 56px FitRing + green match% (fitColor)
+    - Body: 5 paired rows = visitor (full saturation) + division (.45 tint)
+            12px fat axis-color tracks, 16px white dots, kanji ends
+    - Footer: ranked top-3 rows in the MatchList idiom
 */
 
 .slide {
@@ -41,387 +41,237 @@
   line-height: var(--lh-tight);
 }
 
-/* ── Single focal card (one container, no shadow, hairline border) ── */
+/* ── Card: same chrome as MatchDetail (`.card` global) ──────────── */
 .card {
   margin: 0;
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--card-r);
-  padding: var(--sp-2xl);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-pad);
   display: flex;
   flex-direction: column;
   gap: var(--sp-lg);
 }
 
-/* ── Caption row ────────────────────────────────────────────────── */
-.caption {
+/* ── Top: ring + division info (MatchDetail .match-top) ─────────── */
+.matchTop {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-md);
-  flex-wrap: wrap;
-}
-.captionLabel {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sub);
-}
-.captionMeta {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  color: var(--text);
-  min-width: 0;
-}
-.captionDept {
-  font-size: var(--fs-sm);
-  color: var(--text-sec);
-  font-weight: var(--fw-medium);
-}
-.captionDot {
-  color: var(--sub);
-}
-.captionName {
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-bold);
-  color: var(--text);
-  letter-spacing: 0.005em;
-}
-
-/* ── Focal block: big number + 5 axis lines + legend ────────────── */
-.focal {
-  display: grid;
-  grid-template-columns: 168px minmax(0, 1fr);
+  align-items: center;
   gap: var(--sp-xl);
-  align-items: center;
-}
-.matchBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  border-right: 1px solid var(--border);
-  padding-right: var(--sp-lg);
-}
-.matchNumber {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2px;
-  line-height: 1;
-  color: var(--hall-indigo);
-}
-.matchDigits {
-  font-size: 56px;
-  font-weight: var(--fw-black);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
-}
-.matchUnit {
-  font-size: 24px;
-  font-weight: var(--fw-bold);
-  letter-spacing: -0.01em;
-}
-.matchLabel {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sub);
-}
-.matchSub {
-  font-size: 12px;
-  color: var(--sub);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-}
-
-.axisList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-.axisRow {
-  display: grid;
-  grid-template-columns: 22px 64px minmax(0, 1fr) 64px 22px;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-}
-.axisChip {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
-}
-.poleLeft,
-.poleRight {
-  font-size: 12px;
-  color: var(--text-sec);
-  line-height: var(--lh-tight);
-  letter-spacing: 0.01em;
-}
-.poleLeft  { text-align: right; }
-.poleRight { text-align: left; }
-
-.line {
-  position: relative;
-  height: 18px;
-  display: block;
-}
-.rail {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: var(--border);
-  transform: translateY(-50%);
-}
-.midTick {
-  position: absolute;
-  left: 50%;
-  top: 5px;
-  bottom: 5px;
-  width: 1px;
-  background: var(--border);
-}
-.gap {
-  position: absolute;
-  top: 50%;
-  height: 4px;
-  border-radius: 2px;
-  transform: translateY(-50%);
-  z-index: 1;
-}
-.markUser,
-.markDept {
-  position: absolute;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  transition: left 360ms ease;
-}
-.markUser {
-  background: var(--hall-indigo);
-  border: 2px solid var(--card);
-  box-shadow: 0 0 0 1px var(--hall-indigo);
-}
-.markDept {
-  background: var(--card);
-  border: 2px solid var(--text);
-  z-index: 3;
-}
-@media (prefers-reduced-motion: reduce) {
-  .markUser,
-  .markDept { transition: none; }
-}
-
-.gapNum {
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
-  color: var(--text-sec);
-  text-align: center;
-  letter-spacing: 0.02em;
-}
-
-.legend {
-  grid-column: 1 / -1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-lg);
-  padding-top: 4px;
-  font-size: 12px;
-  color: var(--sub);
-  letter-spacing: 0.04em;
-}
-.legendItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.legendMark {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.legendUser {
-  background: var(--hall-indigo);
-}
-.legendDept {
-  background: var(--card);
-  border: 2px solid var(--text);
-}
-
-/* ── Ranked list (top 3) ────────────────────────────────────────── */
-.rank {
-  border-top: 1px solid var(--border);
-  padding-top: var(--sp-md);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.rankHead {
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sub);
-}
-.rankList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-.rankRow {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1.4fr) minmax(0, 2fr) 56px;
-  align-items: center;
-  gap: var(--sp-md);
-  padding: 10px 0;
+  padding-bottom: var(--sp-lg);
   border-bottom: 1px solid var(--border);
 }
-.rankRow:last-child {
-  border-bottom: none;
-}
-.rankFocal .rankNum {
-  background: var(--hall-indigo);
-  color: var(--card);
-}
-.rankFocal .rankDiv {
-  color: var(--hall-indigo);
-}
-.rankFocal .rankBar {
-  background: var(--hall-indigo);
-}
-.rankNum {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
+.fitDisplay {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
-  background: var(--border-light);
-  color: var(--text-sec);
+  gap: 12px;
+  flex-shrink: 0;
 }
-.rankName {
+.fitArc {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.fitText {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+}
+.fitPct {
+  font-size: 28px;
+  font-weight: var(--fw-black);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.fitLbl {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  font-weight: var(--fw-bold);
+  letter-spacing: .06em;
+  margin-top: 2px;
+}
+.divInfo {
   min-width: 0;
 }
-.rankDept {
-  font-size: 11px;
+.divDept {
+  font-size: var(--fs-xs);
   color: var(--sub);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-bottom: 2px;
 }
-.rankDiv {
-  font-size: var(--fs-base);
+.divName {
+  font-size: var(--fs-xl);
   font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
   color: var(--text);
-  letter-spacing: 0.005em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  margin-bottom: var(--sp-sm);
 }
-.rankBarWrap {
-  height: 6px;
-  background: var(--border-light);
-  border-radius: 3px;
-  position: relative;
-  overflow: hidden;
-}
-.rankBar {
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  background: var(--text-sec);
-  border-radius: 3px;
-  transition: width 360ms ease;
-}
-@media (prefers-reduced-motion: reduce) {
-  .rankBar { transition: none; }
-}
-.rankPct {
-  font-size: var(--fs-base);
-  font-weight: var(--fw-black);
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
-  text-align: right;
-  letter-spacing: -0.01em;
+.divAbout {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-sec);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
-/* ── Mobile collapse (<900px) ──────────────────────────────────── */
+/* ── Body: paired ComparisonBars rows ───────────────────────────── */
+.compBlock {
+  display: flex;
+  flex-direction: column;
+}
+.compLabel {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--sub);
+  margin-bottom: var(--sp-md);
+}
+.compRow {
+  margin-bottom: 18px;
+}
+.compRow:last-of-type {
+  margin-bottom: 0;
+}
+.compAxis {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  margin-bottom: 6px;
+}
+.compPair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--sp-xs);
+}
+.compPair:last-child {
+  margin-bottom: 0;
+}
+.compWho {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  width: 44px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: var(--fw-medium);
+}
+.compEnd {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  width: 18px;
+  flex-shrink: 0;
+  text-align: center;
+  font-weight: var(--fw-bold);
+}
+.compTrack {
+  position: relative;
+  flex: 1;
+  height: var(--bar-h); /* 12px fat track */
+  border-radius: 999px;
+  overflow: visible;
+}
+.compTrackDiv {
+  opacity: .45;
+}
+.compDot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--mkr-size); /* 16px */
+  height: var(--mkr-size);
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+  z-index: 2;
+  transition: left .4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .compDot { transition: none; }
+}
+
+/* ── Footer: MatchList-style ranked top-3 ───────────────────────── */
+.allList {
+  background: var(--card);
+  border-radius: var(--card-r);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.allHead {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--sub);
+  padding: 10px var(--sp-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--hover-wash-list);
+}
+.allItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px var(--sp-md);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.allItem:last-child {
+  border-bottom: none;
+}
+.allItemOn {
+  background: var(--indigo-tint);
+}
+.allRn {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-black);
+  color: var(--sub);
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.allInfo {
+  flex: 1;
+  min-width: 0;
+}
+.allName {
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+.allDept {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.allFit {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-black);
+  flex-shrink: 0;
+  margin-left: var(--sp-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Mobile collapse (<900px) ───────────────────────────────────── */
 @media (max-width: 900px) {
   .card {
     padding: var(--sp-lg);
     gap: var(--sp-md);
   }
-  .caption {
+  .matchTop {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
-  }
-  .focal {
-    grid-template-columns: 1fr;
     gap: var(--sp-md);
   }
-  .matchBlock {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding-right: 0;
-    padding-bottom: var(--sp-sm);
-    flex-direction: row;
-    align-items: baseline;
-    gap: var(--sp-md);
-    flex-wrap: wrap;
+  .compWho {
+    width: 36px;
   }
-  .axisRow {
-    grid-template-columns: 22px minmax(0, 1fr) 22px;
-    grid-template-areas:
-      'chip line gap'
-      '.    poles .';
-    gap: 6px 8px;
-    padding: 8px 0;
+  .compRow {
+    margin-bottom: 16px;
   }
-  .axisChip { grid-area: chip; }
-  .line     { grid-area: line; }
-  .gapNum   { grid-area: gap; }
-  .poleLeft, .poleRight { display: none; }
-  .legend {
-    justify-content: flex-start;
-  }
-  .rankRow {
-    grid-template-columns: 22px minmax(0, 1fr) 48px;
-    grid-template-areas:
-      'num name pct'
-      '.   bar  bar';
-    gap: 4px var(--sp-sm);
-    padding: 8px 0;
-  }
-  .rankNum     { grid-area: num; }
-  .rankName    { grid-area: name; }
-  .rankBarWrap { grid-area: bar; }
-  .rankPct     { grid-area: pct; font-size: var(--fs-sm); }
 }

@@ -1,12 +1,10 @@
 /*
-  Slide 4 (Result)
-  Focal point: ONE annotated preview of the result page, showing the three
-  components in their on-page positions (archetype → profile → ranking).
-  Supporting: tiny indigo annotation numerals (01/02/03) outside the gutter.
-  Eliminated: three equal-weight cards (the previous version's box jungle).
-  Color discipline: axis colors appear ONLY on the 5 profile rows. Indigo
-  for structural emphasis (annotations, archetype chips). The rest is
-  grayscale + hairline borders, matching Slides 1-3 and the outer chrome.
+  Slide 4 (Result) — primitive-faithful preview of the result page.
+  The slide IS the result page, miniaturized:
+    01 · TypeReveal hero (dark indigo, kanji chips, 「name」型, code, desc)
+    02 · TraitBar profile (5 fat axis-color bars, 16px white dots, kanji ends)
+    03 · MatchList rows  (numbered, green fit% via fitColor)
+  Annotation numerals 01/02/03 sit in the LEFT gutter outside each region.
 */
 
 .slide {
@@ -15,7 +13,7 @@
   gap: var(--sp-lg);
 }
 
-/* ── Title block (matches Slides 1-3) ────────────────────────── */
+/* ── Title block (matches Slides 1–3) ───────────────────────────── */
 .head {
   display: flex;
   flex-direction: column;
@@ -41,16 +39,16 @@
   line-height: var(--lh-tight);
 }
 
-/* ── Single focal card ───────────────────────────────────────── */
+/* ── Outer card: matches Slide 3's MatchDetail-echo chrome ──────── */
 .card {
   margin: 0;
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--card-r);
-  padding: var(--sp-2xl);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-pad);
   display: flex;
   flex-direction: column;
-  gap: var(--sp-lg);
+  gap: var(--sp-md);
 }
 
 .caption {
@@ -60,50 +58,52 @@
   gap: var(--sp-md);
 }
 .captionLabel {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--sub);
 }
 .captionMeta {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   color: var(--text-sec);
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Preview frame: a window onto the result page ────────────── */
+/* ── Preview frame: a window onto the real result page ──────────── */
 .preview {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-r);
   background: var(--card);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .region {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
   align-items: stretch;
-  gap: var(--sp-md);
-  padding: var(--sp-md) var(--sp-lg);
+  gap: var(--sp-sm);
+  padding: var(--sp-md) var(--sp-lg) var(--sp-md) var(--sp-md);
   border-bottom: 1px solid var(--border);
 }
 .region:last-child {
   border-bottom: none;
 }
 
-/* tiny indigo annotation numeral in the gutter — no chrome, just type */
+/* Gutter annotation numeral — indigo, type only, no chrome. */
 .annot {
   font-size: 11px;
   font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   color: var(--hall-indigo);
   line-height: 1;
-  padding-top: 4px;
+  padding-top: 6px;
+  text-align: center;
 }
 
 .regionBody {
@@ -114,60 +114,73 @@
 }
 
 .regionLabel {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
-  color: var(--text);
+  color: var(--sub);
   line-height: var(--lh-tight);
+  text-transform: uppercase;
 }
 
-/* ── Region 01: archetype ────────────────────────────────────── */
-.archRow {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-md);
-  flex-wrap: wrap;
-}
-.archCode {
-  display: inline-flex;
-  gap: 4px;
-}
-.archChip {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 13px;
-  font-weight: var(--fw-black);
-  color: var(--card);
+/* ── 01 · TypeReveal hero ───────────────────────────────────────── */
+.heroBanner {
   background: var(--hall-indigo);
-  letter-spacing: 0;
-}
-.archMeta {
+  color: white;
+  border-radius: 12px;
+  padding: var(--sp-lg) var(--sp-md);
+  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  align-items: center;
 }
-.archName {
+.heroPre {
+  font-size: var(--fs-xs);
+  opacity: 0.6;
+  letter-spacing: 0.12em;
+  margin-bottom: var(--sp-sm);
+}
+.heroChips {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: var(--sp-md);
+}
+.heroChip {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: var(--fs-base);
   font-weight: var(--fw-bold);
-  color: var(--text);
-  letter-spacing: 0.005em;
-  line-height: var(--lh-tight);
 }
-.archHint {
-  font-size: 12px;
-  color: var(--sub);
-  letter-spacing: 0.02em;
+.heroName {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
   line-height: var(--lh-tight);
+  margin-bottom: var(--sp-xs);
+}
+.heroCode {
+  font-size: var(--fs-xs);
+  opacity: 0.55;
+  letter-spacing: 0.18em;
+  margin-bottom: var(--sp-sm);
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.heroDesc {
+  font-size: var(--fs-sm);
+  opacity: 0.82;
+  line-height: var(--lh-body);
+  max-width: 480px;
+  margin: 0 auto;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
-/* ── Region 02: 5-axis profile ───────────────────────────────── */
-.axisList {
+/* ── 02 · TraitBar profile ──────────────────────────────────────── */
+.traitList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -175,174 +188,171 @@
   flex-direction: column;
   gap: 6px;
 }
-.axisRow {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 84px) minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
+.trait {
+  padding: 6px var(--sp-sm);
+  border-radius: 6px;
+  border-bottom: 1px solid var(--border);
 }
-.axisChip {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: var(--fw-bold);
+.trait:last-child {
+  border-bottom: none;
+}
+.traitHeader {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-sm);
+  margin-bottom: 4px;
+}
+.traitPct {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
 }
-.axisName {
-  font-size: 12px;
-  font-weight: var(--fw-medium);
-  color: var(--text-sec);
-  letter-spacing: 0.01em;
-  line-height: var(--lh-tight);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.traitWin {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
 }
-.axisLine {
+.traitBarRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.traitEnd {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  width: 20px;
+  flex-shrink: 0;
+  text-align: center;
+  font-weight: var(--fw-bold);
+}
+.traitTrack {
   position: relative;
-  height: 16px;
-  display: block;
+  flex: 1;
+  height: var(--bar-h); /* 12px fat track */
+  border-radius: 999px;
+  overflow: visible;
 }
-.axisRail {
-  position: absolute;
-  left: 0; right: 0; top: 50%;
-  height: 1px;
-  background: var(--border);
-  transform: translateY(-50%);
-}
-.axisMid {
-  position: absolute;
-  left: 50%;
-  top: 4px;
-  bottom: 4px;
-  width: 1px;
-  background: var(--border);
-}
-.axisMark {
+.traitDot {
   position: absolute;
   top: 50%;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid var(--card);
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 1px var(--border);
-  transition: left 360ms ease;
+  width: var(--mkr-size); /* 16px */
+  height: var(--mkr-size);
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  transition: left 0.4s ease-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .axisMark { transition: none; }
+  .traitDot { transition: none; }
 }
 
-/* ── Region 03: ranked divisions ─────────────────────────────── */
-.rankList {
+/* ── 03 · MatchList ─────────────────────────────────────────────── */
+.allList {
   list-style: none;
   margin: 0;
   padding: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--card-r);
+  overflow: hidden;
+}
+.allItem {
   display: flex;
-  flex-direction: column;
-}
-.rankRow {
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) minmax(0, 1.4fr) 44px;
   align-items: center;
-  gap: var(--sp-sm);
-  padding: 5px 0;
+  width: 100%;
+  padding: 10px var(--sp-md);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
 }
-.rankNum {
-  font-size: 12px;
-  font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
+.allItem:last-of-type {
+  border-bottom: none;
+}
+.allRn {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-black);
   color: var(--sub);
-  text-align: center;
-  line-height: 1;
+  width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
-.rankName {
-  font-size: 13px;
-  font-weight: var(--fw-medium);
+.allInfo {
+  flex: 1;
+  min-width: 0;
+}
+.allName {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
   color: var(--text);
-  letter-spacing: 0.005em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rankBarWrap {
-  height: 5px;
-  background: var(--border-light);
-  border-radius: 3px;
-  position: relative;
+.allDept {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  margin-top: 1px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
-.rankBar {
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  background: var(--text-sec);
-  border-radius: 3px;
-  transition: width 360ms ease;
-}
-@media (prefers-reduced-motion: reduce) {
-  .rankBar { transition: none; }
-}
-.rankPct {
-  font-size: 13px;
-  font-weight: var(--fw-bold);
+.allFit {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-black);
+  flex-shrink: 0;
+  margin-left: var(--sp-sm);
   font-variant-numeric: tabular-nums;
-  color: var(--text);
-  text-align: right;
-  letter-spacing: -0.01em;
 }
-.rankMore {
+.allMore {
   font-size: 11px;
   color: var(--sub);
   letter-spacing: 0.04em;
-  padding: 6px 0 0 28px;
+  padding: 8px var(--sp-md);
+  text-align: center;
+  background: var(--hover-wash-list);
+  border-top: 1px solid var(--border);
   line-height: 1;
 }
 
-/* ── Footer caption ──────────────────────────────────────────── */
+/* ── Footer caption ─────────────────────────────────────────────── */
 .foot {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--sub);
   text-align: center;
   letter-spacing: 0.04em;
   line-height: var(--lh-tight);
 }
 
-/* ── Mobile collapse (<900px) ────────────────────────────────── */
+/* ── Mobile collapse (<900px) ───────────────────────────────────── */
 @media (max-width: 900px) {
   .card {
     padding: var(--sp-lg);
     gap: var(--sp-md);
   }
   .region {
-    grid-template-columns: 28px minmax(0, 1fr);
-    gap: var(--sp-sm);
-    padding: var(--sp-md);
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: var(--sp-xs);
+    padding: var(--sp-md) var(--sp-sm);
   }
-  .axisRow {
-    grid-template-columns: 22px minmax(0, 1fr);
-    grid-template-areas:
-      'chip name'
-      '.    line';
-    gap: 4px 8px;
+  .heroBanner {
+    padding: var(--sp-md) var(--sp-sm);
   }
-  .axisChip { grid-area: chip; }
-  .axisName { grid-area: name; }
-  .axisLine { grid-area: line; }
-  .rankRow {
-    grid-template-columns: 20px minmax(0, 1fr) 44px;
-    grid-template-areas:
-      'num name pct'
-      '.   bar  bar';
-    gap: 4px var(--sp-sm);
+  .heroName {
+    font-size: var(--fs-lg);
   }
-  .rankNum     { grid-area: num; }
-  .rankName    { grid-area: name; font-size: var(--fs-sm); }
-  .rankBarWrap { grid-area: bar; }
-  .rankPct     { grid-area: pct; font-size: var(--fs-sm); }
-  .rankMore    { padding-left: 0; text-align: center; }
+  .heroChip {
+    width: 28px;
+    height: 28px;
+    font-size: var(--fs-sm);
+  }
+  .traitEnd {
+    width: 16px;
+  }
+  .allItem {
+    padding: 10px var(--sp-sm);
+  }
 }

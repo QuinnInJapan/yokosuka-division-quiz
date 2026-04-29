@@ -2,32 +2,35 @@ import s from './Slide4Comparison.module.css';
 import { AXES } from '../../../data/axes';
 import { AX } from '../../../data/types';
 import type { AxisKey } from '../../../data/types';
+import { dist, fitPct, fitColor } from '../../../lib/scoring';
 
 /*
-  Slide 3 (Comparison)
-  Question: "How does my profile get compared to 103 divisions?"
-  Focal point: ONE concrete comparison — the visitor's 5-axis profile (filled
-  marker) plotted against the single closest division's profile (ring marker)
-  on five axis lines. The visual gap on each line IS the distance metric.
-  Supporting: a tight ranked list of three actual divisions with their distance
-  scores — so the visitor sees "this got picked from 103, ranked by closeness."
-  Color discipline: each axis line uses ONLY its own axis color (rail tint +
-  marker fills). Indigo is reserved for the visitor's marker. Grayscale and
-  hairline borders elsewhere — register matches Slides 1 & 2.
+  Slide 3 (Comparison) — "How does my profile get compared to 103 divisions?"
+
+  Visual contract: borrows the *real* result-page primitives so this preview
+  feels like a snapshot of the same product.
+    - Card chrome: var(--card-shadow) + var(--card-r) (matches MatchDetail).
+    - Top: FitRing-style 56px arc + green match% (fitColor) + division name.
+    - Body: 5 paired ComparisonBars rows, one per axis, each row =
+        · 12px fat fully-saturated axis-color track (TraitBar idiom)
+        · visitor row on top (full saturation), division row below (.45 tint)
+        · 16px white circular dots with 2.5px axis-dark border
+        · kanji_minus / kanji_plus poles (not "A" letters)
+    - Footer: MatchList-style ranked top-3 with green fit pcts.
 */
 
-// Real visitor profile (illustrative answers from STEP 02, all 5 axes).
+// Real visitor profile from the demo answers in Slide 2.
 const PROFILE: Record<AxisKey, number> = { A: 2, B: 1, C: 2, D: 0, E: 0 };
 
-// Real divisions from divisions.json (福祉こども部 / こども家庭支援センター).
-// Each has a 5-axis profile; distance = sum |visitor − dept| over A..E.
+// Real divisions from divisions.json — three of the closest rows by hand
+// so we can render a believable "top 3 of 103" without loading the full file.
 type DivRow = {
   name: string;
   dept: string;
   profile: Record<AxisKey, number>;
 };
 
-const DIVISIONS: DivRow[] = [
+const CANDIDATES: DivRow[] = [
   {
     name: '生活支援課',
     dept: '福祉こども部',
@@ -45,151 +48,153 @@ const DIVISIONS: DivRow[] = [
   },
 ];
 
-// Each axis ranges -2..+2 → range = 4. Five axes, so max total distance = 20.
-const AXIS_RANGE = 4;
-const MAX_TOTAL_DIST = AXIS_RANGE * AX.length;
-
-function distance(p: Record<AxisKey, number>): number {
-  return AX.reduce((sum, a) => sum + Math.abs(PROFILE[a] - p[a]), 0);
-}
-
-function pct(p: Record<AxisKey, number>): number {
-  // Closeness, in percent. 0 distance = 100%, max distance = 0%.
-  return Math.round(((MAX_TOTAL_DIST - distance(p)) / MAX_TOTAL_DIST) * 100);
-}
-
-function pos(value: number): number {
-  // Map -2..+2 → 0..100 for marker left%
-  return ((value + 2) / 4) * 100;
-}
-
-const RANKED = [...DIVISIONS]
-  .map((d) => ({ ...d, dist: distance(d.profile), match: pct(d.profile) }))
-  .sort((a, b) => a.dist - b.dist);
+const RANKED = CANDIDATES
+  .map((d) => ({ ...d, fit: Math.round(fitPct(dist(PROFILE, d.profile))) }))
+  .sort((a, b) => b.fit - a.fit);
 
 const FOCAL = RANKED[0];
 
+// Map score -2..+2 → 0..100 for the dot's left% (same math as ComparisonBars).
+const toLeft = (v: number) => (((v + 2) / 4) * 100).toFixed(0);
+
 export function Slide4Comparison() {
+  const fc = fitColor(FOCAL.fit);
+
   return (
     <div className={s.slide}>
       <header className={s.head}>
         <h2 className={s.title}>STEP 03 · 比較</h2>
         <div className={s.stripe} />
-        <p className={s.sub}>5軸の距離で、103部署から最も近い1課を選ぶ。</p>
+        <p className={s.sub}>5軸の距離で、103課から最も近い1課を選ぶ。</p>
       </header>
 
       <figure className={s.card}>
-        <figcaption className={s.caption}>
-          <span className={s.captionLabel}>最も近い部署</span>
-          <span className={s.captionMeta}>
-            <span className={s.captionDept}>{FOCAL.dept}</span>
-            <span className={s.captionDot} aria-hidden="true">·</span>
-            <span className={s.captionName}>{FOCAL.name}</span>
-          </span>
-        </figcaption>
-
-        <div className={s.focal}>
-          <div className={s.matchBlock}>
-            <div className={s.matchNumber} aria-label={`適合度 ${FOCAL.match}%`}>
-              <span className={s.matchDigits}>{FOCAL.match}</span>
-              <span className={s.matchUnit}>%</span>
+        {/* ── Top: ring + match% + focal division name (MatchDetail echo) ── */}
+        <div className={s.matchTop}>
+          <div className={s.fitDisplay}>
+            <div className={s.fitArc}>
+              <svg width={56} height={56} viewBox="0 0 56 56" aria-hidden="true">
+                <circle
+                  cx={28} cy={28} r={24}
+                  fill="none" stroke="var(--border)" strokeWidth={6}
+                />
+                <circle
+                  cx={28} cy={28} r={24}
+                  fill="none"
+                  stroke={fc.fill}
+                  strokeWidth={6}
+                  strokeDasharray={`${(FOCAL.fit / 100) * 2 * Math.PI * 24} ${2 * Math.PI * 24}`}
+                  strokeLinecap="round"
+                  style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }}
+                />
+              </svg>
             </div>
-            <div className={s.matchLabel}>適合度</div>
-            <div className={s.matchSub}>距離 {FOCAL.dist} / {MAX_TOTAL_DIST}</div>
+            <div className={s.fitText}>
+              <span
+                className={s.fitPct}
+                style={{ color: fc.text }}
+                data-testid="s4-pct"
+              >
+                {FOCAL.fit}%
+              </span>
+              <span className={s.fitLbl}>相性度</span>
+            </div>
           </div>
 
-          <ol className={s.axisList} aria-label="軸ごとの比較">
-            {AX.map((ax) => {
-              const v = PROFILE[ax];
-              const d = FOCAL.profile[ax];
-              const gap = Math.abs(v - d);
-              const lo = Math.min(pos(v), pos(d));
-              const hi = Math.max(pos(v), pos(d));
-              return (
-                <li key={ax} className={s.axisRow} data-testid={`s4-bar-${ax}`}>
-                  <span
-                    className={s.axisChip}
-                    style={{ background: AXES[ax].tint, color: AXES[ax].dark }}
-                    aria-hidden="true"
-                  >
-                    {ax}
-                  </span>
-                  <span className={s.poleLeft}>{AXES[ax].minus}</span>
-                  <span className={s.line}>
-                    <span className={s.rail} aria-hidden="true" />
-                    <span className={s.midTick} aria-hidden="true" />
-                    {gap > 0 && (
-                      <span
-                        className={s.gap}
-                        style={{
-                          left: `${lo}%`,
-                          width: `${hi - lo}%`,
-                          background: AXES[ax].tint,
-                        }}
-                        aria-hidden="true"
-                      />
-                    )}
-                    <span
-                      className={s.markDept}
-                      style={{ left: `${pos(d)}%`, borderColor: AXES[ax].dark }}
-                      aria-label={`部署 ${d}`}
-                    />
-                    <span
-                      className={s.markUser}
-                      style={{ left: `${pos(v)}%` }}
-                      aria-label={`受検者 ${v}`}
-                    />
-                  </span>
-                  <span className={s.poleRight}>{AXES[ax].plus}</span>
-                  <span className={s.gapNum} aria-label={`差 ${gap}`}>
-                    {gap === 0 ? '–' : gap}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-
-          <div className={s.legend} aria-hidden="true">
-            <span className={s.legendItem}>
-              <span className={`${s.legendMark} ${s.legendUser}`} />受検者
-            </span>
-            <span className={s.legendItem}>
-              <span className={`${s.legendMark} ${s.legendDept}`} />部署
-            </span>
+          <div className={s.divInfo}>
+            <div className={s.divDept}>{FOCAL.dept}</div>
+            <div className={s.divName}>{FOCAL.name}</div>
+            <div className={s.divAbout}>
+              受検者プロフィールに最も近い1課（103課中）
+            </div>
           </div>
         </div>
 
-        <div className={s.rank}>
-          <div className={s.rankHead}>近い順 · 上位3課（103部署中）</div>
-          <ol className={s.rankList}>
-            {RANKED.map((d, i) => {
-              const focal = i === 0;
-              return (
-                <li
-                  key={d.name}
-                  className={`${s.rankRow} ${focal ? s.rankFocal : ''}`}
-                >
-                  <span className={s.rankNum}>{i + 1}</span>
-                  <span className={s.rankName}>
-                    <span className={s.rankDept}>{d.dept}</span>
-                    <span className={s.rankDiv}>{d.name}</span>
+        {/* ── Body: 5 paired ComparisonBars rows ── */}
+        <div className={s.compBlock}>
+          <div className={s.compLabel}>相性の内訳</div>
+
+          {AX.map((ax) => {
+            const a = AXES[ax];
+            const uPct = toLeft(PROFILE[ax]);
+            const dPct = toLeft(FOCAL.profile[ax]);
+            return (
+              <div
+                key={ax}
+                className={s.compRow}
+                data-testid={`s4-bar-${ax}`}
+              >
+                <div className={s.compAxis} style={{ color: a.dark }}>
+                  {a.label}
+                </div>
+
+                <div className={s.compPair}>
+                  <span className={s.compWho}>あなた</span>
+                  <span className={s.compEnd} aria-hidden="true">
+                    {a.kanji_minus}
                   </span>
-                  <span className={s.rankBarWrap} aria-hidden="true">
-                    <span
-                      className={s.rankBar}
-                      style={{ width: `${d.match}%` }}
-                    />
-                  </span>
-                  <span
-                    className={s.rankPct}
-                    data-testid={focal ? 's4-pct' : undefined}
+                  <div
+                    className={s.compTrack}
+                    style={{ background: a.color }}
                   >
-                    {d.match}%
+                    <div
+                      className={s.compDot}
+                      style={{ left: `${uPct}%`, borderColor: a.dark }}
+                    />
+                  </div>
+                  <span className={s.compEnd} aria-hidden="true">
+                    {a.kanji_plus}
                   </span>
-                </li>
-              );
-            })}
-          </ol>
+                </div>
+
+                <div className={s.compPair}>
+                  <span className={s.compWho}>この課</span>
+                  <span className={s.compEnd} aria-hidden="true">
+                    {a.kanji_minus}
+                  </span>
+                  <div
+                    className={`${s.compTrack} ${s.compTrackDiv}`}
+                    style={{ background: a.color }}
+                  >
+                    <div
+                      className={s.compDot}
+                      style={{ left: `${dPct}%`, borderColor: a.dark }}
+                    />
+                  </div>
+                  <span className={s.compEnd} aria-hidden="true">
+                    {a.kanji_plus}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Footer: MatchList-style top-3 ranked rows ── */}
+        <div className={s.allList} aria-label="近い順 上位3課">
+          <div className={s.allHead}>近い順 · 上位3課（103課中）</div>
+          {RANKED.map((d, i) => {
+            const rfc = fitColor(d.fit);
+            const isFocal = i === 0;
+            return (
+              <div
+                key={`${d.dept}|${d.name}`}
+                className={`${s.allItem}${isFocal ? ' ' + s.allItemOn : ''}`}
+              >
+                <span className={s.allRn}>{i + 1}</span>
+                <div className={s.allInfo}>
+                  <div className={s.allName}>{d.name}</div>
+                  <div className={s.allDept}>{d.dept}</div>
+                </div>
+                <span
+                  className={s.allFit}
+                  style={{ color: rfc.text }}
+                >
+                  {d.fit}%
+                </span>
+              </div>
+            );
+          })}
         </div>
       </figure>
     </div>

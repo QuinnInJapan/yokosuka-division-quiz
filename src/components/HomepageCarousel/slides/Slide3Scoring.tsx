@@ -2,18 +2,21 @@ import s from './Slide3Scoring.module.css';
 import { AXES } from '../../../data/axes';
 
 /*
-  Slide 2 (Scoring)
-  Question: "How do my answers turn into a profile?"
-  Focal point: ONE axis-score transformation. Four real A-axis questions with their
-  signed contributions add up to a single signed mean score plotted on the A axis
-  (仕組み ↔ 対話). Eliminated: question detail right panel (the previous slide
-  already shows what one question looks like in detail).
+  Slide 2 (Scoring) — "How do my answers turn into a profile?"
+  Visual contract: borrows the *real* result-page primitives so this preview
+  feels like a snapshot of the same product.
+    - Card chrome: var(--card-shadow) + var(--card-r) (matches MatchDetail).
+    - Axis-tag chip: 36×36 tint/dark kanji chip (matches TypeReveal).
+    - Mini feeder bars: fat var(--bar-h) axis-color tracks with white circular
+      dots — same idiom as TraitBar, scaled to row density.
+    - Focal: the actual TraitBar layout (pct + win label in axis-dark above a
+      fat axis-color track, kanji ends, 16px white dot at the score position).
 */
 
 // Real A-axis questions from questions.json (A1..A4), trimmed to scannable labels.
 // `pick` is the 1..5 likert answer; `signed` is the contribution after the
 // forward/reverse map from questions.json scoring.
-const A_AXIS = AXES.A;
+const A = AXES.A;
 
 type Row = {
   id: string;
@@ -30,86 +33,122 @@ const ROWS: Row[] = [
   { id: 'A4', label: '財政データを分析して予算案を作成',       reversed: true,  pick: 3, signed:  0 },
 ];
 
-const MEAN = ROWS.reduce((a, r) => a + r.signed, 0) / ROWS.length; // 0.75
-// Map mean from [-2, +2] to [0, 100] for marker position on the axis bar.
-const MARKER_PCT = ((MEAN + 2) / 4) * 100; // 68.75
+// Mean of the four signed contributions: 0.75 on the [-2, +2] axis.
+const MEAN = ROWS.reduce((acc, r) => acc + r.signed, 0) / ROWS.length;
 
-// Format the score with an explicit sign, one decimal.
-const SCORE_LABEL = (MEAN > 0 ? '+' : MEAN < 0 ? '−' : '±') + Math.abs(MEAN).toFixed(2);
+// Same math as scoreToPct() in src/lib/scoring.ts:
+//   pct = round(50 + (|score| / 2) * 50)
+const PCT = Math.round(50 + (Math.abs(MEAN) / 2) * 50);
+const IS_PLUS = MEAN >= 0;
+const WIN_LABEL = IS_PLUS ? A.plus : A.minus;
+
+// Same math as TraitBar's dotLeft for the focal marker position.
+const DOT_LEFT = ((MEAN + 2) / 4) * 100;
+
+// Map a 1..5 pick to its position on the fat track (0..100%).
+const pickToLeft = (pick: number) => ((pick - 1) / 4) * 100;
 
 export function Slide3Scoring() {
   return (
     <div className={s.slide}>
       <header className={s.head}>
         <h2 className={s.title}>STEP 02 · 採点</h2>
-        <div className={s.stripe} style={{ background: A_AXIS.dark }} />
+        <div className={s.stripe} />
         <p className={s.sub}>同じ軸の4問を平均し、軸スコアを1つ出す。</p>
       </header>
 
       <figure className={s.card}>
-        <figcaption className={s.caption}>
-          <span className={s.captionLabel}>軸の例</span>
-          <span className={s.captionAxis}>
-            <span className={s.axisChip} style={{ background: A_AXIS.tint, color: A_AXIS.dark }}>A</span>
-            <span className={s.axisName}>{A_AXIS.label}</span>
-          </span>
-        </figcaption>
+        {/* Axis tag — TypeReveal echo: kanji chip + axis label */}
+        <div className={s.tag}>
+          <div
+            className={s.chip}
+            style={{ background: A.tint, color: A.dark }}
+            aria-hidden="true"
+          >
+            {A.kanji_plus}
+          </div>
+          <div className={s.tagText}>
+            <span className={s.tagPre}>軸の例</span>
+            <span className={s.tagLabel} style={{ color: A.dark }}>
+              {A.label}
+            </span>
+          </div>
+          <span className={s.qIndex}>4問</span>
+        </div>
 
+        {/* Feeder rows — 4 mini TraitBars, one per contributing question */}
         <ol className={s.rows} aria-label="軸Aに寄与する4問">
-          {ROWS.map((r) => (
-            <li key={r.id} className={s.row}>
-              <span className={s.rowId}>{r.id}</span>
-              <span className={s.rowLabel}>{r.label}</span>
-              <span className={s.rowScale} aria-label={`回答 ${r.pick} / 5`}>
-                {[1, 2, 3, 4, 5].map((n) => (
+          {ROWS.map((r) => {
+            const left = pickToLeft(r.pick);
+            return (
+              <li key={r.id} className={s.row}>
+                <span className={s.rowId}>{r.id}</span>
+                <span className={s.rowLabel}>
+                  {r.label}
+                  {r.reversed ? (
+                    <span className={s.revFlag} title="逆転項目">R</span>
+                  ) : null}
+                </span>
+                <span
+                  className={s.miniBar}
+                  aria-label={`回答 ${r.pick} / 5`}
+                  style={{ background: A.color }}
+                >
                   <span
-                    key={n}
-                    className={`${s.tick} ${n === r.pick ? s.tickPick : ''}`}
+                    className={s.miniDot}
+                    style={{ left: `${left.toFixed(0)}%`, borderColor: A.dark }}
                     aria-hidden="true"
                   />
-                ))}
-              </span>
-              <span
-                className={`${s.rowDelta} ${r.signed > 0 ? s.deltaPos : r.signed < 0 ? s.deltaNeg : s.deltaZero}`}
-                aria-label={`寄与 ${r.signed >= 0 ? '+' : ''}${r.signed}`}
-              >
-                {r.signed > 0 ? '+' : r.signed < 0 ? '−' : '±'}{Math.abs(r.signed)}
-                {r.reversed ? <span className={s.revFlag} title="逆転項目">R</span> : null}
-              </span>
-            </li>
-          ))}
+                </span>
+                <span
+                  className={s.rowDelta}
+                  style={{ color: A.dark }}
+                  aria-label={`寄与 ${r.signed >= 0 ? '+' : ''}${r.signed}`}
+                >
+                  {r.signed > 0 ? '+' : r.signed < 0 ? '−' : '±'}
+                  {Math.abs(r.signed)}
+                </span>
+              </li>
+            );
+          })}
         </ol>
 
-        <div className={s.totalRow} aria-hidden="true">
-          <span className={s.totalLabel}>平均</span>
-          <span className={s.totalDots} />
-          <span className={s.totalValue}>{SCORE_LABEL}</span>
+        {/* Aggregator divider — labels what's about to happen */}
+        <div className={s.divider} aria-hidden="true">
+          <span className={s.dividerLine} />
+          <span className={s.dividerLabel}>4問を平均</span>
+          <span className={s.dividerLine} />
         </div>
 
-        <div className={s.scoreBlock}>
-          <div className={s.scoreNumber} aria-label={`軸Aスコア ${SCORE_LABEL}`}>
-            <span className={s.scoreSign} style={{ color: A_AXIS.dark }}>
-              {MEAN > 0 ? '+' : MEAN < 0 ? '−' : '±'}
+        {/* Focal: the real TraitBar shape (pct + win on top, kanji ends + */}
+        {/* fat axis track with white dot at the score position).          */}
+        <div className={s.trait}>
+          <div className={s.traitHeader}>
+            <span className={s.traitPct} style={{ color: A.dark }}>
+              {PCT}%
             </span>
-            <span className={s.scoreDigits}>{Math.abs(MEAN).toFixed(2)}</span>
+            <span className={s.traitWin} style={{ color: A.dark }}>
+              {WIN_LABEL}
+            </span>
           </div>
-
-          <div className={s.axisLine}>
-            <span className={s.poleLabel}>{A_AXIS.minus}</span>
-            <span className={s.axis}>
-              <span className={s.axisRail} aria-hidden="true" />
-              <span className={s.axisMid} aria-hidden="true" />
-              <span
-                className={s.axisMarker}
-                style={{ left: `${MARKER_PCT}%`, background: A_AXIS.dark }}
+          <div className={s.traitBarRow}>
+            <span className={s.traitEnd} aria-hidden="true">
+              {A.kanji_minus}
+            </span>
+            <div className={s.traitTrack} style={{ background: A.color }}>
+              <div
+                className={s.traitDot}
+                style={{ left: `${DOT_LEFT.toFixed(0)}%`, borderColor: A.dark }}
                 aria-hidden="true"
               />
+            </div>
+            <span className={s.traitEnd} aria-hidden="true">
+              {A.kanji_plus}
             </span>
-            <span className={s.poleLabel}>{A_AXIS.plus}</span>
           </div>
-
-          <p className={s.foot}>軸は5本 · 同じ計算をA〜Eで繰り返す</p>
         </div>
+
+        <p className={s.foot}>軸は5本 · 同じ計算をA〜Eで繰り返す</p>
       </figure>
     </div>
   );
