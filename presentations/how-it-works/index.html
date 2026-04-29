@@ -351,13 +351,13 @@
 </head>
 <body>
   <div class="stage" id="stage">
-    <section class="slide s1 active" data-slide="1">
+    <section class="slide s1 active" data-slide="1" data-section="表紙">
       <div class="s1-eyebrow">横須賀市役所 内部ツール</div>
       <h1 class="s1-title">部署タイプ診断<br/>— その仕組み</h1>
       <div class="s1-subtitle">5つの軸 × 20問で職員のタイプを判定し、<br/>全103部署を適合度順にランクします。</div>
       <div class="s1-axis-bar"><span></span><span></span><span></span><span></span><span></span></div>
     </section>
-    <section class="slide" data-slide="2">
+    <section class="slide" data-slide="2" data-section="入力">
       <header class="sec-header">
         <div class="sec-eyebrow">入力 / Input</div>
         <h2 class="sec-title">5つの軸 × 20の質問</h2>
@@ -415,7 +415,7 @@
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="3">
+    <section class="slide" data-slide="3" data-section="採点">
       <header class="sec-header">
         <div class="sec-eyebrow">採点 / Scoring</div>
         <h2 class="sec-title">回答が軸スコアに変わる</h2>
@@ -445,7 +445,7 @@
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="4">
+    <section class="slide" data-slide="4" data-section="比較">
       <header class="sec-header">
         <div class="sec-eyebrow">比較 / Comparison</div>
         <h2 class="sec-title">5次元ベクトル vs 103部署</h2>
@@ -480,7 +480,7 @@
       </div>
       <div class="s4-foot">部署ベクトルは103部署それぞれに事前設計（職務内容に基づく）</div>
     </section>
-    <section class="slide" data-slide="5">
+    <section class="slide" data-slide="5" data-section="結果">
       <header class="sec-header">
         <div class="sec-eyebrow">結果 / Output</div>
         <h2 class="sec-title">アーキタイプ + 部署ランキング</h2>
@@ -504,7 +504,7 @@
         </div>
       </div>
     </section>
-    <section class="slide s6" data-slide="6">
+    <section class="slide s6" data-slide="6" data-section="まとめ">
       <header class="sec-header">
         <div class="sec-eyebrow">まとめ / Summary</div>
         <h2 class="sec-title">仕組みの全体像</h2>
@@ -549,7 +549,13 @@
     idx = Math.max(0, Math.min(total - 1, n));
     slides.forEach((el, i) => el.classList.toggle('active', i === idx));
     pageEl.textContent = `${idx + 1} / ${total}`;
+    const section = slides[idx].dataset.section || '';
+    document.getElementById('footer-section').textContent =
+      `部署タイプ診断 — その仕組み ・ ${section}`;
   }
+
+  // Initialize footer text correctly on load
+  show(0);
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(idx + 1); }
