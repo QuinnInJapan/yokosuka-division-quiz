@@ -305,11 +305,11 @@
     height: 5px;
     border-radius: 3px;
   }
-  .glyph-bars i:nth-child(1) { margin-left: 50%; width: 38%; background: var(--A-mid); }
+  .glyph-bars i:nth-child(1) { margin-left: 50%; width: 36%; background: var(--A-mid); }
   .glyph-bars i:nth-child(2) { margin-left: 22%; width: 28%; background: var(--B-mid); }
-  .glyph-bars i:nth-child(3) { margin-left: 50%; width: 46%; background: var(--C-mid); }
-  .glyph-bars i:nth-child(4) { margin-left: 50%; width: 14%; background: var(--D-mid); }
-  .glyph-bars i:nth-child(5) { margin-left: 50%; width: 22%; background: var(--E-mid); }
+  .glyph-bars i:nth-child(3) { margin-left: 50%; width: 44%; background: var(--C-mid); }
+  .glyph-bars i:nth-child(4) { margin-left: 30%; width: 20%; background: var(--D-mid); }
+  .glyph-bars i:nth-child(5) { margin-left: 50%; width: 24%; background: var(--E-mid); }
 
   /* Glyph: side-by-side bar stacks (you vs dept) */
   .glyph-vs {
@@ -652,116 +652,125 @@
 
   /* ============ Slide 4: Comparison ============ */
   .s4-body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
+    display: flex; flex-direction: column;
+    gap: 24px;
     flex: 1;
-    align-items: center;
   }
   .s4-card {
     background: var(--card);
     border-radius: var(--card-r);
     box-shadow: var(--card-shadow);
-    padding: 36px;
+    padding: 32px 40px;
   }
-  .s4-card h3 {
-    margin: 0 0 8px;
-    font-size: 20px;
-    color: var(--hall-indigo);
-  }
-  .s4-card .sub {
-    font-size: 14px;
-    color: var(--sub);
+  .s4-card-head {
+    display: flex; justify-content: space-between; align-items: baseline;
     margin-bottom: 24px;
-    letter-spacing: 0.04em;
   }
-  .s4-bars { display: flex; flex-direction: column; gap: 16px; }
+  .s4-card-head h3 { margin: 0; font-size: 22px; color: var(--hall-indigo); }
+  .s4-card-head .legend {
+    display: flex; gap: 24px;
+    font-size: 14px; color: var(--text-sec);
+  }
+  .s4-card-head .legend span {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .s4-card-head .swatch {
+    width: 18px; height: 12px; border-radius: 3px;
+    background: var(--hall-indigo);
+  }
+  .s4-card-head .swatch.dept {
+    background: transparent;
+    border: 2px dashed var(--text-sec);
+  }
+  .s4-bars { display: flex; flex-direction: column; gap: 14px; }
   .s4-bar {
-    display: flex; align-items: center; gap: 14px;
-    cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 8px;
-    transition: background 200ms var(--ease);
+    display: grid;
+    grid-template-columns: 200px 1fr 72px;
+    gap: 24px; align-items: center;
   }
-  .s4-bar:hover { background: var(--bg); }
-  .s4-bar.active { background: var(--bg); }
-  .s4-bar .ax {
-    width: 28px; font-weight: 700;
-    color: var(--text-sec);
-    font-size: 14px;
-    letter-spacing: 0.08em;
+  .s4-bar.A { color: var(--A-mid); }
+  .s4-bar.B { color: var(--B-mid); }
+  .s4-bar.C { color: var(--C-mid); }
+  .s4-bar.D { color: var(--D-mid); }
+  .s4-bar.E { color: var(--E-mid); }
+  .s4-bar .label {
+    font-size: 17px; font-weight: 600;
+    color: var(--text);
   }
-  .s4-bar.active.A .ax { color: var(--A); }
-  .s4-bar.active.B .ax { color: var(--B); }
-  .s4-bar.active.C .ax { color: var(--C); }
-  .s4-bar.active.D .ax { color: var(--D); }
-  .s4-bar.active.E .ax { color: var(--E); }
   .s4-bar .track {
-    flex: 1; height: 14px; background: var(--border-light);
-    position: relative; border-radius: 7px;
+    position: relative;
+    height: 18px;
+    background: var(--border-light);
+    border-radius: 9px;
   }
   .s4-bar .track::before {
-    content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px;
+    content: ''; position: absolute;
+    left: 50%; top: -4px; bottom: -4px;
     width: 1px; background: var(--sub); opacity: 0.4;
   }
-  .s4-bar .fill {
+  .s4-bar .fill-dept {
     position: absolute; top: 0; bottom: 0;
-    border-radius: 7px;
-    transition: opacity 200ms var(--ease);
+    border-radius: 9px;
+    border: 2px dashed currentColor;
+    background: transparent;
+    opacity: 0.7;
+    z-index: 1;
   }
-  .s4-bar.active .fill { opacity: 1; }
-  .s4-bar .gap {
-    position: absolute;
-    top: -4px; bottom: -4px;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(28,35,64,0.15),
-      rgba(28,35,64,0.15) 4px,
-      transparent 4px,
-      transparent 8px
-    );
-    border-radius: 7px;
-    opacity: 0;
-    transition: opacity 200ms var(--ease);
+  .s4-bar .fill-user {
+    position: absolute; top: 0; bottom: 0;
+    border-radius: 9px;
+    background: currentColor;
+    z-index: 2;
   }
-  .s4-bar.active .gap { opacity: 1; }
-  .s4-bar .v {
-    font-weight: 700; min-width: 56px;
-    text-align: right; color: var(--text);
-    font-size: 16px;
+  .s4-bar .delta {
+    font-size: 16px; font-weight: 700;
+    color: var(--text-sec);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
   }
+  .s4-bar .delta.small { color: var(--C); }
+  .s4-bar .delta.large { color: var(--A); }
 
   .s4-match {
-    margin-top: 36px;
-    padding: 28px 36px;
+    padding: 28px 40px;
     background: var(--hall-indigo); color: white;
     border-radius: 14px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 32px;
+    align-items: center;
   }
   .s4-match .label {
-    font-size: 18px;
+    font-size: 20px; font-weight: 700;
     letter-spacing: 0.04em;
-    opacity: 0.85;
   }
   .s4-match .pct {
-    font-size: 56px; font-weight: 800;
+    font-size: 64px; font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .s4-match .meter-wrap {
+    display: flex; flex-direction: column; gap: 10px;
   }
   .s4-match .meter {
-    flex: 1;
-    height: 10px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 5px;
+    height: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
     position: relative;
     overflow: hidden;
   }
   .s4-match .meter-fill {
     position: absolute;
     left: 0; top: 0; bottom: 0;
-    background: linear-gradient(90deg, var(--A-mid), var(--E-mid));
-    border-radius: 5px;
+    background: white;
+    border-radius: 6px;
+  }
+  .s4-match .ticks {
+    display: flex; justify-content: space-between;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.7);
   }
   .s4-foot {
     margin-top: 16px;
@@ -789,40 +798,85 @@
     max-height: 640px;
     border-radius: 8px;
   }
-  .s5-explain { display: flex; flex-direction: column; gap: 24px; }
-  .s5-stat {
+  .s5-explain { display: flex; flex-direction: column; gap: 28px; }
+
+  .s5-archetype {
     background: var(--card);
     border-radius: var(--card-r);
     box-shadow: var(--card-shadow);
-    padding: 28px 32px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+    padding: 36px 40px;
+    border-left: 6px solid var(--A);
   }
-  .s5-stat:hover { transform: translateY(-2px); border-color: var(--hall-indigo); }
-  .s5-stat-row {
-    display: flex; align-items: baseline; gap: 16px;
+  .s5-archetype-eyebrow {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 16px;
   }
-  .s5-stat-num {
-    font-size: 64px; font-weight: 800;
+  .s5-archetype-code {
+    display: flex; gap: 6px;
+    margin-bottom: 16px;
+  }
+  .s5-archetype-code span {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800;
+    color: white;
+    font-family: -apple-system, sans-serif;
+  }
+  .s5-archetype-code span:nth-child(1) { background: var(--A); }
+  .s5-archetype-code span:nth-child(2) { background: var(--B); }
+  .s5-archetype-code span:nth-child(3) { background: var(--C); }
+  .s5-archetype-code span:nth-child(4) { background: var(--D); }
+  .s5-archetype-code span:nth-child(5) { background: var(--E); }
+  .s5-archetype-name {
+    font-size: 36px; font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .s5-archetype-name small {
+    font-size: 18px; font-weight: 600;
+    color: var(--text-sec);
+    margin-left: 6px;
+  }
+  .s5-archetype-desc {
+    font-size: 16px; line-height: 1.75;
+    color: var(--text-sec);
+  }
+
+  .s5-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+  .s5-stats > div {
+    padding: 20px 24px;
+    text-align: center;
+    border-right: 1px solid var(--border-light);
+  }
+  .s5-stats > div:last-child { border-right: none; }
+  .s5-stats .num {
+    font-size: 36px; font-weight: 800;
     color: var(--hall-indigo);
     letter-spacing: -0.02em;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
-  .s5-stat-label {
-    font-size: 22px; font-weight: 700;
-    color: var(--text);
-  }
-  .s5-stat-desc {
-    margin-top: 12px;
-    font-size: 16px; line-height: 1.7;
+  .s5-stats .lbl {
+    margin-top: 6px;
+    font-size: 13px; font-weight: 600;
     color: var(--text-sec);
-    max-height: 0; overflow: hidden;
-    transition: max-height 240ms var(--ease), margin-top 240ms var(--ease);
   }
-  .s5-stat.expanded .s5-stat-desc {
-    max-height: 200px;
-    margin-top: 12px;
+  .s5-stats .note {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--sub);
   }
 
   /* ============ Slide 6: Summary ============ */
@@ -902,7 +956,6 @@
         <div class="s1-eyebrow">横須賀市役所 内部ツール</div>
         <h1 class="s1-title">部署タイプ診断<br/>その仕組み</h1>
         <div class="s1-subtitle">5つの軸 × 20問で職員のタイプを判定し、<br/>全103部署を適合度順にランクします。</div>
-        <div class="s1-axis-bar"><span></span><span></span><span></span><span></span><span></span></div>
       </div>
       <div class="s1-flow">
         <div class="s1-flow-spine"></div>
@@ -969,7 +1022,7 @@
       <header class="sec-header">
         <h2 class="sec-title">5つの軸 × 20の質問</h2>
         <div class="sec-stripe"></div>
-        <div class="sec-sub">職員のタイプを5つの軸で測ります。各軸をクリックすると例題が表示されます。</div>
+        <div class="sec-sub">職員のタイプを5つの軸で測ります。</div>
       </header>
       <div class="s2-grid">
         <div class="s2-axes" id="s2-axes">
@@ -1037,7 +1090,7 @@
       <header class="sec-header">
         <h2 class="sec-title">回答が軸スコアに変わる</h2>
         <div class="sec-stripe" style="background: var(--A);"></div>
-        <div class="sec-sub">各軸に寄与する質問の回答をまとめて、軸スコアを算出します。質問をクリックすると回答内容が表示されます。</div>
+        <div class="sec-sub">各軸に寄与する質問の回答をまとめて、軸スコアを算出します。</div>
       </header>
       <div class="s3-body">
         <div class="s3-left" id="s3-left">
@@ -1087,38 +1140,54 @@
       <header class="sec-header">
         <h2 class="sec-title">受検者 vs 103部署</h2>
         <div class="sec-stripe"></div>
-        <div class="sec-sub">5軸のパターンを部署ごとに比較し、最も近い部署を見つけます。軸をクリックすると差分がハイライトされます。</div>
+        <div class="sec-sub">5軸のパターンを部署ごとに比較し、最も近い部署を見つけます。</div>
       </header>
       <div class="s4-body">
         <div class="s4-card">
-          <h3>受検者の結果</h3>
-          <div class="sub">5軸パターン</div>
-          <div class="s4-bars" id="s4-user">
-            <div class="s4-bar A" data-axis="A"><span class="ax">A</span><span class="track"><span class="fill" data-fill="user-A"></span><span class="gap" data-gap="A"></span></span><span class="v">+0.6</span></div>
-            <div class="s4-bar B" data-axis="B"><span class="ax">B</span><span class="track"><span class="fill" data-fill="user-B"></span><span class="gap" data-gap="B"></span></span><span class="v">−1.0</span></div>
-            <div class="s4-bar C" data-axis="C"><span class="ax">C</span><span class="track"><span class="fill" data-fill="user-C"></span><span class="gap" data-gap="C"></span></span><span class="v">+1.2</span></div>
-            <div class="s4-bar D" data-axis="D"><span class="ax">D</span><span class="track"><span class="fill" data-fill="user-D"></span><span class="gap" data-gap="D"></span></span><span class="v">+0.2</span></div>
-            <div class="s4-bar E" data-axis="E"><span class="ax">E</span><span class="track"><span class="fill" data-fill="user-E"></span><span class="gap" data-gap="E"></span></span><span class="v">+0.4</span></div>
+          <div class="s4-card-head">
+            <h3>受検者 vs <strong>地域福祉課</strong>（理想パターン）</h3>
+            <div class="legend">
+              <span><span class="swatch"></span>受検者</span>
+              <span><span class="swatch dept"></span>部署理想</span>
+            </div>
+          </div>
+          <div class="s4-bars" id="s4-bars">
+            <div class="s4-bar A" data-axis="A">
+              <span class="label">人との関わり方</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-A"></span><span class="fill-user" data-bar="user-A"></span></span>
+              <span class="delta" data-delta="A">Δ 1.4</span>
+            </div>
+            <div class="s4-bar B" data-axis="B">
+              <span class="label">仕事の進め方</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-B"></span><span class="fill-user" data-bar="user-B"></span></span>
+              <span class="delta" data-delta="B">Δ 1.5</span>
+            </div>
+            <div class="s4-bar C" data-axis="C">
+              <span class="label">担う役割</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-C"></span><span class="fill-user" data-bar="user-C"></span></span>
+              <span class="delta" data-delta="C">Δ 0.8</span>
+            </div>
+            <div class="s4-bar D" data-axis="D">
+              <span class="label">変化への姿勢</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-D"></span><span class="fill-user" data-bar="user-D"></span></span>
+              <span class="delta" data-delta="D">Δ 0.3</span>
+            </div>
+            <div class="s4-bar E" data-axis="E">
+              <span class="label">知識のスタイル</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-E"></span><span class="fill-user" data-bar="user-E"></span></span>
+              <span class="delta" data-delta="E">Δ 0.1</span>
+            </div>
           </div>
         </div>
-        <div class="s4-card">
-          <h3>部署の理想パターン</h3>
-          <div class="sub">例：地域福祉課</div>
-          <div class="s4-bars" id="s4-dept">
-            <div class="s4-bar A" data-axis="A"><span class="ax">A</span><span class="track"><span class="fill" data-fill="dept-A"></span><span class="gap" data-gap="A"></span></span><span class="v">+2.0</span></div>
-            <div class="s4-bar B" data-axis="B"><span class="ax">B</span><span class="track"><span class="fill" data-fill="dept-B"></span><span class="gap" data-gap="B"></span></span><span class="v">+0.5</span></div>
-            <div class="s4-bar C" data-axis="C"><span class="ax">C</span><span class="track"><span class="fill" data-fill="dept-C"></span><span class="gap" data-gap="C"></span></span><span class="v">+2.0</span></div>
-            <div class="s4-bar D" data-axis="D"><span class="ax">D</span><span class="track"><span class="fill" data-fill="dept-D"></span><span class="gap" data-gap="D"></span></span><span class="v">+0.5</span></div>
-            <div class="s4-bar E" data-axis="E"><span class="ax">E</span><span class="track"><span class="fill" data-fill="dept-E"></span><span class="gap" data-gap="E"></span></span><span class="v">+0.5</span></div>
+        <div class="s4-match">
+          <span class="label">適合度</span>
+          <div class="meter-wrap">
+            <div class="meter"><span class="meter-fill" id="s4-meter"></span></div>
+            <div class="ticks"><span>0%</span><span>50%</span><span>100%</span></div>
           </div>
+          <span class="pct" id="s4-pct">73%</span>
         </div>
       </div>
-      <div class="s4-match">
-        <span class="label">適合度</span>
-        <span class="meter"><span class="meter-fill" id="s4-meter"></span></span>
-        <span class="pct" id="s4-pct">73%</span>
-      </div>
-      <div class="s4-foot">部署ごとに5軸パターンを事前設計（職務内容に基づく）</div>
     </section>
 
     <!-- Slide 5: Result -->
@@ -1133,62 +1202,32 @@
           <img src="screenshots/results.png" alt="アプリの結果画面" />
         </div>
         <div class="s5-explain">
-          <div class="s5-stat" data-toggle>
-            <div class="s5-stat-row">
-              <div class="s5-stat-num">32</div>
-              <div class="s5-stat-label">アーキタイプ</div>
+          <div class="s5-archetype">
+            <div class="s5-archetype-eyebrow">アーキタイプの例</div>
+            <div class="s5-archetype-code">
+              <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
             </div>
-            <div class="s5-stat-desc">5軸 × 2方向 ＝ 32タイプ。MBTI（4軸 → 16タイプ）の発想を5軸に拡張。</div>
+            <div class="s5-archetype-name">街のよろず屋<small>（DASCG型）</small></div>
+            <div class="s5-archetype-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在。</div>
           </div>
-          <div class="s5-stat" data-toggle>
-            <div class="s5-stat-row">
-              <div class="s5-stat-num">103</div>
-              <div class="s5-stat-label">部署ランキング</div>
+          <div class="s5-stats">
+            <div>
+              <div class="num">32</div>
+              <div class="lbl">アーキタイプ</div>
+              <div class="note">5軸 × 2方向</div>
             </div>
-            <div class="s5-stat-desc">全部署を適合度順に並べる。上位だけでなく下位も確認できる。</div>
-          </div>
-          <div class="s5-stat" data-toggle>
-            <div class="s5-stat-row">
-              <div class="s5-stat-num">5</div>
-              <div class="s5-stat-label">軸ごとの強み</div>
+            <div>
+              <div class="num">103</div>
+              <div class="lbl">部署ランキング</div>
+              <div class="note">適合度順</div>
             </div>
-            <div class="s5-stat-desc">どの軸が強い／弱いかが視覚的にわかる。</div>
+            <div>
+              <div class="num">5</div>
+              <div class="lbl">軸プロファイル</div>
+              <div class="note">強み／弱み</div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Slide 6: Summary -->
-    <section class="slide s6" data-slide="6" data-section="まとめ" data-stage="0">
-      <header class="sec-header">
-        <h2 class="sec-title">仕組みの全体像</h2>
-        <div class="sec-stripe"></div>
-      </header>
-      <div class="s6-steps">
-        <div class="s6-step">
-          <div class="s6-step-num">01</div>
-          <div class="s6-step-body">
-            <div class="s6-step-head">入力 → 採点</div>
-            <div class="s6-step-desc">20問の回答を5つの軸スコアに変換</div>
-          </div>
-        </div>
-        <div class="s6-step">
-          <div class="s6-step-num">02</div>
-          <div class="s6-step-body">
-            <div class="s6-step-head">比較</div>
-            <div class="s6-step-desc">受検者のパターンと103部署のパターンを照らし合わせ、近い部署ほど高い適合度に</div>
-          </div>
-        </div>
-        <div class="s6-step">
-          <div class="s6-step-num">03</div>
-          <div class="s6-step-body">
-            <div class="s6-step-head">結果</div>
-            <div class="s6-step-desc">32アーキタイプから1つ、103部署を適合度順に提示</div>
-          </div>
-        </div>
-      </div>
-      <div class="s6-cta">
-        <button type="button" tabindex="-1">▶ ライブデモへ</button>
       </div>
     </section>
 
@@ -1375,7 +1414,7 @@
   };
   const MAX = 2.0;
   function setBar(side, axis, val) {
-    const fill = document.querySelector(`[data-fill="${side}-${axis}"]`);
+    const fill = document.querySelector(`[data-bar="${side}-${axis}"]`);
     if (!fill) return;
     const pctVal = (Math.abs(val) / MAX) * 50;
     if (val >= 0) {
@@ -1385,49 +1424,14 @@
       fill.style.left = (50 - pctVal) + '%';
       fill.style.width = pctVal + '%';
     }
-    const colorMap = { A: 'var(--A-mid)', B: 'var(--B-mid)', C: 'var(--C-mid)', D: 'var(--D-mid)', E: 'var(--E-mid)' };
-    fill.style.background = colorMap[axis];
-    if (side === 'dept') fill.style.opacity = '0.55';
   }
   ['A','B','C','D','E'].forEach(axis => {
     setBar('user', axis, s4Vals.user[axis]);
     setBar('dept', axis, s4Vals.dept[axis]);
   });
 
-  // Gap overlays per axis
-  function setGap(axis) {
-    ['user', 'dept'].forEach(side => {
-      const gapEl = document.querySelector(`#s4-${side} [data-gap="${axis}"]`);
-      if (!gapEl) return;
-      const u = s4Vals.user[axis], d = s4Vals.dept[axis];
-      const lo = Math.min(u, d), hi = Math.max(u, d);
-      const loPct = 50 + (lo / MAX) * 50;
-      const hiPct = 50 + (hi / MAX) * 50;
-      gapEl.style.left = loPct + '%';
-      gapEl.style.width = (hiPct - loPct) + '%';
-    });
-  }
-  ['A','B','C','D','E'].forEach(setGap);
-
-  const s4Bars = document.querySelectorAll('.s4-bar');
-  s4Bars.forEach(bar => {
-    bar.addEventListener('click', () => {
-      const axis = bar.dataset.axis;
-      const wasActive = bar.classList.contains('active');
-      s4Bars.forEach(b => b.classList.remove('active'));
-      if (!wasActive) {
-        document.querySelectorAll(`.s4-bar[data-axis="${axis}"]`).forEach(b => b.classList.add('active'));
-      }
-    });
-  });
-
   // Match meter
   document.getElementById('s4-meter').style.width = '73%';
-
-  // ============ Slide 5 interactivity ============
-  document.querySelectorAll('.s5-stat').forEach(card => {
-    card.addEventListener('click', () => card.classList.toggle('expanded'));
-  });
 
   // ============ Init ============
   show(0);
