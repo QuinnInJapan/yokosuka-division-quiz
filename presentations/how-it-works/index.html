@@ -296,6 +296,56 @@
     background: var(--D-tint);
     font-size: 16px; line-height: 1.7; color: var(--text-sec);
   }
+
+  /* ============ Slide 6: Summary + CTA ============ */
+  .s6 { justify-content: center; }
+  .s6-cards {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px; margin: 48px 0 56px;
+  }
+  .s6-card {
+    border-radius: var(--card-r);
+    padding: 32px;
+    background: var(--card);
+    box-shadow: var(--card-shadow);
+    border-top: 6px solid var(--hall-indigo);
+  }
+  .s6-card.input { border-top-color: var(--A-mid); }
+  .s6-card.compare { border-top-color: var(--B-mid); }
+  .s6-card.output { border-top-color: var(--C-mid); }
+  .s6-card .lbl {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--sub); margin-bottom: 12px;
+  }
+  .s6-card .head {
+    font-size: 28px; font-weight: 700; color: var(--hall-indigo);
+    margin-bottom: 12px;
+  }
+  .s6-card .body {
+    font-size: 18px; line-height: 1.6; color: var(--text-sec);
+  }
+
+  .s6-note {
+    padding: 20px 28px;
+    background: var(--card); border-left: 4px solid var(--hall-indigo);
+    border-radius: 8px;
+    font-size: 20px; line-height: 1.7; color: var(--text);
+    max-width: 1100px;
+  }
+  .s6-cta {
+    margin-top: 56px;
+    text-align: center;
+  }
+  .s6-cta button {
+    background: var(--hall-indigo); color: white;
+    border: none; border-radius: 12px;
+    padding: 20px 48px;
+    font-size: 24px; font-weight: 700;
+    font-family: var(--font);
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+  }
+  .s6-cta button:hover { background: var(--hall-indigo-hover, #2A3558); }
 </style>
 </head>
 <body>
@@ -453,7 +503,36 @@
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="6"><h1>S6</h1></section>
+    <section class="slide s6" data-slide="6">
+      <header class="sec-header">
+        <div class="sec-eyebrow">まとめ / Summary</div>
+        <h2 class="sec-title">仕組みの全体像</h2>
+        <div class="sec-stripe"></div>
+      </header>
+      <div class="s6-cards">
+        <div class="s6-card input">
+          <div class="lbl">Step 1 — 入力</div>
+          <div class="head">20問 → 5軸スコア</div>
+          <div class="body">5段階の回答を反転補正し、軸ごとに平均を取る</div>
+        </div>
+        <div class="s6-card compare">
+          <div class="lbl">Step 2 — 比較</div>
+          <div class="head">5次元距離計算</div>
+          <div class="body">受検者ベクトルと103部署ベクトルのユークリッド距離 → 適合度%</div>
+        </div>
+        <div class="s6-card output">
+          <div class="lbl">Step 3 — 出力</div>
+          <div class="head">アーキタイプ + ランキング</div>
+          <div class="body">32アーキタイプから1つ、103部署を適合度順に提示</div>
+        </div>
+      </div>
+      <div class="s6-note">
+        <strong>注記：</strong>本ツールは <strong>配属判断ツールではなく</strong>、職員自身が業務適性を考えるための <strong>自己理解の補助</strong> です。配属の最終判断は人事部門が担います。
+      </div>
+      <div class="s6-cta">
+        <button type="button">▶ ライブデモへ</button>
+      </div>
+    </section>
     <div class="footer">
       <span id="footer-section">部署タイプ診断 — その仕組み</span>
       <span id="footer-page">1 / 6</span>
