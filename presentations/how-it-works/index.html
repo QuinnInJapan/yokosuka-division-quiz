@@ -1,0 +1,1803 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>部署タイプ診断：その仕組み</title>
+<style>
+  :root {
+    --A: #C0392B; --A-mid: #E8534A; --A-tint: #FFF0EE;
+    --B: #2E6DB4; --B-mid: #4A90D9; --B-tint: #EBF3FC;
+    --C: #1E7345; --C-mid: #4CAF7D; --C-tint: #ECF8F1;
+    --D: #7B3F9E; --D-mid: #9B59B6; --D-tint: #F5EDF8;
+    --E: #9C6310; --E-mid: #F5A623; --E-tint: #FFF6E6;
+    --hall-indigo: #1C2340;
+    --hall-indigo-hover: #2A3558;
+    --bg: #F0F2F7;
+    --card: #FFFFFF;
+    --text: var(--hall-indigo);
+    --text-sec: #4A5568;
+    --sub: #6B7280;
+    --border: #E4E7ED;
+    --border-light: #F0F2F7;
+    --card-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    --card-r: 16px;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',
+            Meiryo,-apple-system,sans-serif;
+  }
+  html, body {
+    margin: 0; padding: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: var(--font);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+
+  .stage {
+    position: fixed;
+    top: 50%; left: 50%;
+    width: 1920px; height: 1080px;
+    transform-origin: center center;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* ============ Pipeline TOC ============ */
+  .pipeline {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 88px;
+    display: flex;
+    align-items: stretch;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms var(--ease);
+  }
+  .pipeline.show { opacity: 1; pointer-events: auto; }
+  .pipeline-step {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px;
+    padding: 0 24px;
+    cursor: pointer;
+    position: relative;
+    color: var(--sub);
+    transition: color 200ms var(--ease), background 200ms var(--ease);
+  }
+  .pipeline-step + .pipeline-step::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 1px; height: 32px;
+    background: var(--border);
+  }
+  .pipeline-step:hover { background: var(--bg); color: var(--text-sec); }
+  .pipeline-step .num {
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+  }
+  .pipeline-step .label {
+    font-size: 22px; font-weight: 700;
+  }
+  .pipeline-step .en {
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em;
+    opacity: 0.55;
+    text-transform: uppercase;
+  }
+  .pipeline-step::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: transparent;
+    transition: background 200ms var(--ease);
+  }
+  .pipeline-step.active { color: var(--hall-indigo); }
+  .pipeline-step.active::after { background: var(--hall-indigo); }
+  .pipeline-step.done { color: var(--text-sec); }
+  .pipeline-step.done::after { background: var(--border); }
+  .pipeline-step .arrow {
+    position: absolute;
+    right: -10px; top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    color: var(--border);
+    pointer-events: none;
+  }
+  .pipeline-step:last-child .arrow { display: none; }
+
+  /* ============ Slides ============ */
+  .slide {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    padding: 96px;
+    display: none;
+    flex-direction: column;
+  }
+  .slide.has-pipeline { padding-top: 152px; }
+  .slide.active {
+    display: flex;
+    animation: slideEnter 240ms var(--ease);
+  }
+  @keyframes slideEnter {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 32px; left: 96px; right: 96px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: var(--sub);
+  }
+
+  /* ============ Slide 1: Cover ============ */
+  .s1 {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 96px;
+  }
+  .s1.active { display: flex; }
+  .s1-text {
+    flex: 0 0 720px;
+    display: flex; flex-direction: column;
+    justify-content: center;
+  }
+  .s1-eyebrow {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-sec);
+    letter-spacing: 0.04em;
+    margin-bottom: 24px;
+  }
+  .s1-title {
+    font-size: 88px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--hall-indigo);
+    letter-spacing: -0.01em;
+    margin: 0 0 32px;
+  }
+  .s1-subtitle {
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-sec);
+    line-height: 1.5;
+    max-width: 720px;
+  }
+  .s1-axis-bar {
+    margin-top: 56px;
+    display: flex;
+    height: 8px;
+    width: 420px;
+  }
+  .s1-axis-bar > span { flex: 1; }
+  .s1-axis-bar > span:nth-child(1) { background: var(--A-mid); }
+  .s1-axis-bar > span:nth-child(2) { background: var(--B-mid); }
+  .s1-axis-bar > span:nth-child(3) { background: var(--C-mid); }
+  .s1-axis-bar > span:nth-child(4) { background: var(--D-mid); }
+  .s1-axis-bar > span:nth-child(5) { background: var(--E-mid); }
+
+  /* Cover pipeline flow */
+  .s1-flow {
+    flex: 0 0 640px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .s1-stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 18px 24px;
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: var(--card-shadow);
+    z-index: 1;
+    opacity: 0;
+    transform: translateX(12px);
+    border: 2px solid transparent;
+    transition: border-color 280ms var(--ease), box-shadow 280ms var(--ease), transform 280ms var(--ease);
+    animation: s1stageIn 480ms var(--ease) forwards;
+  }
+  .s1.active .s1-stage:nth-child(2) { animation-delay: 200ms; }
+  .s1.active .s1-stage:nth-child(3) { animation-delay: 360ms; }
+  .s1.active .s1-stage:nth-child(4) { animation-delay: 520ms; }
+  .s1.active .s1-stage:nth-child(5) { animation-delay: 680ms; }
+  @keyframes s1stageIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .s1-stage.glow {
+    border-color: var(--hall-indigo);
+    box-shadow: 0 8px 32px rgba(28,35,64,0.18);
+    transform: translateX(0) scale(1.015);
+  }
+  .s1-stage.glow .s1-stage-glyph {
+    background: var(--card);
+    border-color: var(--hall-indigo);
+  }
+
+  .s1-stage-glyph {
+    width: 88px; height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: background 280ms var(--ease), border-color 280ms var(--ease);
+  }
+  .s1-stage-meta { display: flex; flex-direction: column; gap: 4px; }
+  .s1-stage-num {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--sub);
+  }
+  .s1-stage-name {
+    font-size: 24px; font-weight: 700;
+    color: var(--hall-indigo);
+    line-height: 1.2;
+  }
+  .s1-stage-desc {
+    font-size: 14px;
+    color: var(--text-sec);
+    line-height: 1.5;
+  }
+
+  /* Glyph: 20 question dots — fixed-size circles, centered */
+  .glyph-dots {
+    display: grid;
+    grid-template-columns: repeat(5, 8px);
+    grid-template-rows: repeat(4, 8px);
+    gap: 6px;
+    justify-content: center; align-content: center;
+  }
+  .glyph-dots span {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .glyph-dots span:nth-child(5n-4) { background: var(--A-mid); }
+  .glyph-dots span:nth-child(5n-3) { background: var(--B-mid); }
+  .glyph-dots span:nth-child(5n-2) { background: var(--C-mid); }
+  .glyph-dots span:nth-child(5n-1) { background: var(--D-mid); }
+  .glyph-dots span:nth-child(5n)   { background: var(--E-mid); }
+
+  /* Glyph: 5 diverging axis bars centered on midline */
+  .glyph-bars {
+    position: relative;
+    width: 64px; height: 56px;
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 5px;
+  }
+  .glyph-bars::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 4px; bottom: 4px;
+    width: 1px;
+    background: var(--border);
+  }
+  .glyph-bars i {
+    display: block;
+    position: relative;
+    height: 5px;
+    border-radius: 3px;
+  }
+  .glyph-bars i:nth-child(1) { margin-left: 50%; width: 36%; background: var(--A-mid); }
+  .glyph-bars i:nth-child(2) { margin-left: 22%; width: 28%; background: var(--B-mid); }
+  .glyph-bars i:nth-child(3) { margin-left: 50%; width: 44%; background: var(--C-mid); }
+  .glyph-bars i:nth-child(4) { margin-left: 30%; width: 20%; background: var(--D-mid); }
+  .glyph-bars i:nth-child(5) { margin-left: 50%; width: 24%; background: var(--E-mid); }
+
+  /* Glyph: side-by-side bar stacks (you vs dept) */
+  .glyph-vs {
+    display: flex; align-items: center;
+    gap: 10px;
+  }
+  .glyph-vs .stack {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .glyph-vs .stack i {
+    display: block;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--A-mid);
+  }
+  .glyph-vs .stack.you i:nth-child(1) { width: 22px; }
+  .glyph-vs .stack.you i:nth-child(2) { width: 14px; }
+  .glyph-vs .stack.you i:nth-child(3) { width: 26px; }
+  .glyph-vs .stack.you i:nth-child(4) { width: 10px; }
+  .glyph-vs .stack.you i:nth-child(5) { width: 16px; }
+  .glyph-vs .stack.dept i {
+    background: var(--B-mid);
+    margin-left: auto;
+  }
+  .glyph-vs .stack.dept i:nth-child(1) { width: 28px; }
+  .glyph-vs .stack.dept i:nth-child(2) { width: 12px; }
+  .glyph-vs .stack.dept i:nth-child(3) { width: 24px; }
+  .glyph-vs .stack.dept i:nth-child(4) { width: 16px; }
+  .glyph-vs .stack.dept i:nth-child(5) { width: 14px; }
+  .glyph-vs .vs {
+    font-size: 9px; font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--sub);
+  }
+
+  /* Glyph: ranking — numbered rows with bars */
+  .glyph-rank {
+    display: flex; flex-direction: column;
+    gap: 5px;
+  }
+  .glyph-rank .row {
+    display: flex; align-items: center;
+    gap: 6px;
+  }
+  .glyph-rank .num {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--hall-indigo);
+    color: white;
+    font-size: 8px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .glyph-rank .bar {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--hall-indigo);
+  }
+  .glyph-rank .row:nth-child(1) .bar { width: 44px; background: var(--A-mid); }
+  .glyph-rank .row:nth-child(2) .bar { width: 32px; background: var(--C-mid); }
+  .glyph-rank .row:nth-child(3) .bar { width: 22px; background: var(--D-mid); }
+  .glyph-rank .row:nth-child(2) .num,
+  .glyph-rank .row:nth-child(3) .num {
+    background: var(--text-sec);
+  }
+
+  /* ============ Section header ============ */
+  .sec-header {
+    margin-bottom: 32px;
+  }
+  .sec-title {
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 16px;
+    color: var(--hall-indigo);
+  }
+  .sec-stripe {
+    height: 6px;
+    width: 80px;
+    background: var(--hall-indigo);
+  }
+  .sec-sub {
+    margin-top: 12px;
+    font-size: 18px;
+    color: var(--text-sec);
+  }
+
+  /* ============ Slide 2: Input ============ */
+  .s2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 56px;
+    flex: 1;
+    align-items: start;
+  }
+  .s2-axes { display: flex; flex-direction: column; gap: 14px; }
+  .s2-axis-row {
+    display: flex; align-items: center; gap: 20px;
+    padding: 18px 22px;
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+  }
+  .s2-axis-row:hover { transform: translateX(4px); }
+  .s2-axis-row.active {
+    border-color: currentColor;
+  }
+  .s2-axis-row.A.active { color: var(--A); }
+  .s2-axis-row.B.active { color: var(--B); }
+  .s2-axis-row.C.active { color: var(--C); }
+  .s2-axis-row.D.active { color: var(--D); }
+  .s2-axis-row.E.active { color: var(--E); }
+  .s2-axis-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .s2-axis-pill.A { background: var(--A-tint); color: var(--A); }
+  .s2-axis-pill.B { background: var(--B-tint); color: var(--B); }
+  .s2-axis-pill.C { background: var(--C-tint); color: var(--C); }
+  .s2-axis-pill.D { background: var(--D-tint); color: var(--D); }
+  .s2-axis-pill.E { background: var(--E-tint); color: var(--E); }
+  .s2-axis-label { flex: 1; }
+  .s2-axis-name { font-size: 22px; font-weight: 700; color: var(--hall-indigo); margin-bottom: 4px; }
+  .s2-axis-poles { font-size: 16px; color: var(--text-sec); }
+  .s2-axis-hint {
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--sub);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .s2-axis-row.active .s2-axis-hint { opacity: 1; color: currentColor; }
+
+  .s2-example {
+    background: var(--card);
+    border-radius: var(--card-r);
+    padding: 36px;
+    box-shadow: var(--card-shadow);
+    display: flex; flex-direction: column;
+    min-height: 540px;
+    position: relative;
+  }
+  .s2-example-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .s2-example-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .s2-example-label {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--sub); text-transform: uppercase;
+  }
+  .s2-example-q {
+    font-size: 22px; line-height: 1.75; color: var(--text);
+    margin: 0 0 24px;
+    transition: opacity 200ms var(--ease);
+  }
+  .s2-options {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .s2-option {
+    padding: 12px 16px; border: 1px solid var(--border);
+    border-radius: 10px; font-size: 16px; color: var(--text);
+    background: var(--card);
+  }
+  .s2-foot {
+    margin-top: auto; padding-top: 24px;
+    font-size: 16px;
+    color: var(--sub);
+    text-align: center;
+  }
+
+  /* ============ Slide 3: Scoring ============ */
+  .s3-body {
+    display: grid;
+    grid-template-columns: 1fr 0.95fr;
+    gap: 64px;
+    flex: 1;
+    align-items: center;
+  }
+  .s3-left { display: flex; flex-direction: column; gap: 14px; }
+  .s3-q {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--card);
+    padding: 16px 22px; border-radius: 12px;
+    font-size: 18px; color: var(--text);
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+  }
+  .s3-q:hover { transform: translateX(4px); }
+  .s3-q.active { border-color: var(--A); }
+  .s3-q .s3-label {
+    font-weight: 700; min-width: 40px; color: var(--A);
+    font-size: 14px; letter-spacing: 0.08em;
+  }
+  .s3-q .s3-text { flex: 1; }
+  .s3-q .s3-pos {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .s3-pos .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 200ms var(--ease), transform 200ms var(--ease);
+  }
+  .s3-pos .dot.fill { background: var(--A-mid); transform: scale(1.3); }
+
+  .s3-arrow {
+    text-align: center;
+    font-size: 18px; font-weight: 600;
+    color: var(--sub);
+    margin: 12px 0;
+    letter-spacing: 0.08em;
+  }
+  .s3-result {
+    background: var(--A); color: white;
+    border-radius: 12px; padding: 22px 28px;
+    font-size: 22px; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 24px rgba(192,57,43,0.25);
+  }
+  .s3-result .pill {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 14px; letter-spacing: 0.12em;
+  }
+  .s3-result .needle {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .s3-result .scale {
+    width: 200px; height: 6px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    position: relative;
+  }
+  .s3-result .scale::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: -3px; bottom: -3px;
+    width: 1px;
+    background: rgba(255,255,255,0.5);
+  }
+  .s3-result .scale-fill {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-radius: 3px;
+    background: white;
+    transition: left 320ms var(--ease), width 320ms var(--ease);
+  }
+  .s3-result .label-pos {
+    font-size: 14px;
+    opacity: 0.85;
+    letter-spacing: 0.06em;
+  }
+
+  .s3-right {
+    background: var(--card);
+    border-radius: var(--card-r);
+    padding: 36px;
+    box-shadow: var(--card-shadow);
+    min-height: 480px;
+    display: flex; flex-direction: column;
+  }
+  .s3-right-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .s3-right-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--A-tint); color: var(--A);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .s3-right-label {
+    font-size: 14px; font-weight: 600;
+    color: var(--sub); letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .s3-right-q {
+    font-size: 20px; line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 24px;
+  }
+  .s3-right-options {
+    display: flex; flex-direction: column; gap: 8px;
+    flex: 1;
+  }
+  .s3-right-option {
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 16px;
+    color: var(--text-sec);
+    background: var(--card);
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all 200ms var(--ease);
+  }
+  .s3-right-option.chosen {
+    border-color: var(--A);
+    background: var(--A-tint);
+    color: var(--A);
+    font-weight: 700;
+  }
+  .s3-right-option .check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+  .s3-right-option.chosen .check {
+    background: var(--A);
+    border-color: var(--A);
+    position: relative;
+  }
+  .s3-right-option.chosen .check::after {
+    content: '';
+    position: absolute;
+    left: 5px; top: 2px;
+    width: 5px; height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* ============ Slide 4: Comparison ============ */
+  .s4-body {
+    display: flex; flex-direction: column;
+    gap: 24px;
+    flex: 1;
+  }
+  .s4-card {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 32px 40px;
+  }
+  .s4-card-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 24px;
+  }
+  .s4-card-head h3 { margin: 0; font-size: 22px; color: var(--hall-indigo); }
+  .s4-card-head .legend {
+    display: flex; gap: 24px;
+    font-size: 14px; color: var(--text-sec);
+  }
+  .s4-card-head .legend span {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .s4-card-head .swatch {
+    width: 18px; height: 12px; border-radius: 3px;
+    background: var(--hall-indigo);
+  }
+  .s4-card-head .swatch.dept {
+    background: transparent;
+    border: 2px dashed var(--text-sec);
+  }
+  .s4-bars { display: flex; flex-direction: column; gap: 14px; }
+  .s4-bar {
+    display: grid;
+    grid-template-columns: 140px 1fr 140px 72px;
+    gap: 18px; align-items: center;
+  }
+  .s4-bar.A { color: var(--A-mid); }
+  .s4-bar.B { color: var(--B-mid); }
+  .s4-bar.C { color: var(--C-mid); }
+  .s4-bar.D { color: var(--D-mid); }
+  .s4-bar.E { color: var(--E-mid); }
+  .s4-bar .pole {
+    font-size: 15px; font-weight: 700;
+    color: var(--text);
+  }
+  .s4-bar .pole.lo { text-align: right; }
+  .s4-bar .pole.hi { text-align: left; }
+  .s4-bar.A .pole { color: var(--A); }
+  .s4-bar.B .pole { color: var(--B); }
+  .s4-bar.C .pole { color: var(--C); }
+  .s4-bar.D .pole { color: var(--D); }
+  .s4-bar.E .pole { color: var(--E); }
+  .s4-bar .track {
+    position: relative;
+    height: 18px;
+    background: var(--border-light);
+    border-radius: 9px;
+  }
+  .s4-bar .track::before {
+    content: ''; position: absolute;
+    left: 50%; top: -4px; bottom: -4px;
+    width: 1px; background: var(--sub); opacity: 0.4;
+  }
+  .s4-bar .fill-dept {
+    position: absolute; top: 0; bottom: 0;
+    border-radius: 9px;
+    border: 2px dashed currentColor;
+    background: transparent;
+    opacity: 0.7;
+    z-index: 1;
+  }
+  .s4-bar .fill-user {
+    position: absolute; top: 0; bottom: 0;
+    border-radius: 9px;
+    background: currentColor;
+    z-index: 2;
+  }
+  .s4-bar .delta {
+    font-size: 16px; font-weight: 700;
+    color: var(--text-sec);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .s4-bar .delta.small { color: var(--C); }
+  .s4-bar .delta.large { color: var(--A); }
+
+  .s4-match {
+    padding: 28px 40px;
+    background: var(--hall-indigo); color: white;
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 32px;
+    align-items: center;
+  }
+  .s4-match .label {
+    font-size: 20px; font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .s4-match .pct {
+    font-size: 64px; font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .s4-match .meter-wrap {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .s4-match .meter {
+    height: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .s4-match .meter-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: white;
+    border-radius: 6px;
+  }
+  .s4-match .ticks {
+    display: flex; justify-content: space-between;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.7);
+  }
+  .s4-foot {
+    margin-top: 16px;
+    font-size: 16px; color: var(--sub);
+    text-align: center;
+  }
+
+  /* ============ Slide 5: Result components (3 cards, paragraph + 1 example) ============ */
+  .s5-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+    flex: 1;
+    align-items: stretch;
+  }
+  .s5-card {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 36px 32px;
+    display: flex; flex-direction: column;
+    gap: 20px;
+  }
+  .s5-card-head {
+    display: flex; flex-direction: column;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 18px;
+  }
+  .s5-card-label {
+    font-size: 26px; font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .s5-card-meta {
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .s5-card-num {
+    font-size: 24px; font-weight: 800;
+    color: var(--text-sec);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .s5-card-note {
+    font-size: 13px; font-weight: 600;
+    color: var(--sub);
+    letter-spacing: 0.04em;
+  }
+  .s5-card-para {
+    font-size: 17px; line-height: 1.85;
+    color: var(--text-sec);
+    margin: 0;
+  }
+  .s5-card-para strong {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .s5-card-example {
+    margin-top: auto;
+    padding: 28px 26px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: inset 0 0 0 1px var(--border-light);
+    display: flex; flex-direction: column;
+    gap: 16px;
+    position: relative;
+  }
+  .s5-card-example-eyebrow {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.18em;
+    color: white;
+    background: var(--hall-indigo);
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+  /* archetype example */
+  .s5-ex-arch-chips {
+    display: flex; gap: 5px;
+  }
+  .s5-ex-arch-chips span {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800;
+    color: white;
+    font-family: ui-monospace, Menlo, monospace;
+  }
+  .s5-ex-arch-chips span:nth-child(1) { background: var(--A); }
+  .s5-ex-arch-chips span:nth-child(2) { background: var(--B); }
+  .s5-ex-arch-chips span:nth-child(3) { background: var(--C); }
+  .s5-ex-arch-chips span:nth-child(4) { background: var(--D); }
+  .s5-ex-arch-chips span:nth-child(5) { background: var(--E); }
+  .s5-ex-arch-name {
+    font-size: 32px; font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1.15;
+    margin: 0;
+  }
+  .s5-ex-arch-name small {
+    font-size: 17px; font-weight: 700;
+    color: var(--text-sec);
+    margin-left: 4px;
+  }
+  .s5-ex-arch-desc {
+    font-size: 14px; line-height: 1.75;
+    color: var(--text-sec);
+    margin: 0;
+  }
+  /* ranking example */
+  .s5-ex-rank {
+    display: grid;
+    grid-template-columns: 36px 1fr 78px;
+    gap: 12px; align-items: center;
+    padding: 18px 18px;
+    background: linear-gradient(90deg, rgba(76,175,125,0.22), white);
+    border: 1.5px solid var(--C-mid);
+    border-radius: 12px;
+  }
+  .s5-ex-rank .pos {
+    font-weight: 800; color: var(--C);
+    font-size: 22px; text-align: center;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .s5-ex-rank .name {
+    font-weight: 700; color: var(--text);
+    font-size: 18px;
+  }
+  .s5-ex-rank .pct {
+    font-weight: 800; color: var(--C);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  /* profile bar example (TraitBar style) */
+  .s5-ex-bar { display: flex; flex-direction: column; gap: 8px; }
+  .s5-ex-bar-head {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .s5-ex-bar-pct { font-size: 22px; font-weight: 800; color: var(--A); font-variant-numeric: tabular-nums; }
+  .s5-ex-bar-win { font-size: 15px; font-weight: 700; color: var(--A); }
+  .s5-ex-bar-row { display: flex; align-items: center; gap: 10px; }
+  .s5-ex-bar-end { width: 28px; flex-shrink: 0; font-size: 13px; color: var(--sub); text-align: center; font-weight: 600; }
+  .s5-ex-bar-track { position: relative; flex: 1; height: 12px; border-radius: 999px; background: var(--A-mid); }
+  .s5-ex-bar-dot {
+    position: absolute; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--A);
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  }
+  .s5-ex-bar-foot {
+    font-size: 13px; line-height: 1.65;
+    color: var(--text-sec);
+  }
+  .s5-ex-rank-foot {
+    display: flex; flex-direction: column; gap: 3px;
+    font-size: 13px; line-height: 1.5;
+    color: var(--text-sec);
+  }
+  .s5-ex-rank-foot span:first-child {
+    font-weight: 700; color: var(--text);
+  }
+
+  /* ============ Slide 6: Example result ============ */
+  .s6-body {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 32px;
+    flex: 1;
+  }
+  .s6-archetype {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 32px 36px;
+    display: flex; flex-direction: column;
+    gap: 18px;
+  }
+  .s6-archetype-eyebrow {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--sub);
+    text-transform: uppercase;
+  }
+  .s6-archetype-name {
+    font-size: 46px; font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1.15;
+    margin: 0;
+  }
+  .s6-archetype-name small {
+    font-size: 20px; font-weight: 700;
+    color: var(--text-sec);
+    margin-left: 6px;
+  }
+  .s6-archetype-code {
+    font-size: 13px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.24em;
+    font-family: ui-monospace, Menlo, monospace;
+    margin-top: -8px;
+  }
+  .s6-archetype-desc {
+    font-size: 15px; line-height: 1.7;
+    color: var(--text-sec);
+    margin: 0;
+  }
+  .s6-archetype-profile {
+    display: flex; flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-light);
+  }
+  .s6-archetype-profile .ph {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .s6-trait {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .s6-trait-head {
+    display: flex; align-items: baseline;
+    gap: 10px;
+  }
+  .s6-trait-pct {
+    font-size: 16px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .s6-trait-win {
+    font-size: 13px; font-weight: 700;
+  }
+  .s6-trait-row {
+    display: flex; align-items: center;
+    gap: 10px;
+  }
+  .s6-trait-end {
+    width: 28px; flex-shrink: 0;
+    font-size: 12px; color: var(--sub);
+    text-align: center;
+    font-weight: 600;
+  }
+  .s6-trait-track {
+    position: relative;
+    flex: 1;
+    height: 10px;
+    border-radius: 999px;
+  }
+  .s6-trait-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 2.5px solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,.18);
+    z-index: 2;
+  }
+  .s6-trait.A .s6-trait-pct,
+  .s6-trait.A .s6-trait-win { color: var(--A); }
+  .s6-trait.A .s6-trait-track { background: var(--A-mid); }
+  .s6-trait.A .s6-trait-dot { border-color: var(--A); }
+  .s6-trait.B .s6-trait-pct,
+  .s6-trait.B .s6-trait-win { color: var(--B); }
+  .s6-trait.B .s6-trait-track { background: var(--B-mid); }
+  .s6-trait.B .s6-trait-dot { border-color: var(--B); }
+  .s6-trait.C .s6-trait-pct,
+  .s6-trait.C .s6-trait-win { color: var(--C); }
+  .s6-trait.C .s6-trait-track { background: var(--C-mid); }
+  .s6-trait.C .s6-trait-dot { border-color: var(--C); }
+  .s6-trait.D .s6-trait-pct,
+  .s6-trait.D .s6-trait-win { color: var(--D); }
+  .s6-trait.D .s6-trait-track { background: var(--D-mid); }
+  .s6-trait.D .s6-trait-dot { border-color: var(--D); }
+  .s6-trait.E .s6-trait-pct,
+  .s6-trait.E .s6-trait-win { color: var(--E); }
+  .s6-trait.E .s6-trait-track { background: var(--E-mid); }
+  .s6-trait.E .s6-trait-dot { border-color: var(--E); }
+
+  .s6-rank-card {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 32px;
+    display: flex; flex-direction: column;
+  }
+  .s6-rank-card h3 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    color: var(--hall-indigo);
+  }
+  .s6-rank-card .sub {
+    font-size: 13px; color: var(--sub);
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+  }
+  .s6-rank-list {
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .s6-rank-item {
+    display: grid;
+    grid-template-columns: 32px 1fr 80px;
+    gap: 12px; align-items: center;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 10px;
+  }
+  .s6-rank-item.top1 {
+    background: linear-gradient(90deg, rgba(76,175,125,0.18), var(--bg));
+    border: 1px solid var(--C-mid);
+  }
+  .s6-rank-item .pos {
+    font-weight: 800;
+    color: var(--text-sec);
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .s6-rank-item.top1 .pos { color: var(--C); }
+  .s6-rank-item .name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .s6-rank-item .pct {
+    font-weight: 800;
+    color: var(--hall-indigo);
+    font-variant-numeric: tabular-nums;
+    font-size: 16px;
+    text-align: right;
+  }
+  .s6-rank-foot {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    font-size: 13px;
+    color: var(--sub);
+  }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+
+    <!-- Pipeline TOC -->
+    <nav class="pipeline" id="pipeline">
+      <div class="pipeline-step" data-go="2">
+        <span class="num">01</span>
+        <span><span class="label">入力</span><br/><span class="en">Input</span></span>
+      </div>
+      <div class="pipeline-step" data-go="3">
+        <span class="num">02</span>
+        <span><span class="label">採点</span><br/><span class="en">Scoring</span></span>
+      </div>
+      <div class="pipeline-step" data-go="4">
+        <span class="num">03</span>
+        <span><span class="label">比較</span><br/><span class="en">Comparison</span></span>
+      </div>
+      <div class="pipeline-step" data-go="5">
+        <span class="num">04</span>
+        <span><span class="label">結果</span><br/><span class="en">Output</span></span>
+      </div>
+    </nav>
+
+    <!-- Slide 1: Cover -->
+    <section class="slide s1 active" data-slide="1" data-section="表紙" data-stage="0">
+      <div class="s1-text">
+        <div class="s1-eyebrow">横須賀市役所 内部ツール</div>
+        <h1 class="s1-title">部署タイプ診断<br/>その仕組み</h1>
+        <div class="s1-subtitle">5つの軸 × 20問で職員のタイプを判定し、<br/>全103部署を適合度順にランクします。</div>
+      </div>
+      <div class="s1-flow">
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-dots">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">01 — INPUT</span>
+            <span class="s1-stage-name">入力</span>
+            <span class="s1-stage-desc">20問の5段階回答</span>
+          </div>
+        </div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-bars">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">02 — SCORING</span>
+            <span class="s1-stage-name">採点</span>
+            <span class="s1-stage-desc">5軸スコアに変換</span>
+          </div>
+        </div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-vs">
+              <div class="stack you"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="vs">VS</div>
+              <div class="stack dept"><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">03 — COMPARISON</span>
+            <span class="s1-stage-name">比較</span>
+            <span class="s1-stage-desc">103部署のパターンと照合</span>
+          </div>
+        </div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-rank">
+              <div class="row"><span class="num">1</span><span class="bar"></span></div>
+              <div class="row"><span class="num">2</span><span class="bar"></span></div>
+              <div class="row"><span class="num">3</span><span class="bar"></span></div>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">04 — OUTPUT</span>
+            <span class="s1-stage-name">結果</span>
+            <span class="s1-stage-desc">アーキタイプ＋部署ランキング</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Input -->
+    <section class="slide has-pipeline" data-slide="2" data-section="入力" data-stage="1">
+      <header class="sec-header">
+        <h2 class="sec-title">5つの軸 × 20の質問</h2>
+        <div class="sec-stripe"></div>
+        <div class="sec-sub">職員のタイプを5つの軸で測ります。</div>
+      </header>
+      <div class="s2-grid">
+        <div class="s2-axes" id="s2-axes">
+          <div class="s2-axis-row A active" data-axis="A">
+            <div class="s2-axis-pill A">A</div>
+            <div class="s2-axis-label">
+              <div class="s2-axis-name">人との関わり方</div>
+              <div class="s2-axis-poles">制度・仕組み ⇄ 市民対話</div>
+            </div>
+            <div class="s2-axis-hint">例題 ▶</div>
+          </div>
+          <div class="s2-axis-row B" data-axis="B">
+            <div class="s2-axis-pill B">B</div>
+            <div class="s2-axis-label">
+              <div class="s2-axis-name">仕事の進め方</div>
+              <div class="s2-axis-poles">政策立案 ⇄ 現場対応</div>
+            </div>
+            <div class="s2-axis-hint">例題 ▶</div>
+          </div>
+          <div class="s2-axis-row C" data-axis="C">
+            <div class="s2-axis-pill C">C</div>
+            <div class="s2-axis-label">
+              <div class="s2-axis-name">担う役割</div>
+              <div class="s2-axis-poles">ルール管理 ⇄ 市民支援</div>
+            </div>
+            <div class="s2-axis-hint">例題 ▶</div>
+          </div>
+          <div class="s2-axis-row D" data-axis="D">
+            <div class="s2-axis-pill D">D</div>
+            <div class="s2-axis-label">
+              <div class="s2-axis-name">変化への姿勢</div>
+              <div class="s2-axis-poles">革新推進 ⇄ 安定運営</div>
+            </div>
+            <div class="s2-axis-hint">例題 ▶</div>
+          </div>
+          <div class="s2-axis-row E" data-axis="E">
+            <div class="s2-axis-pill E">E</div>
+            <div class="s2-axis-label">
+              <div class="s2-axis-name">知識のスタイル</div>
+              <div class="s2-axis-poles">専門追求 ⇄ 幅広対応</div>
+            </div>
+            <div class="s2-axis-hint">例題 ▶</div>
+          </div>
+        </div>
+        <div class="s2-example" id="s2-example">
+          <div class="s2-example-head">
+            <div class="s2-example-pill A" id="s2-ex-pill">A</div>
+            <div class="s2-example-label">質問の例</div>
+          </div>
+          <p class="s2-example-q" id="s2-ex-q">高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。</p>
+          <div class="s2-options">
+            <div class="s2-option">自分には向いていないと思う</div>
+            <div class="s2-option">あまり気が乗らないが、こなせる</div>
+            <div class="s2-option">どちらとも言えない</div>
+            <div class="s2-option">やりがいを感じながら取り組める</div>
+            <div class="s2-option">まさに自分が輝ける場面</div>
+          </div>
+          <div class="s2-foot">全20問・約3分</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Scoring -->
+    <section class="slide has-pipeline" data-slide="3" data-section="採点" data-stage="2">
+      <header class="sec-header">
+        <h2 class="sec-title">回答が軸スコアに変わる</h2>
+        <div class="sec-stripe" style="background: var(--A);"></div>
+        <div class="sec-sub">各軸に寄与する質問の回答をまとめて、軸スコアを算出します。</div>
+      </header>
+      <div class="s3-body">
+        <div class="s3-left" id="s3-left">
+          <div class="s3-q active" data-q="0">
+            <span class="s3-label">A1</span>
+            <span class="s3-text">窓口で介護申請を支援</span>
+            <span class="s3-pos" data-pos="4"></span>
+          </div>
+          <div class="s3-q" data-q="1">
+            <span class="s3-label">A2</span>
+            <span class="s3-text">地域サークルで対話</span>
+            <span class="s3-pos" data-pos="3"></span>
+          </div>
+          <div class="s3-q" data-q="2">
+            <span class="s3-label">A3</span>
+            <span class="s3-text">業務フローを設計</span>
+            <span class="s3-pos" data-pos="1"></span>
+          </div>
+          <div class="s3-q" data-q="3">
+            <span class="s3-label">A4</span>
+            <span class="s3-text">財政データを分析</span>
+            <span class="s3-pos" data-pos="2"></span>
+          </div>
+          <div class="s3-arrow">▼ 集計</div>
+          <div class="s3-result">
+            <span class="pill">人との関わり方</span>
+            <div class="needle">
+              <span class="label-pos">仕組み</span>
+              <span class="scale"><span class="scale-fill" id="s3-fill"></span></span>
+              <span class="label-pos">対話</span>
+            </div>
+          </div>
+        </div>
+        <div class="s3-right" id="s3-right">
+          <div class="s3-right-head">
+            <div class="s3-right-pill">A1</div>
+            <div class="s3-right-label">回答内容</div>
+          </div>
+          <p class="s3-right-q" id="s3-right-q">高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。</p>
+          <div class="s3-right-options" id="s3-right-options"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: Comparison -->
+    <section class="slide has-pipeline" data-slide="4" data-section="比較" data-stage="3">
+      <header class="sec-header">
+        <h2 class="sec-title">受検者 vs 103部署</h2>
+        <div class="sec-stripe"></div>
+        <div class="sec-sub">5軸のパターンを部署ごとに比較し、最も近い部署を見つけます。</div>
+      </header>
+      <div class="s4-body">
+        <div class="s4-card">
+          <div class="s4-card-head">
+            <h3>受検者 vs <strong>地域福祉課</strong>（理想パターン）</h3>
+            <div class="legend">
+              <span><span class="swatch"></span>受検者</span>
+              <span><span class="swatch dept"></span>部署理想</span>
+            </div>
+          </div>
+          <div class="s4-bars" id="s4-bars">
+            <div class="s4-bar A" data-axis="A">
+              <span class="pole lo">制度・仕組み</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-A"></span><span class="fill-user" data-bar="user-A"></span></span>
+              <span class="pole hi">市民対話</span>
+              <span class="delta" data-delta="A">Δ 1.4</span>
+            </div>
+            <div class="s4-bar B" data-axis="B">
+              <span class="pole lo">政策立案</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-B"></span><span class="fill-user" data-bar="user-B"></span></span>
+              <span class="pole hi">現場対応</span>
+              <span class="delta" data-delta="B">Δ 1.5</span>
+            </div>
+            <div class="s4-bar C" data-axis="C">
+              <span class="pole lo">ルール管理</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-C"></span><span class="fill-user" data-bar="user-C"></span></span>
+              <span class="pole hi">市民支援</span>
+              <span class="delta" data-delta="C">Δ 0.8</span>
+            </div>
+            <div class="s4-bar D" data-axis="D">
+              <span class="pole lo">革新推進</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-D"></span><span class="fill-user" data-bar="user-D"></span></span>
+              <span class="pole hi">安定運営</span>
+              <span class="delta" data-delta="D">Δ 0.3</span>
+            </div>
+            <div class="s4-bar E" data-axis="E">
+              <span class="pole lo">専門追求</span>
+              <span class="track"><span class="fill-dept" data-bar="dept-E"></span><span class="fill-user" data-bar="user-E"></span></span>
+              <span class="pole hi">幅広対応</span>
+              <span class="delta" data-delta="E">Δ 0.1</span>
+            </div>
+          </div>
+        </div>
+        <div class="s4-match">
+          <span class="label">適合度</span>
+          <div class="meter-wrap">
+            <div class="meter"><span class="meter-fill" id="s4-meter"></span></div>
+            <div class="ticks"><span>0%</span><span>50%</span><span>100%</span></div>
+          </div>
+          <span class="pct" id="s4-pct">73%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Result components -->
+    <section class="slide has-pipeline" data-slide="5" data-section="結果" data-stage="4">
+      <header class="sec-header">
+        <h2 class="sec-title">結果に含まれる3つの要素</h2>
+        <div class="sec-stripe"></div>
+        <div class="sec-sub">受検者は、自身のアーキタイプ・適合部署のランキング・5軸プロファイルを得る。</div>
+      </header>
+      <div class="s5-body">
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-label">アーキタイプ</div>
+            <div class="s5-card-meta">
+              <span class="s5-card-num">32種類</span>
+              <span class="s5-card-note">／ 5軸の組み合わせ</span>
+            </div>
+          </div>
+          <p class="s5-card-para">
+            回答結果から、受検者は<strong>1つのアーキタイプ</strong>に分類される。
+            5軸それぞれで2極のうち1つが選ばれ、5文字コードでタイプが決まる。
+          </p>
+          <div class="s5-card-example">
+            <div class="s5-card-example-eyebrow">例</div>
+            <div class="s5-ex-arch-chips">
+              <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
+            </div>
+            <h4 class="s5-ex-arch-name">街のよろず屋<small>型</small></h4>
+            <div class="s5-ex-arch-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。</div>
+          </div>
+        </div>
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-label">部署ランキング</div>
+            <div class="s5-card-meta">
+              <span class="s5-card-num">103部署</span>
+              <span class="s5-card-note">／ 適合度順</span>
+            </div>
+          </div>
+          <p class="s5-card-para">
+            横須賀市役所の<strong>全103部署</strong>が適合度順にランクづけされる。
+            上位だけでなく下位も確認でき、「なぜ向かないのか」も含めて自己理解につながる。
+          </p>
+          <div class="s5-card-example">
+            <div class="s5-card-example-eyebrow">例：上位</div>
+            <div class="s5-ex-rank">
+              <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
+            </div>
+            <div class="s5-ex-rank-foot">
+              <span>上位 3 / 103 部署</span>
+              <span>下位は 18.4%（監査委員事務局）</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-label">プロファイル</div>
+            <div class="s5-card-meta">
+              <span class="s5-card-num">5軸</span>
+              <span class="s5-card-note">／ あなたの傾向</span>
+            </div>
+          </div>
+          <p class="s5-card-para">
+            <strong>5軸ごとに自分の傾向</strong>が可視化される。
+            どの軸が強いか・弱いかを一目で把握でき、軸ごとの伸びしろもわかる。
+          </p>
+          <div class="s5-card-example">
+            <div class="s5-card-example-eyebrow">例：人との関わり方</div>
+            <div class="s5-ex-bar">
+              <div class="s5-ex-bar-head">
+                <span class="s5-ex-bar-pct">65%</span>
+                <span class="s5-ex-bar-win">市民対話</span>
+              </div>
+              <div class="s5-ex-bar-row">
+                <span class="s5-ex-bar-end">機</span>
+                <div class="s5-ex-bar-track"><span class="s5-ex-bar-dot" style="left:65%"></span></div>
+                <span class="s5-ex-bar-end">人</span>
+              </div>
+            </div>
+            <div class="s5-ex-bar-foot">
+              制度・仕組みより市民との対話を重視する傾向。残り4軸も同様に表示される。
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Slide 6: Example result -->
+    <section class="slide has-pipeline" data-slide="6" data-section="例" data-stage="4">
+      <header class="sec-header">
+        <h2 class="sec-title">受検者の結果（例）</h2>
+        <div class="sec-stripe"></div>
+        <div class="sec-sub">DASCG 型の受検者が見る画面の構成。</div>
+      </header>
+      <div class="s6-body">
+        <div class="s6-archetype">
+          <div class="s6-archetype-eyebrow">あなたのタイプ</div>
+          <h3 class="s6-archetype-name">街のよろず屋<small>型</small></h3>
+          <div class="s6-archetype-code">DASCG</div>
+          <p class="s6-archetype-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在です。</p>
+          <div class="s6-archetype-profile">
+            <div class="ph">5軸プロファイル</div>
+            <div class="s6-trait A">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">65%</span>
+                <span class="s6-trait-win">市民対話</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">機</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:65%"></span></div>
+                <span class="s6-trait-end">人</span>
+              </div>
+            </div>
+            <div class="s6-trait B">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">75%</span>
+                <span class="s6-trait-win">現場対応</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">策</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:75%"></span></div>
+                <span class="s6-trait-end">動</span>
+              </div>
+            </div>
+            <div class="s6-trait C">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">80%</span>
+                <span class="s6-trait-win">市民支援</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">律</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:80%"></span></div>
+                <span class="s6-trait-end">援</span>
+              </div>
+            </div>
+            <div class="s6-trait D">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">70%</span>
+                <span class="s6-trait-win">安定運営</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">革</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:70%"></span></div>
+                <span class="s6-trait-end">守</span>
+              </div>
+            </div>
+            <div class="s6-trait E">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">85%</span>
+                <span class="s6-trait-win">幅広対応</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">専</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:85%"></span></div>
+                <span class="s6-trait-end">幅</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="s6-rank-card">
+          <h3>あなたに合う部署</h3>
+          <div class="sub">適合度ランキング（103部署中）</div>
+          <div class="s6-rank-list">
+            <div class="s6-rank-item top1">
+              <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">2</span><span class="name">健康総務課</span><span class="pct">87.5%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">3</span><span class="name">子育て支援課</span><span class="pct">84.3%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">4</span><span class="name">市民相談課</span><span class="pct">82.0%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">5</span><span class="name">障害福祉課</span><span class="pct">80.7%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">6</span><span class="name">高齢福祉課</span><span class="pct">79.2%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">7</span><span class="name">地域安全課</span><span class="pct">77.5%</span>
+            </div>
+          </div>
+          <div class="s6-rank-foot">⋯ 全103部署を確認可能 ⋯</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <span id="footer-section">部署タイプ診断：その仕組み</span>
+      <span id="footer-page">1 / 6</span>
+    </div>
+  </div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const pageEl = document.getElementById('footer-page');
+  const sectionEl = document.getElementById('footer-section');
+  const pipeline = document.getElementById('pipeline');
+  const pipelineSteps = pipeline.querySelectorAll('.pipeline-step');
+  let idx = 0;
+
+  // Slide 1 stage glow loop
+  let s1Timer = null;
+  function startS1Glow() {
+    const stages = document.querySelectorAll('.s1-stage');
+    if (!stages.length) return;
+    stopS1Glow();
+    let i = 0;
+    const tick = () => {
+      stages.forEach(s => s.classList.remove('glow'));
+      stages[i].classList.add('glow');
+      i = (i + 1) % stages.length;
+    };
+    // Wait for stagger entry to finish before starting glow loop
+    setTimeout(() => { tick(); s1Timer = setInterval(tick, 2200); }, 900);
+  }
+  function stopS1Glow() {
+    if (s1Timer) { clearInterval(s1Timer); s1Timer = null; }
+    document.querySelectorAll('.s1-stage').forEach(s => s.classList.remove('glow'));
+  }
+
+  function show(n) {
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((el, i) => el.classList.toggle('active', i === idx));
+    pageEl.textContent = `${idx + 1} / ${total}`;
+
+    const slide = slides[idx];
+    const section = slide.dataset.section;
+    sectionEl.textContent = section
+      ? `部署タイプ診断：その仕組み　${section}`
+      : '部署タイプ診断：その仕組み';
+
+    const stage = parseInt(slide.dataset.stage, 10);
+    if (stage > 0 && stage <= 4) {
+      pipeline.classList.add('show');
+      pipelineSteps.forEach((step, i) => {
+        const stepIdx = i + 1;
+        step.classList.toggle('active', stepIdx === stage);
+        step.classList.toggle('done', stepIdx < stage);
+      });
+    } else {
+      pipeline.classList.remove('show');
+    }
+
+    if (idx === 0) startS1Glow();
+    else stopS1Glow();
+  }
+
+  pipelineSteps.forEach(step => {
+    step.addEventListener('click', () => {
+      const target = parseInt(step.dataset.go, 10);
+      show(target - 1);
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(idx + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); }
+  });
+
+  // ============ Slide 2 interactivity ============
+  const s2Examples = {
+    A: { pill: 'A', q: '高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。' },
+    B: { pill: 'B', q: '新しい補助金制度を設計するため、複数の関連部署と調整しながら、政策骨子をまとめる。' },
+    C: { pill: 'C', q: '建築確認申請の書類を点検し、法令に沿っているか1件ずつ判断していく。' },
+    D: { pill: 'D', q: 'これまでの紙ベースの業務フローを見直し、デジタル化を提案・推進する。' },
+    E: { pill: 'E', q: '都市計画の専門知識を深めながら、長期的な街づくりの方針を組み立てる。' }
+  };
+  const s2Axes = document.querySelectorAll('.s2-axis-row');
+  const s2ExPill = document.getElementById('s2-ex-pill');
+  const s2ExQ = document.getElementById('s2-ex-q');
+  s2Axes.forEach(row => {
+    row.addEventListener('click', () => {
+      s2Axes.forEach(r => r.classList.remove('active'));
+      row.classList.add('active');
+      const axis = row.dataset.axis;
+      const ex = s2Examples[axis];
+      s2ExPill.className = 's2-example-pill ' + axis;
+      s2ExPill.textContent = ex.pill;
+      s2ExQ.style.opacity = '0';
+      setTimeout(() => {
+        s2ExQ.textContent = ex.q;
+        s2ExQ.style.opacity = '1';
+      }, 150);
+    });
+  });
+
+  // ============ Slide 3 interactivity ============
+  const s3Questions = [
+    {
+      q: '高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。',
+      chosen: 4
+    },
+    {
+      q: '地域のサークル活動の場で、参加者の声を直接聞きながら新しい企画を一緒に考える。',
+      chosen: 3
+    },
+    {
+      q: '部署の業務フローを設計し、誰がいつ何をするかを文書化して整える。',
+      chosen: 1
+    },
+    {
+      q: '財政データを分析し、長期的な収支のトレンドからリスクを洗い出す。',
+      chosen: 2
+    }
+  ];
+  const s3Options = ['自分には向いていないと思う', 'あまり気が乗らないが、こなせる', 'どちらとも言えない', 'やりがいを感じながら取り組める', 'まさに自分が輝ける場面'];
+
+  const s3Qs = document.querySelectorAll('.s3-q');
+  const s3RightQ = document.getElementById('s3-right-q');
+  const s3RightOptions = document.getElementById('s3-right-options');
+  const s3RightPill = document.querySelector('.s3-right-pill');
+
+  // Render dots for each question
+  s3Qs.forEach(q => {
+    const posEl = q.querySelector('.s3-pos');
+    if (!posEl) return;
+    const pos = parseInt(posEl.dataset.pos, 10);
+    posEl.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot' + (i === pos ? ' fill' : '');
+      posEl.appendChild(dot);
+    }
+  });
+
+  function renderS3Right(qIdx) {
+    const data = s3Questions[qIdx];
+    s3RightPill.textContent = 'A' + (qIdx + 1);
+    s3RightQ.textContent = data.q;
+    s3RightOptions.innerHTML = '';
+    s3Options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 's3-right-option' + (i === data.chosen ? ' chosen' : '');
+      div.innerHTML = `<span>${opt}</span><span class="check"></span>`;
+      s3RightOptions.appendChild(div);
+    });
+  }
+
+  s3Qs.forEach((q, i) => {
+    q.addEventListener('click', () => {
+      s3Qs.forEach(o => o.classList.remove('active'));
+      q.classList.add('active');
+      renderS3Right(i);
+    });
+  });
+  renderS3Right(0);
+
+  // Score needle: average position 0..4 → -2..+2 → 0%..100%
+  const s3Fill = document.getElementById('s3-fill');
+  const positions = [4, 3, 1, 2];
+  const avg = positions.reduce((a, b) => a + b, 0) / positions.length; // 2.5 → +0.5
+  const pct = (avg / 4) * 100; // 62.5%
+  // center = 50%, fill from 50% toward avg side
+  const center = 50;
+  if (pct >= center) {
+    s3Fill.style.left = center + '%';
+    s3Fill.style.width = (pct - center) + '%';
+  } else {
+    s3Fill.style.left = pct + '%';
+    s3Fill.style.width = (center - pct) + '%';
+  }
+
+  // ============ Slide 4 interactivity ============
+  const s4Vals = {
+    user: { A: 0.6, B: -1.0, C: 1.2, D: 0.2, E: 0.4 },
+    dept: { A: 2.0, B: 0.5, C: 2.0, D: 0.5, E: 0.5 }
+  };
+  const MAX = 2.0;
+  function setBar(side, axis, val) {
+    const fill = document.querySelector(`[data-bar="${side}-${axis}"]`);
+    if (!fill) return;
+    const pctVal = (Math.abs(val) / MAX) * 50;
+    if (val >= 0) {
+      fill.style.left = '50%';
+      fill.style.width = pctVal + '%';
+    } else {
+      fill.style.left = (50 - pctVal) + '%';
+      fill.style.width = pctVal + '%';
+    }
+  }
+  ['A','B','C','D','E'].forEach(axis => {
+    setBar('user', axis, s4Vals.user[axis]);
+    setBar('dept', axis, s4Vals.dept[axis]);
+  });
+
+  // Match meter
+  document.getElementById('s4-meter').style.width = '73%';
+
+  // ============ Init ============
+  show(0);
+
+  // Scale-to-fit
+  const stage = document.getElementById('stage');
+  function fit() {
+    const sx = window.innerWidth / 1920;
+    const sy = window.innerHeight / 1080;
+    const s = Math.min(sx, sy);
+    stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+  window.addEventListener('resize', fit);
+  fit();
+</script>
+</body>
+</html>
