@@ -1,79 +1,85 @@
+import { useState } from 'react';
 import { useStore } from '../state/hooks';
+import { HomepageCarousel, SLIDE_COUNT } from '../components/HomepageCarousel';
+import { Stepper } from '../components/Stepper';
 import { AXES } from '../data/axes';
 import { AX } from '../data/types';
 import s from './Welcome.module.css';
 
 export function Welcome() {
   const { dispatch } = useStore();
-
-  const pills = AX.map(ax => {
-    const a = AXES[ax];
-    return (
-      <span
-        key={ax}
-        className={s.apill}
-        style={{ background: a.tint, color: a.dark }}
-      >
-        {a.label}
-      </span>
-    );
-  });
+  const [idx, setIdx] = useState(0);
+  const onJump = (i: number) => setIdx(Math.max(0, Math.min(SLIDE_COUNT - 1, i)));
 
   return (
-    <>
-      <div className={s['w-header']}>
-        <div className={s['w-city']}>Yokosuka City Hall</div>
-        <h1 className={s['w-title']}>
-          横須賀市役所
-          <br />
-          部署タイプ診断
+    <main className={s.split}>
+      <aside className={s.hero}>
+        <div className={s.eyebrow}>YOKOSUKA CITY HALL</div>
+        <h1 className={s.title}>
+          横須賀市役所<br />部署タイプ診断
         </h1>
-        <p className={s['w-sub']}>
-          20の質問に答えるだけで、
-          <br />
-          あなたにぴったりの課が見つかります
-        </p>
-      </div>
-      <div className="card">
-        <div className={s['axis-pills']}>{pills}</div>
-        <p className={s['w-intro']}>
-          5つの視点からあなたの「働き方タイプ」を診断し、全102課の中から相性の高い部署をランキングでご紹介します。
-        </p>
-        <div className={s['w-steps']}>
-          <div className={s['w-step']}>
-            <span className={s['w-step-num']}>1</span>
-            <span>20の仕事場面に、あなたがどう感じるか回答</span>
-          </div>
-          <div className={s['w-step']}>
-            <span className={s['w-step-num']}>2</span>
-            <span>5つの軸であなたの「働き方タイプ」を診断</span>
-          </div>
-          <div className={s['w-step']}>
-            <span className={s['w-step-num']}>3</span>
-            <span>全102課との相性をランキングで発表！</span>
-          </div>
-        </div>
-        <div className={s['w-stats']}>
-          <div className={s.stat}>
-            <div className={s['stat-n']}>20</div>
-            <div className={s['stat-l']}>質問数</div>
-          </div>
-          <div className={s.stat}>
-            <div className={s['stat-n']}>5</div>
-            <div className={s['stat-l']}>診断軸</div>
-          </div>
-          <div className={s.stat}>
-            <div className={s['stat-n']}>102</div>
-            <div className={s['stat-l']}>対象の課</div>
-          </div>
-        </div>
+        <p className={s.lede}>3分で、あなたに合う課が見つかります。</p>
+
+        <ul className={s.axisChips} aria-label="診断軸">
+          {AX.map((ax) => (
+            <li className={s.axisChip} key={ax} data-testid={`hero-axis-chip-${ax}`}>
+              <span
+                className={s.axisLetter}
+                style={{ background: AXES[ax].tint, color: AXES[ax].dark }}
+                aria-hidden="true"
+              >
+                {ax}
+              </span>
+              <span className={s.axisLabel}>{AXES[ax].label}</span>
+            </li>
+          ))}
+        </ul>
+
         <button
-          className={s['btn-start']}
+          type="button"
+          className={s.cta}
           onClick={() => dispatch({ type: 'START' })}
         >
-          診断をはじめる →
+          診断をはじめる <span aria-hidden="true">→</span>
         </button>
+      </aside>
+
+      <div className={s.stepperSlot}>
+        <Stepper idx={idx} onJump={onJump} />
       </div>
-    </>
+      <section className={s.right}>
+        <div className={s.carouselWrap}>
+          <div className={s.explainerHead} data-testid="explainer-head">
+            <button
+              type="button"
+              className={s.navBtn}
+              data-testid="explainer-prev"
+              aria-label="前のステップ"
+              onClick={() => onJump(idx - 1)}
+              disabled={idx === 0}
+            >
+              ←
+            </button>
+            <span className={s.explainerLabel}>
+              <span className={s.explainerEyebrow}>仕組み · HOW IT WORKS</span>
+              <span className={s.explainerCount} data-testid="explainer-count">
+                {idx + 1} / {SLIDE_COUNT}
+              </span>
+            </span>
+            <button
+              type="button"
+              className={s.navBtn}
+              data-testid="explainer-next"
+              aria-label="次のステップ"
+              onClick={() => onJump(idx + 1)}
+              disabled={idx === SLIDE_COUNT - 1}
+            >
+              →
+            </button>
+          </div>
+          <HomepageCarousel idx={idx} onIdxChange={setIdx} />
+        </div>
+      </section>
+    </main>
   );
 }

@@ -10,6 +10,20 @@ body {
   padding: 0 var(--sp-lg) var(--sp-2xl);
 }
 
+/* Welcome screen escapes the centered/padded shell to render its own full-bleed split layout */
+body[data-screen="welcome"] {
+  align-items: stretch;
+  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+body[data-screen="welcome"] #root {
+  max-width: none;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .content-w {
   max-width: var(--content-max);
   margin-left: auto;

@@ -1,0 +1,126 @@
+.slide { display: flex; flex-direction: column; gap: var(--sp-lg); }
+.head { display: flex; flex-direction: column; gap: 8px; }
+.title { font-size: 32px; font-weight: var(--fw-bold); color: var(--hall-indigo); margin: 0; line-height: 1.2; }
+.stripe { height: 5px; width: 64px; background: var(--hall-indigo); }
+.sub { font-size: 15px; color: var(--text-sec); }
+
+.body {
+  display: grid; grid-template-columns: 1fr;
+  gap: var(--sp-md); align-items: stretch;
+}
+@media (min-width: 900px) {
+  .body { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.card {
+  background: var(--card); border-radius: var(--card-r);
+  box-shadow: var(--card-shadow); padding: var(--sp-lg);
+  display: flex; flex-direction: column; gap: var(--sp-md);
+}
+.cardHead {
+  display: flex; flex-direction: column; gap: 4px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+.cardLabel {
+  font-size: 18px; font-weight: var(--fw-black);
+  color: var(--hall-indigo); line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.cardMeta { display: flex; align-items: baseline; gap: 6px; }
+.cardNum {
+  font-size: 16px; font-weight: var(--fw-black);
+  color: var(--text-sec); letter-spacing: -0.01em;
+  line-height: 1; font-variant-numeric: tabular-nums;
+}
+.cardNote {
+  font-size: 11px; font-weight: var(--fw-bold);
+  color: var(--sub); letter-spacing: 0.04em;
+}
+.cardPara { font-size: 13px; line-height: 1.85; color: var(--text-sec); margin: 0; }
+.cardPara strong { font-weight: var(--fw-bold); color: var(--text); }
+
+.cardEx {
+  margin-top: auto;
+  padding: var(--sp-md);
+  background: var(--bg);
+  border-radius: 12px;
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative;
+}
+.exEyebrow {
+  display: inline-block; align-self: flex-start;
+  font-size: 9px; font-weight: var(--fw-black);
+  letter-spacing: 0.18em; color: white;
+  background: var(--hall-indigo);
+  text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+}
+
+/* archetype chips */
+.archChips { display: flex; gap: 4px; }
+.archChips span {
+  width: 26px; height: 26px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: var(--fw-black);
+  color: white; font-family: ui-monospace, Menlo, monospace;
+}
+.archChips span:nth-child(1) { background: var(--A); }
+.archChips span:nth-child(2) { background: var(--B); }
+.archChips span:nth-child(3) { background: var(--C); }
+.archChips span:nth-child(4) { background: var(--D); }
+.archChips span:nth-child(5) { background: var(--E); }
+.archName {
+  font-size: 22px; font-weight: var(--fw-black);
+  color: var(--hall-indigo); line-height: 1.15; margin: 0;
+}
+.archName small {
+  font-size: 13px; font-weight: var(--fw-bold);
+  color: var(--text-sec); margin-left: 4px;
+}
+.archDesc { font-size: 12px; line-height: 1.7; color: var(--text-sec); margin: 0; }
+
+/* ranking example */
+.exRank {
+  display: grid;
+  grid-template-columns: 28px 1fr 60px;
+  gap: 10px; align-items: center;
+  padding: 12px 14px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--C-mid) 22%, transparent), white);
+  border: 1.5px solid var(--C-mid);
+  border-radius: 10px;
+}
+.rankPos {
+  font-weight: var(--fw-black); color: var(--C);
+  font-size: 18px; text-align: center;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.rankName { font-weight: var(--fw-bold); color: var(--text); font-size: 14px; }
+.rankPct {
+  font-weight: var(--fw-black); color: var(--C);
+  font-variant-numeric: tabular-nums; text-align: right;
+  font-size: 16px; letter-spacing: -0.01em;
+}
+.exRankFoot {
+  display: flex; flex-direction: column; gap: 2px;
+  font-size: 11px; line-height: 1.5; color: var(--text-sec);
+}
+.exRankFoot span:first-child { font-weight: var(--fw-bold); color: var(--text); }
+
+/* profile bar example */
+.exBar { display: flex; flex-direction: column; gap: 6px; }
+.exBarHead { display: flex; align-items: baseline; gap: 8px; }
+.exBarPct { font-size: 16px; font-weight: var(--fw-black); color: var(--A); font-variant-numeric: tabular-nums; }
+.exBarWin { font-size: 12px; font-weight: var(--fw-bold); color: var(--A); }
+.exBarRow { display: flex; align-items: center; gap: 8px; }
+.exBarEnd { width: 22px; flex-shrink: 0; font-size: 11px; color: var(--sub); text-align: center; font-weight: var(--fw-bold); }
+.exBarTrack { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--A-mid); }
+.exBarDot {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px; height: 14px;
+  border-radius: 50%; background: white;
+  border: 3px solid var(--A);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.exBarFoot { font-size: 11px; line-height: 1.6; color: var(--text-sec); }

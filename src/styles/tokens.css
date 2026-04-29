@@ -55,6 +55,11 @@
   --card-r:      16px;
   --card-shadow: 0 2px 20px rgba(0,0,0,0.08);
 
+  /* ── Welcome split layout ── */
+  --hero-w:      420px;
+  --col-pad:     var(--sp-2xl);
+  --hero-accent: #F5EBD8;
+
   /* ── Data vis ── */
   --bar-h:     12px;
   --mkr-size:  16px;

@@ -5,6 +5,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { state } = useStore();
 
   useEffect(() => {
+    document.body.dataset.screen = state.screen;
+  }, [state.screen]);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
     const heading = document.querySelector<HTMLHeadingElement>('h1');
     if (heading) {

@@ -1,0 +1,127 @@
+.slide { display: flex; flex-direction: column; gap: var(--sp-lg); }
+.head { display: flex; flex-direction: column; gap: 8px; }
+.title { font-size: 32px; font-weight: var(--fw-bold); color: var(--hall-indigo); margin: 0; line-height: 1.2; }
+.stripe { height: 5px; width: 64px; background: var(--hall-indigo); }
+.sub { font-size: 15px; color: var(--text-sec); }
+
+.body {
+  display: grid; grid-template-columns: 1fr;
+  gap: var(--sp-md);
+}
+@media (min-width: 1000px) {
+  .body { grid-template-columns: 1.15fr 0.85fr; }
+}
+
+.archetype {
+  background: var(--card); border-radius: var(--card-r);
+  box-shadow: var(--card-shadow);
+  padding: var(--sp-lg);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.archEyebrow {
+  font-size: 10px; font-weight: var(--fw-bold);
+  letter-spacing: 0.18em; color: var(--sub);
+  text-transform: uppercase;
+}
+.archName {
+  font-size: 28px; font-weight: var(--fw-black);
+  color: var(--hall-indigo); line-height: 1.15; margin: 0;
+}
+.archName small {
+  font-size: 14px; font-weight: var(--fw-bold);
+  color: var(--text-sec); margin-left: 5px;
+}
+.archCode {
+  font-size: 11px; font-weight: var(--fw-bold);
+  color: var(--sub); letter-spacing: 0.24em;
+  font-family: ui-monospace, Menlo, monospace;
+  margin-top: -6px;
+}
+.archDesc { font-size: 13px; line-height: 1.7; color: var(--text-sec); margin: 0; }
+
+.profile {
+  display: flex; flex-direction: column; gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+.ph {
+  font-size: 10px; font-weight: var(--fw-bold);
+  letter-spacing: 0.14em; color: var(--sub);
+  text-transform: uppercase; margin-bottom: 2px;
+}
+.trait { display: flex; flex-direction: column; gap: 3px; }
+.traitHead { display: flex; align-items: baseline; gap: 8px; }
+.traitPct { font-size: 13px; font-weight: var(--fw-black); font-variant-numeric: tabular-nums; }
+.traitWin { font-size: 11px; font-weight: var(--fw-bold); }
+.traitRow { display: flex; align-items: center; gap: 8px; }
+.traitEnd {
+  width: 22px; flex-shrink: 0;
+  font-size: 11px; color: var(--sub);
+  text-align: center; font-weight: var(--fw-bold);
+}
+.traitTrack { position: relative; flex: 1; height: 8px; border-radius: 999px; }
+.traitDot {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px; height: 12px;
+  border-radius: 50%; background: white;
+  border: 2.5px solid;
+  box-shadow: 0 1px 3px rgba(0,0,0,.18);
+  z-index: 2;
+}
+.traitA .traitPct, .traitA .traitWin { color: var(--A); }
+.traitA .traitTrack { background: var(--A-mid); }
+.traitA .traitDot { border-color: var(--A); }
+.traitB .traitPct, .traitB .traitWin { color: var(--B); }
+.traitB .traitTrack { background: var(--B-mid); }
+.traitB .traitDot { border-color: var(--B); }
+.traitC .traitPct, .traitC .traitWin { color: var(--C); }
+.traitC .traitTrack { background: var(--C-mid); }
+.traitC .traitDot { border-color: var(--C); }
+.traitD .traitPct, .traitD .traitWin { color: var(--D); }
+.traitD .traitTrack { background: var(--D-mid); }
+.traitD .traitDot { border-color: var(--D); }
+.traitE .traitPct, .traitE .traitWin { color: var(--E); }
+.traitE .traitTrack { background: var(--E-mid); }
+.traitE .traitDot { border-color: var(--E); }
+
+.rankCard {
+  background: var(--card); border-radius: var(--card-r);
+  box-shadow: var(--card-shadow);
+  padding: var(--sp-lg);
+  display: flex; flex-direction: column;
+}
+.rankTitle { margin: 0 0 4px; font-size: 16px; color: var(--hall-indigo); font-weight: var(--fw-bold); }
+.rankSub {
+  font-size: 11px; color: var(--sub);
+  margin-bottom: 14px; letter-spacing: 0.04em;
+}
+.rankList { display: flex; flex-direction: column; gap: 6px; }
+.rankItem {
+  display: grid;
+  grid-template-columns: 26px 1fr 64px;
+  gap: 10px; align-items: center;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.rankItemTop {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--C-mid) 18%, transparent), var(--bg));
+  border: 1px solid var(--C-mid);
+}
+.rankPos {
+  font-weight: var(--fw-black); color: var(--text-sec);
+  font-size: 14px; font-variant-numeric: tabular-nums;
+}
+.rankItemTop .rankPos { color: var(--C); }
+.rankName { font-weight: var(--fw-bold); color: var(--text); font-size: 13px; }
+.rankPct {
+  font-weight: var(--fw-black); color: var(--hall-indigo);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px; text-align: right;
+}
+.rankFoot {
+  margin-top: 14px; padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+  text-align: center; font-size: 11px; color: var(--sub);
+}
