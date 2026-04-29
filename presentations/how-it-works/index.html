@@ -237,7 +237,7 @@
   .s4-bar { display: flex; align-items: center; gap: 12px; }
   .s4-bar .ax { width: 28px; font-weight: 700; font-family: ui-monospace, monospace; }
   .s4-bar .track {
-    flex: 1; height: 12px; background: var(--border-light, #F0F2F7);
+    flex: 1; height: 12px; background: var(--border-light);
     position: relative; border-radius: 6px;
   }
   .s4-bar .track::before {
@@ -293,6 +293,7 @@
     margin-top: 32px;
     padding: 16px 20px;
     border-left: 3px solid var(--D-mid);
+    border-radius: 0 8px 8px 0;
     background: var(--D-tint);
     font-size: 16px; line-height: 1.7; color: var(--text-sec);
   }
@@ -345,7 +346,7 @@
     cursor: pointer;
     box-shadow: var(--card-shadow);
   }
-  .s6-cta button:hover { background: var(--hall-indigo-hover, #2A3558); }
+  .s6-cta button:hover { background: var(--hall-indigo-hover); }
 </style>
 </head>
 <body>
@@ -487,7 +488,7 @@
       </header>
       <div class="s5-body">
         <div class="s5-shot">
-          <img src="screenshots/results.png" alt="Results screen" />
+          <img src="screenshots/results.png" alt="アプリの結果画面" />
         </div>
         <div class="s5-explain">
           <h3>受検者が見る結果</h3>
@@ -530,7 +531,7 @@
         <strong>注記：</strong>本ツールは <strong>配属判断ツールではなく</strong>、職員自身が業務適性を考えるための <strong>自己理解の補助</strong> です。配属の最終判断は人事部門が担います。
       </div>
       <div class="s6-cta">
-        <button type="button">▶ ライブデモへ</button>
+        <button type="button" tabindex="-1">▶ ライブデモへ</button>
       </div>
     </section>
     <div class="footer">
