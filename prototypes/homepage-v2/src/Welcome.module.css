@@ -47,32 +47,35 @@
   max-width: 32ch;
 }
 
-.stats {
+.axisChips {
   list-style: none; padding: 0;
-  margin: var(--sp-xl) 0 0;
-  display: flex; gap: var(--sp-xl);
+  margin: var(--sp-lg) 0 0;
+  display: flex; flex-direction: column;
+  gap: 8px;
 }
-.stats li {
-  display: flex; flex-direction: column; gap: 4px;
+.axisChip {
+  display: flex; align-items: center;
+  gap: 12px;
 }
-.statN {
-  font-size: 56px;
-  font-weight: var(--fw-black);
-  color: var(--hero-accent);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-.statL {
-  font-size: 11px;
+.axisLetter {
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-size: 13px;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.14em;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+.axisLabel {
+  font-size: 14px;
+  font-weight: var(--fw-medium);
   color: white;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .cta {
   align-self: flex-start;
-  margin-top: var(--sp-lg);
+  margin-top: var(--sp-xl);
   display: inline-flex; align-items: center; gap: 10px;
   padding: 16px 28px;
   background: white;
@@ -94,18 +97,6 @@
 @media (prefers-reduced-motion: reduce) {
   .cta { transition: none; }
   .cta:hover { transform: none; }
-}
-
-.stripes {
-  position: absolute;
-  left: var(--col-pad);
-  bottom: var(--col-pad);
-  display: flex; gap: 4px;
-}
-.stripe {
-  width: 4px;
-  height: 60px;
-  border-radius: 1px;
 }
 
 .right {

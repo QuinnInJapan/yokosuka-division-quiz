@@ -2,11 +2,8 @@ import { useState } from 'react';
 import { HomepageCarousel, SLIDE_COUNT } from './HomepageCarousel';
 import { Stepper } from './Stepper';
 import s from './Welcome.module.css';
-
-const AXIS_COLORS = [
-  'var(--A)', 'var(--B)', 'var(--C)', 'var(--D)', 'var(--E)',
-] as const;
-const AXIS_KEYS = ['A', 'B', 'C', 'D', 'E'] as const;
+import { AXES } from '../../../src/data/axes';
+import { AX } from '../../../src/data/types';
 
 export function Welcome() {
   const [idx, setIdx] = useState(0);
@@ -21,41 +18,30 @@ export function Welcome() {
         </h1>
         <p className={s.lede}>3分で、あなたに合う課が見つかります。</p>
 
-        <ul className={s.stats}>
-          <li>
-            <span data-testid="hero-stat-20" className={s.statN}>20</span>
-            <span className={s.statL}>問</span>
-          </li>
-          <li>
-            <span data-testid="hero-stat-5" className={s.statN}>5</span>
-            <span className={s.statL}>軸</span>
-          </li>
-          <li>
-            <span data-testid="hero-stat-102" className={s.statN}>102</span>
-            <span className={s.statL}>課</span>
-          </li>
+        <ul className={s.axisChips} aria-label="診断軸">
+          {AX.map((ax) => (
+            <li className={s.axisChip} key={ax} data-testid={`hero-axis-chip-${ax}`}>
+              <span
+                className={s.axisLetter}
+                style={{ background: AXES[ax].tint, color: AXES[ax].dark }}
+                aria-hidden="true"
+              >
+                {ax}
+              </span>
+              <span className={s.axisLabel}>{AXES[ax].label}</span>
+            </li>
+          ))}
         </ul>
 
         <button type="button" className={s.cta}>
           診断をはじめる <span aria-hidden="true">→</span>
         </button>
-
-        <div className={s.stripes} aria-hidden="true">
-          {AXIS_KEYS.map((k, i) => (
-            <span
-              key={k}
-              data-testid={`hero-axis-stripe-${k}`}
-              style={{ background: AXIS_COLORS[i] }}
-              className={s.stripe}
-            />
-          ))}
-        </div>
       </aside>
 
       <section className={s.right}>
         <div className={s.carouselWrap}>
-          <HomepageCarousel idx={idx} onIdxChange={setIdx} />
           <Stepper idx={idx} onJump={onJump} />
+          <HomepageCarousel idx={idx} onIdxChange={setIdx} />
         </div>
       </section>
     </main>
