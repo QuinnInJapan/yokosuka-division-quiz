@@ -1,126 +1,348 @@
-.slide { display: flex; flex-direction: column; gap: var(--sp-lg); }
-.head { display: flex; flex-direction: column; gap: 8px; }
-.title { font-size: 32px; font-weight: var(--fw-bold); color: var(--hall-indigo); margin: 0; line-height: 1.2; }
-.stripe { height: 5px; width: 64px; background: var(--hall-indigo); }
-.sub { font-size: 15px; color: var(--text-sec); }
+/*
+  Slide 4 (Result)
+  Focal point: ONE annotated preview of the result page, showing the three
+  components in their on-page positions (archetype → profile → ranking).
+  Supporting: tiny indigo annotation numerals (01/02/03) outside the gutter.
+  Eliminated: three equal-weight cards (the previous version's box jungle).
+  Color discipline: axis colors appear ONLY on the 5 profile rows. Indigo
+  for structural emphasis (annotations, archetype chips). The rest is
+  grayscale + hairline borders, matching Slides 1-3 and the outer chrome.
+*/
 
-.body {
-  display: grid; grid-template-columns: 1fr;
-  gap: var(--sp-md); align-items: stretch;
-}
-@media (min-width: 900px) {
-  .body { grid-template-columns: 1fr 1fr 1fr; }
+.slide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
 }
 
+/* ── Title block (matches Slides 1-3) ────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+}
+.title {
+  font-size: 32px;
+  font-weight: var(--fw-black);
+  color: var(--hall-indigo);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.stripe {
+  height: 4px;
+  width: 56px;
+  background: var(--hall-indigo);
+}
+.sub {
+  font-size: var(--fs-base);
+  color: var(--text-sec);
+  margin: 0;
+  line-height: var(--lh-tight);
+}
+
+/* ── Single focal card ───────────────────────────────────────── */
 .card {
-  background: var(--card); border-radius: var(--card-r);
-  box-shadow: var(--card-shadow); padding: var(--sp-lg);
-  display: flex; flex-direction: column; gap: var(--sp-md);
+  margin: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--card-r);
+  padding: var(--sp-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
 }
-.cardHead {
-  display: flex; flex-direction: column; gap: 4px;
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-md);
+}
+.captionLabel {
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+.captionMeta {
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  color: var(--text-sec);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Preview frame: a window onto the result page ────────────── */
+.preview {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+}
+
+.region {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--sp-md);
+  padding: var(--sp-md) var(--sp-lg);
   border-bottom: 1px solid var(--border);
-  padding-bottom: 14px;
 }
-.cardLabel {
-  font-size: 18px; font-weight: var(--fw-black);
-  color: var(--hall-indigo); line-height: 1.1;
+.region:last-child {
+  border-bottom: none;
+}
+
+/* tiny indigo annotation numeral in the gutter — no chrome, just type */
+.annot {
+  font-size: 11px;
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--hall-indigo);
+  line-height: 1;
+  padding-top: 4px;
+}
+
+.regionBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  min-width: 0;
+}
+
+.regionLabel {
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  color: var(--text);
+  line-height: var(--lh-tight);
+}
+
+/* ── Region 01: archetype ────────────────────────────────────── */
+.archRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-md);
+  flex-wrap: wrap;
+}
+.archCode {
+  display: inline-flex;
+  gap: 4px;
+}
+.archChip {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  font-weight: var(--fw-black);
+  color: var(--card);
+  background: var(--hall-indigo);
+  letter-spacing: 0;
+}
+.archMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.archName {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-bold);
+  color: var(--text);
+  letter-spacing: 0.005em;
+  line-height: var(--lh-tight);
+}
+.archHint {
+  font-size: 12px;
+  color: var(--sub);
+  letter-spacing: 0.02em;
+  line-height: var(--lh-tight);
+}
+
+/* ── Region 02: 5-axis profile ───────────────────────────────── */
+.axisList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.axisRow {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 84px) minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+.axisChip {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+.axisName {
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  color: var(--text-sec);
+  letter-spacing: 0.01em;
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.axisLine {
+  position: relative;
+  height: 16px;
+  display: block;
+}
+.axisRail {
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: var(--border);
+  transform: translateY(-50%);
+}
+.axisMid {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--border);
+}
+.axisMark {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--card);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px var(--border);
+  transition: left 360ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .axisMark { transition: none; }
+}
+
+/* ── Region 03: ranked divisions ─────────────────────────────── */
+.rankList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.rankRow {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) minmax(0, 1.4fr) 44px;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: 5px 0;
+}
+.rankNum {
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--sub);
+  text-align: center;
+  line-height: 1;
+}
+.rankName {
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rankBarWrap {
+  height: 5px;
+  background: var(--border-light);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.rankBar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: var(--text-sec);
+  border-radius: 3px;
+  transition: width 360ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rankBar { transition: none; }
+}
+.rankPct {
+  font-size: 13px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  text-align: right;
   letter-spacing: -0.01em;
 }
-.cardMeta { display: flex; align-items: baseline; gap: 6px; }
-.cardNum {
-  font-size: 16px; font-weight: var(--fw-black);
-  color: var(--text-sec); letter-spacing: -0.01em;
-  line-height: 1; font-variant-numeric: tabular-nums;
-}
-.cardNote {
-  font-size: 11px; font-weight: var(--fw-bold);
-  color: var(--sub); letter-spacing: 0.04em;
-}
-.cardPara { font-size: 13px; line-height: 1.85; color: var(--text-sec); margin: 0; }
-.cardPara strong { font-weight: var(--fw-bold); color: var(--text); }
-
-.cardEx {
-  margin-top: auto;
-  padding: var(--sp-md);
-  background: var(--bg);
-  border-radius: 12px;
-  display: flex; flex-direction: column; gap: 12px;
-  position: relative;
-}
-.exEyebrow {
-  display: inline-block; align-self: flex-start;
-  font-size: 9px; font-weight: var(--fw-black);
-  letter-spacing: 0.18em; color: white;
-  background: var(--hall-indigo);
-  text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px;
+.rankMore {
+  font-size: 11px;
+  color: var(--sub);
+  letter-spacing: 0.04em;
+  padding: 6px 0 0 28px;
+  line-height: 1;
 }
 
-/* archetype chips */
-.archChips { display: flex; gap: 4px; }
-.archChips span {
-  width: 26px; height: 26px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: var(--fw-black);
-  color: white; font-family: ui-monospace, Menlo, monospace;
+/* ── Footer caption ──────────────────────────────────────────── */
+.foot {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sub);
+  text-align: center;
+  letter-spacing: 0.04em;
+  line-height: var(--lh-tight);
 }
-.archChips span:nth-child(1) { background: var(--A); }
-.archChips span:nth-child(2) { background: var(--B); }
-.archChips span:nth-child(3) { background: var(--C); }
-.archChips span:nth-child(4) { background: var(--D); }
-.archChips span:nth-child(5) { background: var(--E); }
-.archName {
-  font-size: 22px; font-weight: var(--fw-black);
-  color: var(--hall-indigo); line-height: 1.15; margin: 0;
-}
-.archName small {
-  font-size: 13px; font-weight: var(--fw-bold);
-  color: var(--text-sec); margin-left: 4px;
-}
-.archDesc { font-size: 12px; line-height: 1.7; color: var(--text-sec); margin: 0; }
 
-/* ranking example */
-.exRank {
-  display: grid;
-  grid-template-columns: 28px 1fr 60px;
-  gap: 10px; align-items: center;
-  padding: 12px 14px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--C-mid) 22%, transparent), white);
-  border: 1.5px solid var(--C-mid);
-  border-radius: 10px;
+/* ── Mobile collapse (<900px) ────────────────────────────────── */
+@media (max-width: 900px) {
+  .card {
+    padding: var(--sp-lg);
+    gap: var(--sp-md);
+  }
+  .region {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: var(--sp-sm);
+    padding: var(--sp-md);
+  }
+  .axisRow {
+    grid-template-columns: 22px minmax(0, 1fr);
+    grid-template-areas:
+      'chip name'
+      '.    line';
+    gap: 4px 8px;
+  }
+  .axisChip { grid-area: chip; }
+  .axisName { grid-area: name; }
+  .axisLine { grid-area: line; }
+  .rankRow {
+    grid-template-columns: 20px minmax(0, 1fr) 44px;
+    grid-template-areas:
+      'num name pct'
+      '.   bar  bar';
+    gap: 4px var(--sp-sm);
+  }
+  .rankNum     { grid-area: num; }
+  .rankName    { grid-area: name; font-size: var(--fs-sm); }
+  .rankBarWrap { grid-area: bar; }
+  .rankPct     { grid-area: pct; font-size: var(--fs-sm); }
+  .rankMore    { padding-left: 0; text-align: center; }
 }
-.rankPos {
-  font-weight: var(--fw-black); color: var(--C);
-  font-size: 18px; text-align: center;
-  font-variant-numeric: tabular-nums; line-height: 1;
-}
-.rankName { font-weight: var(--fw-bold); color: var(--text); font-size: 14px; }
-.rankPct {
-  font-weight: var(--fw-black); color: var(--C);
-  font-variant-numeric: tabular-nums; text-align: right;
-  font-size: 16px; letter-spacing: -0.01em;
-}
-.exRankFoot {
-  display: flex; flex-direction: column; gap: 2px;
-  font-size: 11px; line-height: 1.5; color: var(--text-sec);
-}
-.exRankFoot span:first-child { font-weight: var(--fw-bold); color: var(--text); }
-
-/* profile bar example */
-.exBar { display: flex; flex-direction: column; gap: 6px; }
-.exBarHead { display: flex; align-items: baseline; gap: 8px; }
-.exBarPct { font-size: 16px; font-weight: var(--fw-black); color: var(--A); font-variant-numeric: tabular-nums; }
-.exBarWin { font-size: 12px; font-weight: var(--fw-bold); color: var(--A); }
-.exBarRow { display: flex; align-items: center; gap: 8px; }
-.exBarEnd { width: 22px; flex-shrink: 0; font-size: 11px; color: var(--sub); text-align: center; font-weight: var(--fw-bold); }
-.exBarTrack { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--A-mid); }
-.exBarDot {
-  position: absolute; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 14px; height: 14px;
-  border-radius: 50%; background: white;
-  border: 3px solid var(--A);
-  box-shadow: 0 1px 3px rgba(0,0,0,.2);
-}
-.exBarFoot { font-size: 11px; line-height: 1.6; color: var(--text-sec); }

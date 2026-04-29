@@ -1,114 +1,321 @@
-.slide { display: flex; flex-direction: column; gap: var(--sp-lg); }
-.head { display: flex; flex-direction: column; gap: 8px; }
-.title { font-size: 32px; font-weight: var(--fw-bold); color: var(--hall-indigo); margin: 0; line-height: 1.2; }
-.stripe { height: 5px; width: 64px; background: var(--A); }
-.sub { font-size: 15px; color: var(--text-sec); }
+/*
+  Slide 2 (Scoring)
+  Focal point: ONE axis-score transformation, rendered at data-number scale.
+  Supporting: a tight 4-row table that shows the four contributing answers
+  and their signed deltas (the math being averaged).
+  Eliminated: the right-hand "selected question full text" panel — Slide 1
+  already shows what one question looks like in detail.
+  Color discipline: axis-A color appears ONLY on A-tagged content (the chip,
+  the score sign, and the marker on the A axis line). The rest is grayscale +
+  indigo for structural emphasis.
+*/
 
-.body {
-  display: grid; grid-template-columns: 1fr;
-  gap: var(--sp-lg); align-items: stretch;
-}
-@media (min-width: 1100px) {
-  .body { grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr); align-items: center; }
-}
-
-.left { display: flex; flex-direction: column; gap: 10px; }
-.q {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--card); padding: 12px 16px;
-  border-radius: 12px; box-shadow: var(--card-shadow);
-  border: 2px solid transparent;
-  cursor: pointer; font-family: inherit; text-align: left;
-  transition: border-color 200ms ease, transform 200ms ease;
-}
-.q:hover { transform: translateX(3px); }
-.qActive { border-color: var(--A); }
-.qLabel {
-  font-weight: var(--fw-bold); min-width: 32px; color: var(--A);
-  font-size: 12px; letter-spacing: 0.08em;
-}
-.qText { flex: 1; font-size: 14px; color: var(--text); }
-.qPos { display: flex; align-items: center; gap: 5px; }
-.dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--border);
-  transition: background 200ms ease, transform 200ms ease;
-}
-.dotFill { background: var(--A-mid); transform: scale(1.3); }
-
-.arrow {
-  text-align: center; font-size: 14px; font-weight: var(--fw-bold);
-  color: var(--sub); margin: 6px 0; letter-spacing: 0.08em;
-}
-.result {
-  background: var(--A); color: white;
-  border-radius: 12px; padding: 16px 20px;
-  display: flex; align-items: center; gap: 14px;
-  box-shadow: 0 4px 18px color-mix(in srgb, var(--A) 22%, transparent);
-}
-.resPill {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 5px 12px; border-radius: 999px;
-  font-size: 12px; font-weight: var(--fw-bold);
-  letter-spacing: 0.1em;
-}
-.needle { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-.needleEnd { font-size: 12px; opacity: 0.85; letter-spacing: 0.05em; }
-.scale {
-  width: 140px; height: 5px; background: rgba(255, 255, 255, 0.25);
-  border-radius: 3px; position: relative;
-}
-.scale::before {
-  content: ''; position: absolute;
-  left: 50%; top: -2px; bottom: -2px;
-  width: 1px; background: rgba(255, 255, 255, 0.5);
-}
-.scaleFill {
-  position: absolute; top: 0; bottom: 0;
-  border-radius: 3px; background: white;
-  transition: left 320ms ease, width 320ms ease;
+.slide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
 }
 
-.right {
-  background: var(--bg); border-radius: var(--card-r);
-  padding: var(--sp-lg);
-  display: flex; flex-direction: column;
+/* ── Title block (matches Slide 1 register) ────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
 }
-.rightHead { display: flex; align-items: center; gap: 10px; margin-bottom: var(--sp-md); }
-.rightPill {
-  padding: 5px 11px; border-radius: 999px;
-  background: var(--A-tint); color: var(--A);
-  font-size: 11px; font-weight: var(--fw-bold); letter-spacing: 0.1em;
+.title {
+  font-size: 32px;
+  font-weight: var(--fw-black);
+  color: var(--hall-indigo);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
-.rightLabel {
-  font-size: 11px; font-weight: var(--fw-bold);
-  color: var(--sub); letter-spacing: 0.08em; text-transform: uppercase;
+.stripe {
+  height: 4px;
+  width: 56px;
+  background: var(--hall-indigo);
 }
-.rightQ { font-size: 14px; line-height: 1.7; color: var(--text); margin: 0 0 var(--sp-md); }
-.rightOptions { display: flex; flex-direction: column; gap: 6px; }
-.rightOption {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 13px; color: var(--text-sec);
+.sub {
+  font-size: var(--fs-base);
+  color: var(--text-sec);
+  margin: 0;
+  line-height: var(--lh-tight);
+}
+
+/* ── Single focal card ─────────────────────────────────────────── */
+.card {
+  margin: 0;
   background: var(--card);
-  display: flex; justify-content: space-between; align-items: center;
-  transition: all 200ms ease;
+  border: 1px solid var(--border);
+  border-radius: var(--card-r);
+  padding: var(--sp-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
 }
-.rightOptionChosen {
-  border-color: var(--A); background: var(--A-tint);
-  color: var(--A); font-weight: var(--fw-bold);
+
+.caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-md);
 }
-.check {
-  width: 16px; height: 16px; border-radius: 50%;
-  border: 2px solid var(--border); flex-shrink: 0;
+.captionLabel {
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sub);
 }
-.rightOptionChosen .check {
-  background: var(--A); border-color: var(--A); position: relative;
+.captionAxis {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
-.rightOptionChosen .check::after {
-  content: ''; position: absolute;
-  left: 4px; top: 1px; width: 4px; height: 7px;
-  border: solid white; border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.axisChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+.axisName {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+/* ── Contribution table ────────────────────────────────────────── */
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+.row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto 64px;
+  align-items: center;
+  gap: var(--sp-md);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rowId {
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+}
+.rowLabel {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-normal);
+  color: var(--text);
+  line-height: var(--lh-tight);
+  min-width: 0;
+}
+.rowScale {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tick {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.tickPick {
+  background: var(--hall-indigo);
+}
+.rowDelta {
+  font-family: inherit;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.deltaPos { color: var(--text); }
+.deltaNeg { color: var(--text); }
+.deltaZero { color: var(--sub); }
+.revFlag {
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  color: var(--sub);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 3px;
+  line-height: 1;
+}
+
+/* ── Sum-line (visual bridge from rows → score) ────────────────── */
+.totalRow {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto 64px;
+  align-items: center;
+  gap: var(--sp-md);
+  padding-top: 4px;
+}
+.totalLabel {
+  grid-column: 1 / 3;
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+.totalDots {
+  grid-column: 3;
+  height: 1px;
+  width: 60px;
+  background: var(--border);
+}
+.totalValue {
+  grid-column: 4;
+  font-size: 20px;
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  text-align: right;
+  letter-spacing: 0.01em;
+}
+
+/* ── Score block: BIG number + axis line ───────────────────────── */
+.scoreBlock {
+  margin-top: var(--sp-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+  align-items: center;
+}
+.scoreNumber {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  line-height: 1;
+}
+.scoreSign {
+  font-size: 28px;
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.scoreDigits {
+  font-size: 56px;
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.axisLine {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  align-items: center;
+  gap: var(--sp-md);
+}
+.poleLabel {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-sec);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.axis {
+  position: relative;
+  height: 22px;
+  display: block;
+}
+.axisRail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--border);
+  transform: translateY(-50%);
+}
+.axisMid {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--border);
+}
+.axisMarker {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--card);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px var(--border);
+  transition: left 360ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .axisMarker { transition: none; }
+}
+
+.foot {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sub);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* ── Mobile collapse (<900px) ──────────────────────────────────── */
+@media (max-width: 900px) {
+  .card {
+    padding: var(--sp-lg);
+    gap: var(--sp-md);
+  }
+  .caption {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-sm);
+  }
+  .row {
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'id label delta'
+      '.  scale scale';
+    gap: 8px var(--sp-sm);
+    padding: 10px 0;
+  }
+  .rowId    { grid-area: id; }
+  .rowLabel { grid-area: label; font-size: var(--fs-sm); }
+  .rowDelta { grid-area: delta; font-size: var(--fs-sm); }
+  .rowScale { grid-area: scale; gap: 5px; }
+  .totalRow {
+    grid-template-columns: 1fr auto;
+  }
+  .totalLabel { grid-column: 1; }
+  .totalDots  { display: none; }
+  .totalValue { grid-column: 2; font-size: 18px; }
+  .scoreDigits { font-size: 44px; }
+  .scoreSign { font-size: 22px; }
+  .axisLine {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .poleLabel:first-child  { text-align: left; }
+  .poleLabel:last-child   { text-align: right; order: 3; }
+  .axis { order: 2; }
 }

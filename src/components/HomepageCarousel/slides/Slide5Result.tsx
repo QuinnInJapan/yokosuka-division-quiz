@@ -1,4 +1,45 @@
 import s from './Slide5Result.module.css';
+import { AXES } from '../../../data/axes';
+import { AX } from '../../../data/types';
+import type { AxisKey } from '../../../data/types';
+
+/*
+  Slide 4 (Result)
+  Question: "What do I see at the end?"
+  Focal point: a single annotated wireframe / preview of the result page,
+  showing the three components in the SHAPE they appear: archetype hero on
+  top, 5-axis profile in the middle, ranked divisions at the bottom.
+  Numbered annotations 01/02/03 point at each region — supporting role.
+  This is the meta-anatomy slide; Slide 5 owns the worked example.
+  Color discipline: only axis-tagged content carries axis color (the five
+  profile rows). Indigo is reserved for structural emphasis (annotation
+  numbers, callout lines, archetype code chips). Everything else is
+  grayscale + hairline borders to match the outer chrome.
+*/
+
+// Real visitor profile values (-2..+2) used for the abstract bars in the
+// preview. These are the same illustrative answers used on Slide 3, so the
+// arc reads consistently across slides.
+const PROFILE: Record<AxisKey, number> = { A: 2, B: 1, C: 2, D: 0, E: 0 };
+
+// Real divisions from divisions.json for the ranked-list region preview.
+const RANK_PREVIEW: { name: string; pct: number }[] = [
+  { name: '生活支援課',       pct: 95 },
+  { name: '子育て支援課',     pct: 90 },
+  { name: 'こども家庭支援課', pct: 80 },
+];
+
+// Map -2..+2 → 0..100 for marker left%
+function pos(value: number): number {
+  return ((value + 2) / 4) * 100;
+}
+
+// Archetype code derived from the PROFILE: each axis picks plus or minus
+// letter depending on sign. (D is 0 → take the "plus" / 守 side as default.)
+const ARCHETYPE_CODE = AX.map((ax) => {
+  const v = PROFILE[ax];
+  return v >= 0 ? AXES[ax].letter_plus : AXES[ax].letter_minus;
+});
 
 export function Slide5Result() {
   return (
@@ -6,93 +47,94 @@ export function Slide5Result() {
       <header className={s.head}>
         <h2 className={s.title}>STEP 04 · 結果</h2>
         <div className={s.stripe} />
-        <div className={s.sub}>受検者は、自身のアーキタイプ・適合部署のランキング・5軸プロファイルを得る。</div>
+        <p className={s.sub}>1ページに、3つの答えが並ぶ。</p>
       </header>
-      <div className={s.body}>
-        {/* Card 1: archetype */}
-        <div className={s.card}>
-          <div className={s.cardHead}>
-            <div className={s.cardLabel}>アーキタイプ</div>
-            <div className={s.cardMeta}>
-              <span className={s.cardNum}>32種類</span>
-              <span className={s.cardNote}>／ 5軸の組み合わせ</span>
-            </div>
-          </div>
-          <p className={s.cardPara}>
-            回答結果から、受検者は<strong>1つのアーキタイプ</strong>に分類される。
-            5軸それぞれで2極のうち1つが選ばれ、5文字コードでタイプが決まる。
-          </p>
-          <div className={s.cardEx}>
-            <div className={s.exEyebrow}>例</div>
-            <div className={s.archChips}>
-              <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
-            </div>
-            <h4 className={s.archName}>街のよろず屋<small>型</small></h4>
-            <div className={s.archDesc}>市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。</div>
-          </div>
-        </div>
 
-        {/* Card 2: ranking */}
-        <div className={s.card}>
-          <div className={s.cardHead}>
-            <div className={s.cardLabel}>部署ランキング</div>
-            <div className={s.cardMeta}>
-              <span className={s.cardNum}>103部署</span>
-              <span className={s.cardNote}>／ 適合度順</span>
-            </div>
-          </div>
-          <p className={s.cardPara}>
-            横須賀市役所の<strong>全103部署</strong>が適合度順にランクづけされる。
-            上位だけでなく下位も確認でき、「なぜ向かないのか」も含めて自己理解につながる。
-          </p>
-          <div className={s.cardEx}>
-            <div className={s.exEyebrow}>例：上位</div>
-            <div className={s.exRank}>
-              <span className={s.rankPos}>1</span>
-              <span className={s.rankName}>教職員課</span>
-              <span className={s.rankPct}>88.8%</span>
-            </div>
-            <div className={s.exRankFoot}>
-              <span>上位 3 / 103 部署</span>
-              <span>下位は 18.4%（監査委員事務局）</span>
-            </div>
-          </div>
-        </div>
+      <figure className={s.card}>
+        <figcaption className={s.caption}>
+          <span className={s.captionLabel}>結果ページの構成</span>
+          <span className={s.captionMeta}>3 ブロック</span>
+        </figcaption>
 
-        {/* Card 3: profile */}
-        <div className={s.card}>
-          <div className={s.cardHead}>
-            <div className={s.cardLabel}>プロファイル</div>
-            <div className={s.cardMeta}>
-              <span className={s.cardNum}>5軸</span>
-              <span className={s.cardNote}>／ あなたの傾向</span>
-            </div>
-          </div>
-          <p className={s.cardPara}>
-            <strong>5軸ごとに自分の傾向</strong>が可視化される。
-            どの軸が強いか・弱いかを一目で把握でき、軸ごとの伸びしろもわかる。
-          </p>
-          <div className={s.cardEx}>
-            <div className={s.exEyebrow}>例：人との関わり方</div>
-            <div className={s.exBar}>
-              <div className={s.exBarHead}>
-                <span className={s.exBarPct}>65%</span>
-                <span className={s.exBarWin}>市民対話</span>
-              </div>
-              <div className={s.exBarRow}>
-                <span className={s.exBarEnd}>機</span>
-                <div className={s.exBarTrack}>
-                  <span className={s.exBarDot} style={{ left: '65%' }} />
+        <div className={s.preview} aria-label="結果ページのプレビュー">
+          {/* ── Region 01: archetype hero ───────────────────────── */}
+          <section className={s.region} aria-label="アーキタイプ">
+            <span className={s.annot} aria-hidden="true">01</span>
+            <div className={s.regionBody}>
+              <div className={s.regionLabel}>あなたのアーキタイプ</div>
+              <div className={s.archRow}>
+                <div className={s.archCode} aria-hidden="true">
+                  {ARCHETYPE_CODE.map((ch, i) => (
+                    <span key={i} className={s.archChip}>{ch}</span>
+                  ))}
                 </div>
-                <span className={s.exBarEnd}>人</span>
+                <div className={s.archMeta}>
+                  <div className={s.archName}>32種類から1つ</div>
+                  <div className={s.archHint}>5軸の組み合わせで決まる5文字コード</div>
+                </div>
               </div>
             </div>
-            <div className={s.exBarFoot}>
-              制度・仕組みより市民との対話を重視する傾向。残り4軸も同様に表示される。
+          </section>
+
+          {/* ── Region 02: 5-axis profile ───────────────────────── */}
+          <section className={s.region} aria-label="プロファイル">
+            <span className={s.annot} aria-hidden="true">02</span>
+            <div className={s.regionBody}>
+              <div className={s.regionLabel}>5軸プロファイル</div>
+              <ol className={s.axisList}>
+                {AX.map((ax) => {
+                  const v = PROFILE[ax];
+                  return (
+                    <li key={ax} className={s.axisRow}>
+                      <span
+                        className={s.axisChip}
+                        style={{ background: AXES[ax].tint, color: AXES[ax].dark }}
+                        aria-hidden="true"
+                      >
+                        {ax}
+                      </span>
+                      <span className={s.axisName}>{AXES[ax].label}</span>
+                      <span className={s.axisLine} aria-hidden="true">
+                        <span className={s.axisRail} />
+                        <span className={s.axisMid} />
+                        <span
+                          className={s.axisMark}
+                          style={{ left: `${pos(v)}%`, background: AXES[ax].dark }}
+                        />
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
-          </div>
+          </section>
+
+          {/* ── Region 03: ranked divisions ─────────────────────── */}
+          <section className={s.region} aria-label="部署ランキング">
+            <span className={s.annot} aria-hidden="true">03</span>
+            <div className={s.regionBody}>
+              <div className={s.regionLabel}>部署ランキング（103課中）</div>
+              <ol className={s.rankList}>
+                {RANK_PREVIEW.map((d, i) => (
+                  <li key={d.name} className={s.rankRow}>
+                    <span className={s.rankNum}>{i + 1}</span>
+                    <span className={s.rankName}>{d.name}</span>
+                    <span className={s.rankBarWrap} aria-hidden="true">
+                      <span className={s.rankBar} style={{ width: `${d.pct}%` }} />
+                    </span>
+                    <span className={s.rankPct}>{d.pct}%</span>
+                  </li>
+                ))}
+                <li className={s.rankMore} aria-hidden="true">… 4位 〜 103位 まで続く</li>
+              </ol>
+            </div>
+          </section>
         </div>
-      </div>
+
+        <p className={s.foot}>
+          スクロール1枚に、アーキタイプ・プロファイル・ランキングが並ぶ。
+        </p>
+      </figure>
     </div>
   );
 }

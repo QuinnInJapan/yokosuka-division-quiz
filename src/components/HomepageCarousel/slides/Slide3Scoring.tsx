@@ -1,85 +1,116 @@
-import { useState } from 'react';
 import s from './Slide3Scoring.module.css';
+import { AXES } from '../../../data/axes';
 
-const QUESTIONS = [
-  { q: '高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。', chosen: 4, label: '窓口で介護申請を支援' },
-  { q: '地域のサークル活動の場で、参加者の声を直接聞きながら新しい企画を一緒に考える。',                  chosen: 3, label: '地域サークルで対話' },
-  { q: '部署の業務フローを設計し、誰がいつ何をするかを文書化して整える。',                          chosen: 1, label: '業務フローを設計' },
-  { q: '財政データを分析し、長期的な収支のトレンドからリスクを洗い出す。',                          chosen: 2, label: '財政データを分析' },
+/*
+  Slide 2 (Scoring)
+  Question: "How do my answers turn into a profile?"
+  Focal point: ONE axis-score transformation. Four real A-axis questions with their
+  signed contributions add up to a single signed mean score plotted on the A axis
+  (仕組み ↔ 対話). Eliminated: question detail right panel (the previous slide
+  already shows what one question looks like in detail).
+*/
+
+// Real A-axis questions from questions.json (A1..A4), trimmed to scannable labels.
+// `pick` is the 1..5 likert answer; `signed` is the contribution after the
+// forward/reverse map from questions.json scoring.
+const A_AXIS = AXES.A;
+
+type Row = {
+  id: string;
+  label: string;
+  reversed: boolean;
+  pick: 1 | 2 | 3 | 4 | 5;
+  signed: -2 | -1 | 0 | 1 | 2;
+};
+
+const ROWS: Row[] = [
+  { id: 'A1', label: '窓口で介護申請を一緒に進める',         reversed: false, pick: 4, signed:  1 },
+  { id: 'A2', label: '地域サークルで支援制度を直接説明',       reversed: false, pick: 4, signed:  1 },
+  { id: 'A3', label: '部署横断の業務フローを再設計',          reversed: true,  pick: 2, signed:  1 },
+  { id: 'A4', label: '財政データを分析して予算案を作成',       reversed: true,  pick: 3, signed:  0 },
 ];
 
-const OPTIONS = [
-  '自分には向いていないと思う',
-  'あまり気が乗らないが、こなせる',
-  'どちらとも言えない',
-  'やりがいを感じながら取り組める',
-  'まさに自分が輝ける場面',
-];
+const MEAN = ROWS.reduce((a, r) => a + r.signed, 0) / ROWS.length; // 0.75
+// Map mean from [-2, +2] to [0, 100] for marker position on the axis bar.
+const MARKER_PCT = ((MEAN + 2) / 4) * 100; // 68.75
 
-const AVG_PCT = (QUESTIONS.reduce((a, b) => a + b.chosen, 0) / QUESTIONS.length / 4) * 100; // 62.5
+// Format the score with an explicit sign, one decimal.
+const SCORE_LABEL = (MEAN > 0 ? '+' : MEAN < 0 ? '−' : '±') + Math.abs(MEAN).toFixed(2);
 
 export function Slide3Scoring() {
-  const [active, setActive] = useState(0);
-  const fillLeft = AVG_PCT >= 50 ? 50 : AVG_PCT;
-  const fillWidth = Math.abs(AVG_PCT - 50);
-
   return (
     <div className={s.slide}>
       <header className={s.head}>
         <h2 className={s.title}>STEP 02 · 採点</h2>
-        <div className={s.stripe} />
-        <div className={s.sub}>各軸に寄与する質問の回答をまとめて、軸スコアを算出します。</div>
+        <div className={s.stripe} style={{ background: A_AXIS.dark }} />
+        <p className={s.sub}>同じ軸の4問を平均し、軸スコアを1つ出す。</p>
       </header>
-      <div className={s.body}>
-        <div className={s.left}>
-          {QUESTIONS.map((q, i) => (
-            <button
-              type="button"
-              key={i}
-              data-testid={`s3-q-${i}`}
-              className={`${s.q} ${active === i ? s.qActive : ''}`}
-              onClick={() => setActive(i)}
-            >
-              <span className={s.qLabel}>A{i + 1}</span>
-              <span className={s.qText}>{q.label}</span>
-              <span className={s.qPos}>
-                {[0, 1, 2, 3, 4].map((p) => (
-                  <span key={p} className={`${s.dot} ${p === q.chosen ? s.dotFill : ''}`} />
+
+      <figure className={s.card}>
+        <figcaption className={s.caption}>
+          <span className={s.captionLabel}>軸の例</span>
+          <span className={s.captionAxis}>
+            <span className={s.axisChip} style={{ background: A_AXIS.tint, color: A_AXIS.dark }}>A</span>
+            <span className={s.axisName}>{A_AXIS.label}</span>
+          </span>
+        </figcaption>
+
+        <ol className={s.rows} aria-label="軸Aに寄与する4問">
+          {ROWS.map((r) => (
+            <li key={r.id} className={s.row}>
+              <span className={s.rowId}>{r.id}</span>
+              <span className={s.rowLabel}>{r.label}</span>
+              <span className={s.rowScale} aria-label={`回答 ${r.pick} / 5`}>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <span
+                    key={n}
+                    className={`${s.tick} ${n === r.pick ? s.tickPick : ''}`}
+                    aria-hidden="true"
+                  />
                 ))}
               </span>
-            </button>
-          ))}
-          <div className={s.arrow}>▼ 集計</div>
-          <div className={s.result}>
-            <span className={s.resPill}>人との関わり方</span>
-            <div className={s.needle}>
-              <span className={s.needleEnd}>仕組み</span>
-              <span className={s.scale}>
-                <span
-                  className={s.scaleFill}
-                  style={{ left: `${fillLeft}%`, width: `${fillWidth}%` }}
-                />
+              <span
+                className={`${s.rowDelta} ${r.signed > 0 ? s.deltaPos : r.signed < 0 ? s.deltaNeg : s.deltaZero}`}
+                aria-label={`寄与 ${r.signed >= 0 ? '+' : ''}${r.signed}`}
+              >
+                {r.signed > 0 ? '+' : r.signed < 0 ? '−' : '±'}{Math.abs(r.signed)}
+                {r.reversed ? <span className={s.revFlag} title="逆転項目">R</span> : null}
               </span>
-              <span className={s.needleEnd}>対話</span>
-            </div>
-          </div>
+            </li>
+          ))}
+        </ol>
+
+        <div className={s.totalRow} aria-hidden="true">
+          <span className={s.totalLabel}>平均</span>
+          <span className={s.totalDots} />
+          <span className={s.totalValue}>{SCORE_LABEL}</span>
         </div>
-        <div className={s.right}>
-          <div className={s.rightHead}>
-            <div className={s.rightPill}>A{active + 1}</div>
-            <div className={s.rightLabel}>回答内容</div>
+
+        <div className={s.scoreBlock}>
+          <div className={s.scoreNumber} aria-label={`軸Aスコア ${SCORE_LABEL}`}>
+            <span className={s.scoreSign} style={{ color: A_AXIS.dark }}>
+              {MEAN > 0 ? '+' : MEAN < 0 ? '−' : '±'}
+            </span>
+            <span className={s.scoreDigits}>{Math.abs(MEAN).toFixed(2)}</span>
           </div>
-          <p className={s.rightQ} data-testid="s3-right-q">{QUESTIONS[active].q}</p>
-          <div className={s.rightOptions}>
-            {OPTIONS.map((o, i) => (
-              <div key={i} className={`${s.rightOption} ${i === QUESTIONS[active].chosen ? s.rightOptionChosen : ''}`}>
-                <span>{o}</span>
-                <span className={s.check} />
-              </div>
-            ))}
+
+          <div className={s.axisLine}>
+            <span className={s.poleLabel}>{A_AXIS.minus}</span>
+            <span className={s.axis}>
+              <span className={s.axisRail} aria-hidden="true" />
+              <span className={s.axisMid} aria-hidden="true" />
+              <span
+                className={s.axisMarker}
+                style={{ left: `${MARKER_PCT}%`, background: A_AXIS.dark }}
+                aria-hidden="true"
+              />
+            </span>
+            <span className={s.poleLabel}>{A_AXIS.plus}</span>
           </div>
+
+          <p className={s.foot}>軸は5本 · 同じ計算をA〜Eで繰り返す</p>
         </div>
-      </div>
+      </figure>
     </div>
   );
 }

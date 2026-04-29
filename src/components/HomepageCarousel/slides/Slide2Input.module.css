@@ -1,91 +1,194 @@
-.slide { display: flex; flex-direction: column; gap: var(--sp-lg); }
+/*
+  Slide 1 (Input)
+  Focal point: ONE real question rendered at body+ scale.
+  Supporting: a 5-step likert scale that teaches the answer format by affordance.
+  Eliminated: axis selector, axis pills, per-axis examples — this slide is about the
+  question *format*, not about axes. Axis colors are reserved (principle 7) for
+  axis-tagged content elsewhere.
+*/
 
-.head { display: flex; flex-direction: column; gap: 8px; }
-.title {
-  font-size: 32px; font-weight: var(--fw-bold);
-  color: var(--hall-indigo); line-height: 1.2; margin: 0;
-}
-.stripe { height: 5px; width: 64px; background: var(--hall-indigo); }
-.sub { font-size: 15px; color: var(--text-sec); }
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
+.slide {
+  display: flex;
+  flex-direction: column;
   gap: var(--sp-lg);
 }
-@media (min-width: 1100px) {
-  .grid { grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr); }
+
+/* ── Title block (unchanged register) ─────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+}
+.title {
+  font-size: 32px;
+  font-weight: var(--fw-black);
+  color: var(--hall-indigo);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.stripe {
+  height: 4px;
+  width: 56px;
+  background: var(--hall-indigo);
+}
+.sub {
+  font-size: var(--fs-base);
+  color: var(--text-sec);
+  margin: 0;
+  line-height: var(--lh-tight);
 }
 
-.axes { display: flex; flex-direction: column; gap: 10px; }
-.row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 16px;
+/* ── The single focal card ───────────────────────────────────── */
+.card {
+  margin: 0;
   background: var(--card);
-  border: 2px solid transparent;
-  border-radius: 12px;
-  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  border-radius: var(--card-r);
+  padding: var(--sp-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
+}
+
+.qLabel {
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The scenario IS the focal point — largest, heaviest item on the slide. */
+.scenario {
+  margin: 0;
+  font-size: 22px;
+  font-weight: var(--fw-medium);
+  line-height: 1.6;
+  color: var(--text);
+  letter-spacing: 0.005em;
+  /* Hanging indent feel without quote glyphs */
+  border-left: 3px solid var(--hall-indigo);
+  padding-left: var(--sp-lg);
+}
+
+/* ── Scale: poles + 5 dots ───────────────────────────────────── */
+.scale {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-lg);
+  margin-top: var(--sp-sm);
+}
+.poleMin,
+.poleMax {
+  font-size: var(--fs-sm);
+  color: var(--text-sec);
+  line-height: var(--lh-tight);
+}
+.poleMin { text-align: right; }
+.poleMax { text-align: left; }
+
+.dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+/* hairline rail through the dot row */
+.dots::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 1px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.dot {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
   cursor: pointer;
   font-family: inherit;
-  text-align: left;
-  transition: border-color 200ms ease, transform 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 150ms ease, background 150ms ease;
 }
-.row:hover { transform: translateX(3px); }
-.rowActive { border-color: var(--hall-indigo); color: var(--hall-indigo); }
-.pill {
-  padding: 5px 12px; border-radius: 999px;
-  font-size: 11px; font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  flex-shrink: 0;
+.dotInner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 150ms ease;
 }
-.pillA { background: var(--A-tint); color: var(--A); }
-.pillB { background: var(--B-tint); color: var(--B); }
-.pillC { background: var(--C-tint); color: var(--C); }
-.pillD { background: var(--D-tint); color: var(--D); }
-.pillE { background: var(--E-tint); color: var(--E); }
-.label { flex: 1; display: flex; flex-direction: column; gap: 3px; }
-.name { font-size: 16px; font-weight: var(--fw-bold); color: var(--hall-indigo); }
-.poles { font-size: 13px; color: var(--text-sec); }
-.hint {
-  font-size: 11px; font-weight: var(--fw-bold);
-  letter-spacing: 0.08em;
-  color: var(--sub);
-  text-transform: uppercase;
-  opacity: 0.7;
+@media (hover: hover) {
+  .dot:not(.dotActive):hover {
+    border-color: var(--hall-indigo);
+  }
+  .dot:not(.dotActive):hover .dotInner {
+    background: var(--indigo-tint);
+  }
 }
-.rowActive .hint { opacity: 1; color: currentColor; }
-
-.example {
-  background: var(--bg);
-  border-radius: var(--card-r);
-  padding: var(--sp-lg);
-  display: flex; flex-direction: column;
+.dot:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
 }
-.exHead { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.exPill {
-  padding: 5px 11px; border-radius: 999px;
-  font-size: 11px; font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
+.dotActive {
+  border-color: var(--hall-indigo);
+  background: var(--hall-indigo);
 }
-.exLabel {
-  font-size: 12px; font-weight: var(--fw-bold);
-  letter-spacing: 0.08em; color: var(--sub);
-  text-transform: uppercase;
-}
-.exQ {
-  font-size: 16px; line-height: 1.7; color: var(--text);
-  margin: 0 0 var(--sp-md);
-}
-.options { display: flex; flex-direction: column; gap: 6px; }
-.option {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 13px;
-  color: var(--text);
+.dotActive .dotInner {
   background: var(--card);
 }
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .dotInner {
+    transition: none;
+  }
+}
+
+/* ── Caption (footnote tier) ─────────────────────────────────── */
 .foot {
-  margin-top: var(--sp-md); padding-top: var(--sp-sm);
-  font-size: 13px; color: var(--sub); text-align: center;
+  margin: 0;
+  font-size: 12px;
+  color: var(--sub);
+  text-align: center;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Mobile collapse (<900px) ────────────────────────────────── */
+@media (max-width: 900px) {
+  .card {
+    padding: var(--sp-lg);
+    gap: var(--sp-md);
+  }
+  .scenario {
+    font-size: 18px;
+    padding-left: var(--sp-md);
+  }
+  .scale {
+    grid-template-columns: 1fr;
+    gap: var(--sp-sm);
+    text-align: center;
+  }
+  .poleMin,
+  .poleMax {
+    text-align: center;
+  }
+  .dots {
+    justify-content: center;
+    gap: 18px;
+  }
 }
