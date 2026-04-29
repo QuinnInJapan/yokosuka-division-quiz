@@ -795,21 +795,26 @@
     gap: 20px;
   }
   .s5-card-head {
-    display: flex; align-items: baseline; gap: 14px;
+    display: flex; flex-direction: column;
+    gap: 6px;
     border-bottom: 1px solid var(--border);
     padding-bottom: 18px;
   }
-  .s5-card-num {
-    font-size: 56px; font-weight: 800;
+  .s5-card-label {
+    font-size: 26px; font-weight: 800;
     color: var(--hall-indigo);
-    letter-spacing: -0.02em;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .s5-card-meta {
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .s5-card-num {
+    font-size: 24px; font-weight: 800;
+    color: var(--text-sec);
+    letter-spacing: -0.01em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-  }
-  .s5-card-title { display: flex; flex-direction: column; gap: 4px; }
-  .s5-card-label {
-    font-size: 20px; font-weight: 700;
-    color: var(--text);
   }
   .s5-card-note {
     font-size: 13px; font-weight: 600;
@@ -1394,10 +1399,10 @@
 
         <div class="s5-card">
           <div class="s5-card-head">
-            <div class="s5-card-num">32</div>
-            <div class="s5-card-title">
-              <div class="s5-card-label">アーキタイプ</div>
-              <div class="s5-card-note">5軸 × 2方向 ＝ 32タイプ</div>
+            <div class="s5-card-label">アーキタイプ</div>
+            <div class="s5-card-meta">
+              <span class="s5-card-num">32種類</span>
+              <span class="s5-card-note">／ 5軸 × 2方向</span>
             </div>
           </div>
           <p class="s5-card-para">
@@ -1416,10 +1421,10 @@
 
         <div class="s5-card">
           <div class="s5-card-head">
-            <div class="s5-card-num">103</div>
-            <div class="s5-card-title">
-              <div class="s5-card-label">部署ランキング</div>
-              <div class="s5-card-note">全部署を適合度順</div>
+            <div class="s5-card-label">部署ランキング</div>
+            <div class="s5-card-meta">
+              <span class="s5-card-num">103部署</span>
+              <span class="s5-card-note">／ 適合度順</span>
             </div>
           </div>
           <p class="s5-card-para">
@@ -1440,10 +1445,10 @@
 
         <div class="s5-card">
           <div class="s5-card-head">
-            <div class="s5-card-num">5</div>
-            <div class="s5-card-title">
-              <div class="s5-card-label">軸プロファイル</div>
-              <div class="s5-card-note">あなたの傾向</div>
+            <div class="s5-card-label">5軸プロファイル</div>
+            <div class="s5-card-meta">
+              <span class="s5-card-num">5軸</span>
+              <span class="s5-card-note">／ あなたの傾向</span>
             </div>
           </div>
           <p class="s5-card-para">
