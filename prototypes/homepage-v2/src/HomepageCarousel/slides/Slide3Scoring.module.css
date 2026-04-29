@@ -1,0 +1,114 @@
+.slide { display: flex; flex-direction: column; gap: var(--sp-lg); }
+.head { display: flex; flex-direction: column; gap: 8px; }
+.title { font-size: 32px; font-weight: var(--fw-bold); color: var(--hall-indigo); margin: 0; line-height: 1.2; }
+.stripe { height: 5px; width: 64px; background: var(--A); }
+.sub { font-size: 15px; color: var(--text-sec); }
+
+.body {
+  display: grid; grid-template-columns: 1fr;
+  gap: var(--sp-lg); align-items: stretch;
+}
+@media (min-width: 1100px) {
+  .body { grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr); align-items: center; }
+}
+
+.left { display: flex; flex-direction: column; gap: 10px; }
+.q {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); padding: 12px 16px;
+  border-radius: 12px; box-shadow: var(--card-shadow);
+  border: 2px solid transparent;
+  cursor: pointer; font-family: inherit; text-align: left;
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+.q:hover { transform: translateX(3px); }
+.qActive { border-color: var(--A); }
+.qLabel {
+  font-weight: var(--fw-bold); min-width: 32px; color: var(--A);
+  font-size: 12px; letter-spacing: 0.08em;
+}
+.qText { flex: 1; font-size: 14px; color: var(--text); }
+.qPos { display: flex; align-items: center; gap: 5px; }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border);
+  transition: background 200ms ease, transform 200ms ease;
+}
+.dotFill { background: var(--A-mid); transform: scale(1.3); }
+
+.arrow {
+  text-align: center; font-size: 14px; font-weight: var(--fw-bold);
+  color: var(--sub); margin: 6px 0; letter-spacing: 0.08em;
+}
+.result {
+  background: var(--A); color: white;
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--A) 22%, transparent);
+}
+.resPill {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 5px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: var(--fw-bold);
+  letter-spacing: 0.1em;
+}
+.needle { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.needleEnd { font-size: 12px; opacity: 0.85; letter-spacing: 0.05em; }
+.scale {
+  width: 140px; height: 5px; background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px; position: relative;
+}
+.scale::before {
+  content: ''; position: absolute;
+  left: 50%; top: -2px; bottom: -2px;
+  width: 1px; background: rgba(255, 255, 255, 0.5);
+}
+.scaleFill {
+  position: absolute; top: 0; bottom: 0;
+  border-radius: 3px; background: white;
+  transition: left 320ms ease, width 320ms ease;
+}
+
+.right {
+  background: var(--bg); border-radius: var(--card-r);
+  padding: var(--sp-lg);
+  display: flex; flex-direction: column;
+}
+.rightHead { display: flex; align-items: center; gap: 10px; margin-bottom: var(--sp-md); }
+.rightPill {
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--A-tint); color: var(--A);
+  font-size: 11px; font-weight: var(--fw-bold); letter-spacing: 0.1em;
+}
+.rightLabel {
+  font-size: 11px; font-weight: var(--fw-bold);
+  color: var(--sub); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.rightQ { font-size: 14px; line-height: 1.7; color: var(--text); margin: 0 0 var(--sp-md); }
+.rightOptions { display: flex; flex-direction: column; gap: 6px; }
+.rightOption {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px; color: var(--text-sec);
+  background: var(--card);
+  display: flex; justify-content: space-between; align-items: center;
+  transition: all 200ms ease;
+}
+.rightOptionChosen {
+  border-color: var(--A); background: var(--A-tint);
+  color: var(--A); font-weight: var(--fw-bold);
+}
+.check {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--border); flex-shrink: 0;
+}
+.rightOptionChosen .check {
+  background: var(--A); border-color: var(--A); position: relative;
+}
+.rightOptionChosen .check::after {
+  content: ''; position: absolute;
+  left: 4px; top: 1px; width: 4px; height: 7px;
+  border: solid white; border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
