@@ -4,15 +4,6 @@
   --hero-accent: #F5EBD8;
 }
 
-/* Reset prototype-level container constraints inherited from main app layout.css */
-:global(html),
-:global(body),
-:global(#root) {
-  height: 100%;
-  overflow: hidden;
-  max-width: none;
-  padding: 0;
-}
 
 .split {
   display: grid;

@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from 'react';
+import { useState } from 'react';
 import { HomepageCarousel, SLIDE_COUNT } from './HomepageCarousel';
 import { Stepper } from './Stepper';
 import s from './Welcome.module.css';
@@ -10,31 +10,10 @@ const AXIS_KEYS = ['A', 'B', 'C', 'D', 'E'] as const;
 
 export function Welcome() {
   const [idx, setIdx] = useState(0);
-  const mainRef = useRef<HTMLElement>(null);
   const onJump = (i: number) => setIdx(Math.max(0, Math.min(SLIDE_COUNT - 1, i)));
 
-  useLayoutEffect(() => {
-    // Register keyboard handler synchronously (before load event) so Playwright tests can use it
-    mainRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      const ae = document.activeElement as HTMLElement | null;
-      if (ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA' || ae?.isContentEditable) return;
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        setIdx(i => Math.min(SLIDE_COUNT - 1, i + 1));
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setIdx(i => Math.max(0, i - 1));
-      }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <main className={s.split} tabIndex={-1} ref={mainRef}>
+    <main className={s.split}>
       <aside className={s.hero}>
         <div className={s.eyebrow}>YOKOSUKA CITY HALL</div>
         <h1 className={s.title}>

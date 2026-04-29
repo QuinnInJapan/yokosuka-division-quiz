@@ -4,8 +4,9 @@ test.use({ viewport: { width: 1440, height: 900 } });
 
 test('hero: title, lede, stats trio, CTA all visible above fold', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByText('横須賀市役所')).toBeVisible();
-  await expect(page.getByText('部署タイプ診断')).toBeVisible();
+  const heroH1 = page.locator('h1');
+  await expect(heroH1).toContainText('横須賀市役所');
+  await expect(heroH1).toContainText('部署タイプ診断');
   for (const n of ['20', '5', '102']) {
     await expect(page.getByTestId(`hero-stat-${n}`)).toBeVisible();
   }
@@ -45,6 +46,7 @@ test('stepper: contextual label shows current step JP label only', async ({ page
 
 test('stepper: keyboard arrows update both carousel and stepper', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByTestId('stepper-step-1')).toBeVisible();
   await page.keyboard.press('ArrowRight');
   await expect(page.getByTestId('carousel-slide-2')).toHaveAttribute('data-active', 'true');
   await expect(page.getByTestId('stepper-step-2')).toHaveAttribute('data-active', 'true');
