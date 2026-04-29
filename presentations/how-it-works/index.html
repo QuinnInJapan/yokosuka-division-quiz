@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<title>部署タイプ診断 — その仕組み</title>
+<title>部署タイプ診断：その仕組み</title>
 <style>
   :root {
     /* Palette — copied from src/styles/tokens.css */
@@ -77,7 +77,7 @@
   }
   .s1-title {
     font-size: 96px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.15;
     color: var(--hall-indigo);
     letter-spacing: -0.01em;
@@ -93,7 +93,6 @@
   .s1-axis-bar {
     margin-top: 64px;
     display: flex;
-    gap: 0;
     height: 8px;
     width: 480px;
   }
@@ -104,7 +103,7 @@
   .s1-axis-bar > span:nth-child(4) { background: var(--D-mid); }
   .s1-axis-bar > span:nth-child(5) { background: var(--E-mid); }
 
-  /* ============ Shared: section header with axis stripe ============ */
+  /* ============ Shared: section header ============ */
   .sec-header {
     margin-bottom: 48px;
   }
@@ -144,14 +143,18 @@
     border-radius: 12px;
     box-shadow: var(--card-shadow);
   }
-  .s2-axis-key {
-    width: 8px; height: 56px; border-radius: 4px;
+  .s2-axis-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
   }
-  .s2-axis-key.A { background: var(--A-mid); }
-  .s2-axis-key.B { background: var(--B-mid); }
-  .s2-axis-key.C { background: var(--C-mid); }
-  .s2-axis-key.D { background: var(--D-mid); }
-  .s2-axis-key.E { background: var(--E-mid); }
+  .s2-axis-pill.A { background: var(--A-tint); color: var(--A); }
+  .s2-axis-pill.B { background: var(--B-tint); color: var(--B); }
+  .s2-axis-pill.C { background: var(--C-tint); color: var(--C); }
+  .s2-axis-pill.D { background: var(--D-tint); color: var(--D); }
+  .s2-axis-pill.E { background: var(--E-tint); color: var(--E); }
   .s2-axis-label { flex: 1; }
   .s2-axis-name { font-size: 22px; font-weight: 700; color: var(--hall-indigo); margin-bottom: 4px; }
   .s2-axis-poles { font-size: 16px; color: var(--text-sec); }
@@ -165,18 +168,19 @@
   }
   .s2-example-label {
     font-size: 14px; font-weight: 500; letter-spacing: 0.08em;
-    color: var(--A); text-transform: uppercase; margin-bottom: 12px;
+    color: var(--sub); text-transform: uppercase; margin-bottom: 12px;
   }
   .s2-example-q {
-    font-size: 22px; line-height: 1.6; color: var(--text);
-    margin-bottom: 24px;
+    font-size: 22px; line-height: 1.75; color: var(--text);
+    margin: 0 0 24px;
   }
   .s2-options {
     display: flex; flex-direction: column; gap: 8px;
   }
   .s2-option {
     padding: 12px 16px; border: 1px solid var(--border);
-    border-radius: 8px; font-size: 16px; color: var(--text-sec);
+    border-radius: 10px; font-size: 16px; color: var(--text);
+    background: var(--card);
   }
   .s2-foot {
     margin-top: 32px;
@@ -190,41 +194,48 @@
   .s3-diagram { display: flex; flex-direction: column; gap: 12px; }
   .s3-q {
     display: flex; align-items: center; gap: 16px;
-    background: var(--A-tint); border-left: 4px solid var(--A-mid);
-    padding: 12px 16px; border-radius: 8px;
+    background: var(--A-tint);
+    padding: 14px 20px; border-radius: 10px;
     font-size: 18px; color: var(--text);
+    border: 1px solid transparent;
   }
   .s3-q .s3-label { font-weight: 700; min-width: 48px; color: var(--A); }
-  .s3-q .s3-val { font-family: ui-monospace, monospace; font-weight: 700; min-width: 56px; text-align: right; }
-  .s3-q.reversed { background: #fff; border-left-style: dashed; }
+  .s3-q .s3-val { font-weight: 800; min-width: 56px; text-align: right; }
+  .s3-q.reversed {
+    background: var(--card);
+    border: 1px dashed var(--A-mid);
+  }
   .s3-q.reversed::after {
     content: '反転'; margin-left: auto;
-    font-size: 12px; color: var(--A); padding: 2px 8px;
-    border: 1px solid var(--A); border-radius: 4px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--A); padding: 2px 10px;
+    border: 1px solid var(--A); border-radius: 999px;
   }
   .s3-arrow {
-    text-align: center; font-size: 24px; color: var(--sub); margin: 8px 0;
+    text-align: center; font-size: 22px; color: var(--sub); margin: 8px 0;
+    font-weight: 500;
   }
   .s3-result {
     background: var(--A); color: white;
-    border-radius: 12px; padding: 16px 20px;
+    border-radius: 12px; padding: 18px 24px;
     font-size: 22px; font-weight: 700;
     display: flex; justify-content: space-between; align-items: center;
   }
-  .s3-result .num { font-size: 36px; font-weight: 800; font-family: ui-monospace, monospace; }
+  .s3-result .num { font-size: 36px; font-weight: 800; }
 
-  .s3-explain { font-size: 22px; line-height: 1.7; color: var(--text); }
+  .s3-explain { font-size: 22px; line-height: 1.75; color: var(--text); }
   .s3-explain h3 { font-size: 28px; margin: 0 0 16px; color: var(--hall-indigo); }
   .s3-explain ul { margin: 0 0 24px; padding-left: 24px; }
   .s3-explain li { margin-bottom: 8px; }
   .s3-eq {
     margin-top: 24px;
-    padding: 20px;
+    padding: 24px;
     background: var(--card);
     border-radius: 12px; box-shadow: var(--card-shadow);
     font-size: 20px; line-height: 1.6;
   }
-  .s3-eq code { font-family: ui-monospace, monospace; font-weight: 700; color: var(--A); }
+  .s3-eq .formula { font-weight: 700; color: var(--A); }
+  .s3-eq .range { font-size: 16px; color: var(--sub); display: block; margin-top: 6px; }
 
   /* ============ Slide 4: Comparison ============ */
   .s4-body { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; flex: 1; align-items: center; }
@@ -235,7 +246,7 @@
   .s4-vec h3 { margin: 0 0 20px; font-size: 24px; color: var(--hall-indigo); }
   .s4-bars { display: flex; flex-direction: column; gap: 14px; }
   .s4-bar { display: flex; align-items: center; gap: 12px; }
-  .s4-bar .ax { width: 28px; font-weight: 700; font-family: ui-monospace, monospace; }
+  .s4-bar .ax { width: 28px; font-weight: 700; color: var(--text-sec); }
   .s4-bar .track {
     flex: 1; height: 12px; background: var(--border-light);
     position: relative; border-radius: 6px;
@@ -247,7 +258,7 @@
   .s4-bar .fill {
     position: absolute; top: 0; bottom: 0; border-radius: 6px;
   }
-  .s4-bar .v { font-family: ui-monospace, monospace; font-weight: 700; min-width: 48px; text-align: right; }
+  .s4-bar .v { font-weight: 700; min-width: 48px; text-align: right; color: var(--text); }
 
   .s4-formula {
     margin-top: 32px; padding: 24px 32px;
@@ -256,11 +267,11 @@
     font-size: 22px; line-height: 1.7;
     text-align: center;
   }
-  .s4-formula code { font-family: ui-monospace, monospace; font-weight: 700; }
-  .s4-formula .small { font-size: 16px; opacity: 0.75; }
+  .s4-formula .formula { font-weight: 700; }
+  .s4-formula .small { font-size: 16px; opacity: 0.75; display: block; margin-top: 6px; }
   .s4-foot {
     position: absolute; bottom: 72px; left: 96px; right: 96px;
-    font-size: 18px; color: var(--sub); text-align: center;
+    font-size: 16px; color: var(--sub); text-align: center;
   }
 
   /* ============ Slide 5: Result ============ */
@@ -272,79 +283,64 @@
   }
   .s5-shot img {
     max-width: 100%; max-height: 600px; border-radius: 8px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
   }
   .s5-explain h3 { font-size: 28px; margin: 0 0 16px; color: var(--hall-indigo); }
-  .s5-explain p { font-size: 22px; line-height: 1.7; color: var(--text); margin: 0 0 16px; }
-  .s5-stat {
-    display: flex; gap: 32px; margin: 32px 0;
-  }
-  .s5-stat .item {
-    flex: 1; padding: 24px;
-    background: var(--card); border-radius: 12px;
-    box-shadow: var(--card-shadow); text-align: center;
-  }
-  .s5-stat .num {
-    font-size: 56px; font-weight: 800; color: var(--hall-indigo);
-    font-family: ui-monospace, monospace; line-height: 1;
-  }
-  .s5-stat .lbl { font-size: 16px; color: var(--sub); margin-top: 8px; }
+  .s5-explain p { font-size: 22px; line-height: 1.75; color: var(--text); margin: 0 0 16px; }
+  .s5-explain p strong { font-weight: 800; }
   .s5-mbti {
     margin-top: 32px;
-    padding: 16px 20px;
-    border-left: 3px solid var(--D-mid);
-    border-radius: 0 8px 8px 0;
-    background: var(--D-tint);
-    font-size: 16px; line-height: 1.7; color: var(--text-sec);
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--sub);
   }
+  .s5-mbti strong { color: var(--text); font-weight: 700; }
 
   /* ============ Slide 6: Summary + CTA ============ */
   .s6 { justify-content: center; }
-  .s6-cards {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 32px; margin: 48px 0 56px;
+  .s6-steps {
+    display: flex; flex-direction: column;
+    gap: 28px;
+    margin: 40px 0 48px;
   }
-  .s6-card {
-    border-radius: var(--card-r);
-    padding: 32px;
-    background: var(--card);
-    box-shadow: var(--card-shadow);
-    border-top: 6px solid var(--hall-indigo);
+  .s6-step {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 32px;
+    align-items: baseline;
   }
-  .s6-card.input { border-top-color: var(--A-mid); }
-  .s6-card.compare { border-top-color: var(--B-mid); }
-  .s6-card.output { border-top-color: var(--C-mid); }
-  .s6-card .lbl {
-    font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--sub); margin-bottom: 12px;
+  .s6-step-num {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1;
+    letter-spacing: -0.02em;
   }
-  .s6-card .head {
-    font-size: 28px; font-weight: 700; color: var(--hall-indigo);
-    margin-bottom: 12px;
-  }
-  .s6-card .body {
-    font-size: 18px; line-height: 1.6; color: var(--text-sec);
-  }
+  .s6-step-body { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
+  .s6-step-head { font-size: 28px; font-weight: 700; color: var(--hall-indigo); line-height: 1.4; }
+  .s6-step-desc { font-size: 18px; line-height: 1.75; color: var(--text-sec); }
 
   .s6-note {
-    padding: 20px 28px;
-    background: var(--card); border-left: 4px solid var(--hall-indigo);
-    border-radius: 8px;
-    font-size: 20px; line-height: 1.7; color: var(--text);
-    max-width: 1100px;
+    padding: 24px 32px;
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    font-size: 20px; line-height: 1.75; color: var(--text);
+    max-width: 1200px;
   }
+  .s6-note strong { font-weight: 700; }
   .s6-cta {
-    margin-top: 56px;
+    margin-top: 48px;
     text-align: center;
   }
   .s6-cta button {
     background: var(--hall-indigo); color: white;
-    border: none; border-radius: 12px;
-    padding: 20px 48px;
-    font-size: 24px; font-weight: 700;
+    border: none; border-radius: 14px;
+    padding: 18px 48px;
+    font-size: 22px; font-weight: 700;
     font-family: var(--font);
     cursor: pointer;
-    box-shadow: var(--card-shadow);
   }
   .s6-cta button:hover { background: var(--hall-indigo-hover); }
 </style>
@@ -353,7 +349,7 @@
   <div class="stage" id="stage">
     <section class="slide s1 active" data-slide="1" data-section="表紙">
       <div class="s1-eyebrow">横須賀市役所 内部ツール</div>
-      <h1 class="s1-title">部署タイプ診断<br/>— その仕組み</h1>
+      <h1 class="s1-title">部署タイプ診断<br/>その仕組み</h1>
       <div class="s1-subtitle">5つの軸 × 20問で職員のタイプを判定し、<br/>全103部署を適合度順にランクします。</div>
       <div class="s1-axis-bar"><span></span><span></span><span></span><span></span><span></span></div>
     </section>
@@ -366,35 +362,35 @@
       <div class="s2-grid">
         <div class="s2-axes">
           <div class="s2-axis-row">
-            <div class="s2-axis-key A"></div>
+            <div class="s2-axis-pill A">A</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">人との関わり方</div>
               <div class="s2-axis-poles">制度・仕組み ⇄ 市民対話</div>
             </div>
           </div>
           <div class="s2-axis-row">
-            <div class="s2-axis-key B"></div>
+            <div class="s2-axis-pill B">B</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">仕事の進め方</div>
               <div class="s2-axis-poles">政策立案 ⇄ 現場対応</div>
             </div>
           </div>
           <div class="s2-axis-row">
-            <div class="s2-axis-key C"></div>
+            <div class="s2-axis-pill C">C</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">担う役割</div>
               <div class="s2-axis-poles">ルール管理 ⇄ 市民支援</div>
             </div>
           </div>
           <div class="s2-axis-row">
-            <div class="s2-axis-key D"></div>
+            <div class="s2-axis-pill D">D</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">変化への姿勢</div>
               <div class="s2-axis-poles">革新推進 ⇄ 安定運営</div>
             </div>
           </div>
           <div class="s2-axis-row">
-            <div class="s2-axis-key E"></div>
+            <div class="s2-axis-pill E">E</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">知識のスタイル</div>
               <div class="s2-axis-poles">専門追求 ⇄ 幅広対応</div>
@@ -402,7 +398,7 @@
           </div>
         </div>
         <div class="s2-example">
-          <div class="s2-example-label">質問の例 — A1</div>
+          <div class="s2-example-label">質問の例：A1</div>
           <p class="s2-example-q">高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。</p>
           <div class="s2-options">
             <div class="s2-option">自分には向いていないと思う</div>
@@ -434,13 +430,13 @@
           <h3>仕組み</h3>
           <ul>
             <li>1つの質問は、1つの軸に寄与</li>
-            <li>5段階の回答 → 数値 (−2, −1, 0, +1, +2)</li>
+            <li>5段階の回答を数値（−2, −1, 0, +1, +2）に変換</li>
             <li>「反転質問」は符号を反転してから集計</li>
             <li>各軸ごとに、寄与する質問の <strong>平均</strong> を取る</li>
           </ul>
           <div class="s3-eq">
-            <code>軸スコア = 各軸の(反転補正済み回答値) の 平均</code><br/>
-            <span style="font-size:16px;color:var(--sub)">範囲：おおよそ −2 〜 +2</span>
+            <span class="formula">軸スコア ＝ 各軸の（反転補正済み回答値）の 平均</span>
+            <span class="range">範囲：おおよそ −2 〜 +2</span>
           </div>
         </div>
       </div>
@@ -449,7 +445,7 @@
       <header class="sec-header">
         <div class="sec-eyebrow">比較 / Comparison</div>
         <h2 class="sec-title">5次元ベクトル vs 103部署</h2>
-        <div class="sec-stripe" style="background: var(--B);"></div>
+        <div class="sec-stripe"></div>
       </header>
       <div class="s4-body">
         <div class="s4-vec">
@@ -474,17 +470,16 @@
         </div>
       </div>
       <div class="s4-formula">
-        <code>距離 = √Σ (受検者ᵢ − 部署ᵢ)²</code> &nbsp;&nbsp; → &nbsp;&nbsp;
-        <code>適合度% = (1 − 距離 / √80) × 100</code><br/>
-        <span class="small">距離が小さいほど、適合度が高い。最大距離 = √80 ≈ 8.94</span>
+        <span class="formula">距離 ＝ √Σ（受検者ᵢ − 部署ᵢ）²　　→　　適合度% ＝ （1 − 距離 / √80）× 100</span>
+        <span class="small">距離が小さいほど、適合度が高い。最大距離 ＝ √80 ≈ 8.94</span>
       </div>
       <div class="s4-foot">部署ベクトルは103部署それぞれに事前設計（職務内容に基づく）</div>
     </section>
     <section class="slide" data-slide="5" data-section="結果">
       <header class="sec-header">
         <div class="sec-eyebrow">結果 / Output</div>
-        <h2 class="sec-title">アーキタイプ + 部署ランキング</h2>
-        <div class="sec-stripe" style="background: var(--C);"></div>
+        <h2 class="sec-title">アーキタイプ ＋ 部署ランキング</h2>
+        <div class="sec-stripe"></div>
       </header>
       <div class="s5-body">
         <div class="s5-shot">
@@ -492,14 +487,10 @@
         </div>
         <div class="s5-explain">
           <h3>受検者が見る結果</h3>
-          <p>32アーキタイプから1つに分類され、全103部署が適合度順にランクされます。</p>
-          <div class="s5-stat">
-            <div class="item"><div class="num">32</div><div class="lbl">アーキタイプ<br/>(2⁵)</div></div>
-            <div class="item"><div class="num">103</div><div class="lbl">部署を<br/>適合度順</div></div>
-          </div>
+          <p><strong>32</strong>のアーキタイプ（2⁵）から1つに分類され、全<strong>103</strong>部署が適合度順にランクされます。</p>
           <div class="s5-mbti">
             ※ MBTI（4軸 → 16タイプ）の発想を参考に、5軸 → 32タイプへ拡張。
-            職員の性格分類ではなく、<strong>業務適性の把握</strong>を目的とする。
+            職員の性格分類ではなく、<strong>業務適性の把握</strong>を目的としています。
           </div>
         </div>
       </div>
@@ -510,21 +501,27 @@
         <h2 class="sec-title">仕組みの全体像</h2>
         <div class="sec-stripe"></div>
       </header>
-      <div class="s6-cards">
-        <div class="s6-card input">
-          <div class="lbl">Step 1 — 入力</div>
-          <div class="head">20問 → 5軸スコア</div>
-          <div class="body">5段階の回答を反転補正し、軸ごとに平均を取る</div>
+      <div class="s6-steps">
+        <div class="s6-step">
+          <div class="s6-step-num">01</div>
+          <div class="s6-step-body">
+            <div class="s6-step-head">入力：20問が5軸スコアに</div>
+            <div class="s6-step-desc">5段階回答に反転補正をかけ、軸ごとに平均を取る</div>
+          </div>
         </div>
-        <div class="s6-card compare">
-          <div class="lbl">Step 2 — 比較</div>
-          <div class="head">5次元距離計算</div>
-          <div class="body">受検者ベクトルと103部署ベクトルのユークリッド距離 → 適合度%</div>
+        <div class="s6-step">
+          <div class="s6-step-num">02</div>
+          <div class="s6-step-body">
+            <div class="s6-step-head">比較：5次元距離で全103部署を採点</div>
+            <div class="s6-step-desc">受検者ベクトルと部署ベクトルのユークリッド距離から適合度を算出</div>
+          </div>
         </div>
-        <div class="s6-card output">
-          <div class="lbl">Step 3 — 出力</div>
-          <div class="head">アーキタイプ + ランキング</div>
-          <div class="body">32アーキタイプから1つ、103部署を適合度順に提示</div>
+        <div class="s6-step">
+          <div class="s6-step-num">03</div>
+          <div class="s6-step-body">
+            <div class="s6-step-head">出力：アーキタイプと部署ランキング</div>
+            <div class="s6-step-desc">32アーキタイプから1つ、103部署を適合度順に提示</div>
+          </div>
         </div>
       </div>
       <div class="s6-note">
@@ -535,7 +532,7 @@
       </div>
     </section>
     <div class="footer">
-      <span id="footer-section">部署タイプ診断 — その仕組み</span>
+      <span id="footer-section">部署タイプ診断：その仕組み</span>
       <span id="footer-page">1 / 6</span>
     </div>
   </div>
@@ -544,14 +541,16 @@
   const total = slides.length;
   let idx = 0;
   const pageEl = document.getElementById('footer-page');
+  const sectionEl = document.getElementById('footer-section');
 
   function show(n) {
     idx = Math.max(0, Math.min(total - 1, n));
     slides.forEach((el, i) => el.classList.toggle('active', i === idx));
     pageEl.textContent = `${idx + 1} / ${total}`;
-    const section = slides[idx].dataset.section || '';
-    document.getElementById('footer-section').textContent =
-      `部署タイプ診断 — その仕組み ・ ${section}`;
+    const section = slides[idx].dataset.section;
+    sectionEl.textContent = section
+      ? `部署タイプ診断：その仕組み　${section}`
+      : '部署タイプ診断：その仕組み';
   }
 
   // Initialize footer text correctly on load
