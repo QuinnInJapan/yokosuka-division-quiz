@@ -6,3 +6,10 @@ html, body, #root {
   padding: 0;
   margin: 0;
 }
+
+/* Prototype-level layout tokens */
+:root {
+  --hero-w: 420px;
+  --col-pad: var(--sp-2xl);
+  --hero-accent: #F5EBD8;
+}

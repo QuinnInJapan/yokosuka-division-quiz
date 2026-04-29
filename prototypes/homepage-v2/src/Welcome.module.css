@@ -1,10 +1,3 @@
-:root {
-  --hero-w: 420px;
-  --col-pad: var(--sp-2xl);
-  --hero-accent: #F5EBD8;
-}
-
-
 .split {
   display: grid;
   grid-template-columns: var(--hero-w) 1fr;
