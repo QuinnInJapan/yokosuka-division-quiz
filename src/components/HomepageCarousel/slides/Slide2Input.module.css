@@ -1,239 +1,91 @@
-/*
-  Slide 1 (Input) — visual primitives borrowed from the real app:
-    - Card: var(--card-shadow) + var(--card-r)             (MatchDetail.card)
-    - Chip: 36×36 rounded, tint bg + dark text             (TypeReveal.type-chip)
-    - Likert bar: var(--bar-h) track, axis color, 16px     (TraitBar.trait-track
-      white dot w/ 2.5px axis-dark border + soft shadow     + .trait-dot)
-*/
-
 .slide {
+  max-width: var(--content-max);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-lg);
 }
 
-/* ── Title block ─────────────────────────────────────────────── */
-.head {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-sm);
+/* ── Meta row (mirrors Quiz.module.css .quiz-meta) ── */
+.meta {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-lg);
 }
-.title {
-  font-size: 32px;
-  font-weight: var(--fw-black);
-  color: var(--hall-indigo);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-.stripe {
-  height: 4px;
-  width: 56px;
-  background: var(--hall-indigo);
-}
-.sub {
-  font-size: var(--fs-base);
-  color: var(--text-sec);
-  margin: 0;
-  line-height: var(--lh-tight);
-}
-
-/* ── The single focal card ───────────────────────────────────── */
-.card {
-  margin: 0;
-  background: var(--card);
-  border-radius: var(--card-r);
-  box-shadow: var(--card-shadow);
-  padding: var(--sp-2xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-lg);
-}
-
-/* ── Axis tag (TypeReveal echo: chip + pre-label) ────────────── */
-.tag {
-  display: flex;
+.qNum {
+  display: inline-flex;
   align-items: center;
-  gap: var(--sp-md);
-  padding-bottom: var(--sp-md);
-  border-bottom: 1px solid var(--border);
-}
-.chip {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-bold);
-  flex-shrink: 0;
-}
-.tagText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  flex: 1;
-}
-.tagPre {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  letter-spacing: 0.08em;
-  font-weight: var(--fw-medium);
-}
-.tagLabel {
+  gap: 10px;
   font-size: var(--fs-sm);
+  color: var(--sub);
   font-weight: var(--fw-bold);
-  line-height: var(--lh-tight);
 }
-.qIndex {
+.qNum > span[aria-hidden] { color: var(--border); }
+.flourish {
   font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
-  letter-spacing: 0.12em;
-  color: var(--sub);
-  font-variant-numeric: tabular-nums;
-  flex-shrink: 0;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  background: var(--indigo-tint-soft);
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.axisTag {
+  display: inline-flex; align-items: center;
+  font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  padding: 6px 14px; border-radius: 999px;
 }
 
-/* ── Focal: the scenario ─────────────────────────────────────── */
+/* ── Scenario (centered hero in axis-dark color) ── */
 .scenario {
-  margin: 0;
-  font-size: 22px;
-  font-weight: var(--fw-medium);
-  line-height: 1.6;
-  color: var(--text);
-  letter-spacing: 0.005em;
+  text-align: center;
+  padding: var(--sp-xl) var(--sp-md);
+  margin-bottom: var(--sp-lg);
+  font-size: var(--fs-xl);
+  line-height: 1.7;
+  font-weight: var(--fw-bold);
   word-break: keep-all;
   overflow-wrap: break-word;
 }
 
-/* ── Scale (TraitBar echo) ───────────────────────────────────── */
-.scale {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-sm);
-  margin-top: var(--sp-xs);
-}
-.scaleHeader {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--fs-sm);
-  color: var(--text-sec);
-  font-weight: var(--fw-medium);
-  line-height: var(--lh-tight);
-}
-.pole { white-space: nowrap; }
-
-.barRow {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-md);
-  padding-top: 2px;
-}
-
-/* ── The fat axis-color track — TraitBar.trait-track ─────────── */
-.track {
-  position: relative;
-  height: var(--bar-h);
-  border-radius: 999px;
-  overflow: visible;
-}
-
-/* tick dots sitting ON the track */
-.tick {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  z-index: 1;
-}
-
-/* white circular marker — TraitBar.trait-dot, exact dimensions */
-.marker {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 2.5px solid;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  z-index: 2;
-  transition: left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .marker { transition: none; }
-}
-
-/* ── Hit targets (the 5 buttons, sit BELOW the track) ────────── */
-.hits {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0;
-}
-.hit {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 28px;
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  border: 0;
-  font-family: inherit;
-  cursor: pointer;
+/* ── Options ── */
+.optsLabel {
+  font-size: var(--fs-xs);
   color: var(--sub);
-  border-radius: 6px;
-  transition: color 150ms ease, background 150ms ease;
-}
-.hitNum {
-  font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
-  font-variant-numeric: tabular-nums;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
 }
-.hit[aria-checked='true'] {
+.opt {
+  display: block; width: 100%;
+  padding: var(--sp-md) 20px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  text-align: left;
+  cursor: pointer;
+  margin-bottom: var(--sp-sm);
+  transition: border-color 0.12s ease-out, background 0.12s ease-out;
   color: var(--text);
+  line-height: 1.5;
+  min-height: 48px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  font-family: inherit;
 }
-@media (hover: hover) {
-  .hit:not([aria-checked='true']):hover {
-    background: var(--hover-wash);
-    color: var(--text);
-  }
-}
-.hit:focus-visible {
+.opt:hover { border-color: #b0b4be; background: var(--hover-wash); }
+.opt:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
+.optNum { font-weight: var(--fw-bold); margin-right: 10px; }
+
 @media (prefers-reduced-motion: reduce) {
-  .hit { transition: none; }
+  .opt { transition: none; }
 }
 
-/* ── Caption (footnote tier) ─────────────────────────────────── */
-.foot {
-  margin: 0;
-  font-size: 12px;
-  color: var(--sub);
-  text-align: center;
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Mobile collapse (<900px) ────────────────────────────────── */
 @media (max-width: 900px) {
-  .card {
-    padding: var(--sp-lg);
-    gap: var(--sp-md);
-  }
-  .scenario {
-    font-size: 18px;
-  }
-  .tagPre { font-size: 11px; }
-  .qIndex { font-size: 11px; }
+  .scenario { font-size: var(--fs-lg); padding: var(--sp-lg) var(--sp-sm); }
 }
