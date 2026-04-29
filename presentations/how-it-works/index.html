@@ -778,25 +778,337 @@
     text-align: center;
   }
 
-  /* ============ Slide 5: Result ============ */
+  /* ============ Slide 5: Result components ============ */
   .s5-body {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 56px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
     flex: 1;
-    align-items: center;
+    align-items: stretch;
   }
-  .s5-shot {
+  .s5-card {
     background: var(--card);
     border-radius: var(--card-r);
     box-shadow: var(--card-shadow);
-    padding: 16px;
-    display: flex; align-items: center; justify-content: center;
+    padding: 32px 28px;
+    display: flex; flex-direction: column;
+    gap: 16px;
   }
-  .s5-shot img {
-    max-width: 100%;
-    max-height: 640px;
+  .s5-card-head {
+    display: flex; align-items: baseline; gap: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+  .s5-card-num {
+    font-size: 48px; font-weight: 800;
+    color: var(--hall-indigo);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .s5-card-title { display: flex; flex-direction: column; gap: 2px; }
+  .s5-card-label {
+    font-size: 18px; font-weight: 700;
+    color: var(--text);
+  }
+  .s5-card-note {
+    font-size: 12px; font-weight: 600;
+    color: var(--sub);
+    letter-spacing: 0.04em;
+  }
+
+  /* 32 アーキタイプ — encoding strip */
+  .s5-encoding {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .s5-axis-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px; align-items: center;
+    font-size: 13px;
+  }
+  .s5-axis-row .pole {
+    padding: 6px 10px;
     border-radius: 8px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .s5-axis-row .pole .letter {
+    font-weight: 800; font-size: 14px;
+    margin-right: 4px;
+  }
+  .s5-axis-row.A .pole.lo { background: var(--A-tint); color: var(--A); }
+  .s5-axis-row.A .pole.hi { background: var(--A); color: white; }
+  .s5-axis-row.B .pole.lo { background: var(--B-tint); color: var(--B); }
+  .s5-axis-row.B .pole.hi { background: var(--B); color: white; }
+  .s5-axis-row.C .pole.lo { background: var(--C-tint); color: var(--C); }
+  .s5-axis-row.C .pole.hi { background: var(--C); color: white; }
+  .s5-axis-row.D .pole.lo { background: var(--D-tint); color: var(--D); }
+  .s5-axis-row.D .pole.hi { background: var(--D); color: white; }
+  .s5-axis-row.E .pole.lo { background: var(--E-tint); color: var(--E); }
+  .s5-axis-row.E .pole.hi { background: var(--E); color: white; }
+  .s5-axis-row .pole.hi { font-weight: 700; }
+  .s5-axis-row .vs {
+    font-size: 10px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.08em;
+  }
+  .s5-encoding-foot {
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 12px; line-height: 1.6;
+    color: var(--text-sec);
+    border-top: 1px solid var(--border-light);
+  }
+  .s5-encoding-foot strong {
+    font-weight: 800; color: var(--hall-indigo);
+    font-family: monospace;
+  }
+
+  /* 103 部署ランキング — top + bottom preview */
+  .s5-rank {
+    display: flex; flex-direction: column;
+    gap: 6px;
+  }
+  .s5-rank-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 56px;
+    gap: 10px; align-items: center;
+    font-size: 14px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-radius: 8px;
+  }
+  .s5-rank-row .pos {
+    font-weight: 800; color: var(--text-sec);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .s5-rank-row .name {
+    font-weight: 600; color: var(--text);
+  }
+  .s5-rank-row .pct {
+    font-weight: 700; color: var(--hall-indigo);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .s5-rank-row.top .pct { color: var(--C); }
+  .s5-rank-row.bottom .pct { color: var(--A); }
+  .s5-rank-divider {
+    text-align: center;
+    font-size: 14px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.2em;
+    padding: 4px 0;
+  }
+
+  /* 5 軸プロファイル — mini bars */
+  .s5-profile {
+    display: flex; flex-direction: column;
+    gap: 12px;
+  }
+  .s5-prof-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .s5-prof-row .head {
+    display: flex; justify-content: space-between;
+    font-size: 13px;
+  }
+  .s5-prof-row .head .lbl {
+    font-weight: 600; color: var(--text);
+  }
+  .s5-prof-row .head .pole {
+    font-size: 11px; color: var(--sub);
+    font-weight: 600;
+  }
+  .s5-prof-row .track {
+    height: 10px;
+    background: var(--border-light);
+    border-radius: 5px;
+    position: relative;
+  }
+  .s5-prof-row .track::before {
+    content: ''; position: absolute;
+    left: 50%; top: -2px; bottom: -2px;
+    width: 1px; background: var(--sub); opacity: 0.4;
+  }
+  .s5-prof-row .fill {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-radius: 5px;
+  }
+  .s5-prof-row.A .fill { background: var(--A-mid); }
+  .s5-prof-row.B .fill { background: var(--B-mid); }
+  .s5-prof-row.C .fill { background: var(--C-mid); }
+  .s5-prof-row.D .fill { background: var(--D-mid); }
+  .s5-prof-row.E .fill { background: var(--E-mid); }
+
+  /* ============ Slide 6: Example result ============ */
+  .s6-body {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 32px;
+    flex: 1;
+  }
+  .s6-archetype {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 36px 40px;
+    border-left: 6px solid var(--A);
+    display: flex; flex-direction: column;
+    gap: 16px;
+  }
+  .s6-archetype-eyebrow {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--sub);
+    text-transform: uppercase;
+  }
+  .s6-archetype-code {
+    display: flex; gap: 8px;
+  }
+  .s6-archetype-code span {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 800;
+    color: white;
+  }
+  .s6-archetype-code span:nth-child(1) { background: var(--A); }
+  .s6-archetype-code span:nth-child(2) { background: var(--B); }
+  .s6-archetype-code span:nth-child(3) { background: var(--C); }
+  .s6-archetype-code span:nth-child(4) { background: var(--D); }
+  .s6-archetype-code span:nth-child(5) { background: var(--E); }
+  .s6-archetype-name {
+    font-size: 44px; font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1.2;
+  }
+  .s6-archetype-name small {
+    font-size: 18px; font-weight: 600;
+    color: var(--text-sec);
+    margin-left: 8px;
+  }
+  .s6-archetype-desc {
+    font-size: 17px; line-height: 1.75;
+    color: var(--text-sec);
+  }
+  .s6-archetype-profile {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .s6-archetype-profile .head {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .s6-archetype-profile .row {
+    display: grid;
+    grid-template-columns: 140px 1fr 56px;
+    gap: 12px; align-items: center;
+    font-size: 13px;
+  }
+  .s6-archetype-profile .row .lbl {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .s6-archetype-profile .row .track {
+    position: relative;
+    height: 8px;
+    background: var(--border-light);
+    border-radius: 4px;
+  }
+  .s6-archetype-profile .row .track::before {
+    content: ''; position: absolute;
+    left: 50%; top: -2px; bottom: -2px;
+    width: 1px; background: var(--sub); opacity: 0.4;
+  }
+  .s6-archetype-profile .row .fill {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-radius: 4px;
+  }
+  .s6-archetype-profile .row.A .fill { background: var(--A-mid); }
+  .s6-archetype-profile .row.B .fill { background: var(--B-mid); }
+  .s6-archetype-profile .row.C .fill { background: var(--C-mid); }
+  .s6-archetype-profile .row.D .fill { background: var(--D-mid); }
+  .s6-archetype-profile .row.E .fill { background: var(--E-mid); }
+  .s6-archetype-profile .row .v {
+    font-size: 12px; font-weight: 700;
+    color: var(--text-sec);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .s6-rank-card {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 32px;
+    display: flex; flex-direction: column;
+  }
+  .s6-rank-card h3 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    color: var(--hall-indigo);
+  }
+  .s6-rank-card .sub {
+    font-size: 13px; color: var(--sub);
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+  }
+  .s6-rank-list {
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .s6-rank-item {
+    display: grid;
+    grid-template-columns: 32px 1fr 80px;
+    gap: 12px; align-items: center;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 10px;
+  }
+  .s6-rank-item.top1 {
+    background: linear-gradient(90deg, rgba(76,175,125,0.18), var(--bg));
+    border: 1px solid var(--C-mid);
+  }
+  .s6-rank-item .pos {
+    font-weight: 800;
+    color: var(--text-sec);
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .s6-rank-item.top1 .pos { color: var(--C); }
+  .s6-rank-item .name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .s6-rank-item .meter {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .s6-rank-item .pct {
+    font-weight: 800;
+    color: var(--hall-indigo);
+    font-variant-numeric: tabular-nums;
+    font-size: 16px;
+  }
+  .s6-rank-foot {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    font-size: 13px;
+    color: var(--sub);
   }
   .s5-explain { display: flex; flex-direction: column; gap: 28px; }
 
@@ -1190,43 +1502,178 @@
       </div>
     </section>
 
-    <!-- Slide 5: Result -->
+    <!-- Slide 5: Result components -->
     <section class="slide has-pipeline" data-slide="5" data-section="結果" data-stage="4">
       <header class="sec-header">
-        <h2 class="sec-title">アーキタイプ ＋ 部署ランキング</h2>
+        <h2 class="sec-title">結果に含まれる3つの要素</h2>
         <div class="sec-stripe"></div>
-        <div class="sec-sub">受検者ごとに1つのタイプと、103部署の適合度ランキングを提示します。</div>
+        <div class="sec-sub">受検者ごとに、アーキタイプ・部署ランキング・軸プロファイルが提示されます。</div>
       </header>
       <div class="s5-body">
-        <div class="s5-shot">
-          <img src="screenshots/results.png" alt="アプリの結果画面" />
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-num">32</div>
+            <div class="s5-card-title">
+              <div class="s5-card-label">アーキタイプ</div>
+              <div class="s5-card-note">5軸 × 2方向 ＝ 32タイプ</div>
+            </div>
+          </div>
+          <div class="s5-encoding">
+            <div class="s5-axis-row A">
+              <div class="pole lo"><span class="letter">F</span>制度・仕組み</div>
+              <div class="vs">／</div>
+              <div class="pole hi"><span class="letter">D</span>市民対話</div>
+            </div>
+            <div class="s5-axis-row B">
+              <div class="pole lo"><span class="letter">P</span>政策立案</div>
+              <div class="vs">／</div>
+              <div class="pole hi"><span class="letter">A</span>現場対応</div>
+            </div>
+            <div class="s5-axis-row C">
+              <div class="pole lo"><span class="letter">R</span>ルール管理</div>
+              <div class="vs">／</div>
+              <div class="pole hi"><span class="letter">S</span>市民支援</div>
+            </div>
+            <div class="s5-axis-row D">
+              <div class="pole lo"><span class="letter">I</span>革新推進</div>
+              <div class="vs">／</div>
+              <div class="pole hi"><span class="letter">C</span>安定運営</div>
+            </div>
+            <div class="s5-axis-row E">
+              <div class="pole lo"><span class="letter">X</span>専門追求</div>
+              <div class="vs">／</div>
+              <div class="pole hi"><span class="letter">G</span>幅広対応</div>
+            </div>
+          </div>
+          <div class="s5-encoding-foot">
+            各軸で2極のうち1つを選び、5文字コードでタイプが決まる。<br/>
+            例：<strong>DASCG</strong> 型（5軸すべて＋方向）
+          </div>
         </div>
-        <div class="s5-explain">
-          <div class="s5-archetype">
-            <div class="s5-archetype-eyebrow">アーキタイプの例</div>
-            <div class="s5-archetype-code">
-              <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
-            </div>
-            <div class="s5-archetype-name">街のよろず屋<small>（DASCG型）</small></div>
-            <div class="s5-archetype-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在。</div>
-          </div>
-          <div class="s5-stats">
-            <div>
-              <div class="num">32</div>
-              <div class="lbl">アーキタイプ</div>
-              <div class="note">5軸 × 2方向</div>
-            </div>
-            <div>
-              <div class="num">103</div>
-              <div class="lbl">部署ランキング</div>
-              <div class="note">適合度順</div>
-            </div>
-            <div>
-              <div class="num">5</div>
-              <div class="lbl">軸プロファイル</div>
-              <div class="note">強み／弱み</div>
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-num">103</div>
+            <div class="s5-card-title">
+              <div class="s5-card-label">部署ランキング</div>
+              <div class="s5-card-note">全部署を適合度順</div>
             </div>
           </div>
+          <div class="s5-rank">
+            <div class="s5-rank-row top">
+              <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
+            </div>
+            <div class="s5-rank-row top">
+              <span class="pos">2</span><span class="name">健康総務課</span><span class="pct">87.5%</span>
+            </div>
+            <div class="s5-rank-row top">
+              <span class="pos">3</span><span class="name">子育て支援課</span><span class="pct">84.3%</span>
+            </div>
+            <div class="s5-rank-divider">⋯</div>
+            <div class="s5-rank-row bottom">
+              <span class="pos">102</span><span class="name">財政課</span><span class="pct">22.1%</span>
+            </div>
+            <div class="s5-rank-row bottom">
+              <span class="pos">103</span><span class="name">監査委員事務局</span><span class="pct">18.4%</span>
+            </div>
+          </div>
+          <div class="s5-encoding-foot">
+            上位だけでなく下位も確認できる。<br/>
+            「なぜ向かないのか」も含めた自己理解に。
+          </div>
+        </div>
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-num">5</div>
+            <div class="s5-card-title">
+              <div class="s5-card-label">軸プロファイル</div>
+              <div class="s5-card-note">あなたの傾向</div>
+            </div>
+          </div>
+          <div class="s5-profile">
+            <div class="s5-prof-row A">
+              <div class="head"><span class="lbl">人との関わり方</span><span class="pole">市民対話寄り</span></div>
+              <div class="track"><span class="fill" style="left:50%;width:15%"></span></div>
+            </div>
+            <div class="s5-prof-row B">
+              <div class="head"><span class="lbl">仕事の進め方</span><span class="pole">政策立案寄り</span></div>
+              <div class="track"><span class="fill" style="left:25%;width:25%"></span></div>
+            </div>
+            <div class="s5-prof-row C">
+              <div class="head"><span class="lbl">担う役割</span><span class="pole">市民支援寄り</span></div>
+              <div class="track"><span class="fill" style="left:50%;width:30%"></span></div>
+            </div>
+            <div class="s5-prof-row D">
+              <div class="head"><span class="lbl">変化への姿勢</span><span class="pole">中間</span></div>
+              <div class="track"><span class="fill" style="left:50%;width:5%"></span></div>
+            </div>
+            <div class="s5-prof-row E">
+              <div class="head"><span class="lbl">知識のスタイル</span><span class="pole">幅広対応寄り</span></div>
+              <div class="track"><span class="fill" style="left:50%;width:10%"></span></div>
+            </div>
+          </div>
+          <div class="s5-encoding-foot">
+            どの軸が強い／弱いかが視覚的にわかる。<br/>
+            軸ごとの伸びしろも把握できる。
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Slide 6: Example result -->
+    <section class="slide has-pipeline" data-slide="6" data-section="例" data-stage="4">
+      <header class="sec-header">
+        <h2 class="sec-title">受検者の結果（例）</h2>
+        <div class="sec-stripe"></div>
+        <div class="sec-sub">DASCG 型の受検者が見る画面の構成。</div>
+      </header>
+      <div class="s6-body">
+        <div class="s6-archetype">
+          <div class="s6-archetype-eyebrow">あなたのタイプ</div>
+          <div class="s6-archetype-code">
+            <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
+          </div>
+          <div class="s6-archetype-name">街のよろず屋<small>型</small></div>
+          <div class="s6-archetype-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在です。</div>
+          <div class="s6-archetype-profile">
+            <div class="head">5軸プロファイル</div>
+            <div class="row A"><span class="lbl">人との関わり方</span><span class="track"><span class="fill" style="left:50%;width:15%"></span></span><span class="v">+0.6</span></div>
+            <div class="row B"><span class="lbl">仕事の進め方</span><span class="track"><span class="fill" style="left:25%;width:25%"></span></span><span class="v">−1.0</span></div>
+            <div class="row C"><span class="lbl">担う役割</span><span class="track"><span class="fill" style="left:50%;width:30%"></span></span><span class="v">+1.2</span></div>
+            <div class="row D"><span class="lbl">変化への姿勢</span><span class="track"><span class="fill" style="left:50%;width:5%"></span></span><span class="v">+0.2</span></div>
+            <div class="row E"><span class="lbl">知識のスタイル</span><span class="track"><span class="fill" style="left:50%;width:10%"></span></span><span class="v">+0.4</span></div>
+          </div>
+        </div>
+        <div class="s6-rank-card">
+          <h3>あなたに合う部署</h3>
+          <div class="sub">適合度ランキング（103部署中）</div>
+          <div class="s6-rank-list">
+            <div class="s6-rank-item top1">
+              <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">2</span><span class="name">健康総務課</span><span class="pct">87.5%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">3</span><span class="name">子育て支援課</span><span class="pct">84.3%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">4</span><span class="name">市民相談課</span><span class="pct">82.0%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">5</span><span class="name">障害福祉課</span><span class="pct">80.7%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">6</span><span class="name">高齢福祉課</span><span class="pct">79.2%</span>
+            </div>
+            <div class="s6-rank-item">
+              <span class="pos">7</span><span class="name">地域安全課</span><span class="pct">77.5%</span>
+            </div>
+          </div>
+          <div class="s6-rank-foot">⋯ 全103部署を確認可能 ⋯</div>
         </div>
       </div>
     </section>
