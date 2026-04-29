@@ -43,6 +43,34 @@ export function Welcome() {
       </div>
       <section className={s.right}>
         <div className={s.carouselWrap}>
+          <div className={s.explainerHead} data-testid="explainer-head">
+            <button
+              type="button"
+              className={s.navBtn}
+              data-testid="explainer-prev"
+              aria-label="前のステップ"
+              onClick={() => onJump(idx - 1)}
+              disabled={idx === 0}
+            >
+              ←
+            </button>
+            <span className={s.explainerLabel}>
+              <span className={s.explainerEyebrow}>仕組み · HOW IT WORKS</span>
+              <span className={s.explainerCount} data-testid="explainer-count">
+                {idx + 1} / {SLIDE_COUNT}
+              </span>
+            </span>
+            <button
+              type="button"
+              className={s.navBtn}
+              data-testid="explainer-next"
+              aria-label="次のステップ"
+              onClick={() => onJump(idx + 1)}
+              disabled={idx === SLIDE_COUNT - 1}
+            >
+              →
+            </button>
+          </div>
           <HomepageCarousel idx={idx} onIdxChange={setIdx} />
         </div>
       </section>

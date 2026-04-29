@@ -63,6 +63,19 @@ test('stepper: numeral renders only on active segment', async ({ page }) => {
   await expect(page.getByTestId('stepper-step-1')).toHaveText('');
 });
 
+test('explainer head: counter updates and chevrons navigate', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('explainer-head')).toBeVisible();
+  await expect(page.getByTestId('explainer-count')).toHaveText('1 / 5');
+  await expect(page.getByTestId('explainer-prev')).toBeDisabled();
+  await page.getByTestId('explainer-next').click();
+  await expect(page.getByTestId('explainer-count')).toHaveText('2 / 5');
+  await expect(page.getByTestId('carousel-slide-2')).toHaveAttribute('data-active', 'true');
+  await expect(page.getByTestId('explainer-prev')).toBeEnabled();
+  await page.getByTestId('explainer-prev').click();
+  await expect(page.getByTestId('explainer-count')).toHaveText('1 / 5');
+});
+
 test('layout: page does not scroll vertically at 1440x900', async ({ page }) => {
   await page.goto('/');
   const overflow = await page.evaluate(() =>
