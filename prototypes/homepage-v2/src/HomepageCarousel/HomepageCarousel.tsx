@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import s from './HomepageCarousel.module.css';
 import { Slide2Input } from './slides/Slide2Input';
 import { Slide3Scoring } from './slides/Slide3Scoring';
@@ -21,24 +20,7 @@ type Props = {
   onIdxChange: (i: number) => void;
 };
 
-export function HomepageCarousel({ idx, onIdxChange }: Props) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const ae = document.activeElement as HTMLElement | null;
-      const tag = ae?.tagName;
-      const editable = ae?.isContentEditable;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || editable) return;
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        onIdxChange(Math.min(SLIDE_COUNT - 1, idx + 1));
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        onIdxChange(Math.max(0, idx - 1));
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [idx, onIdxChange]);
+export function HomepageCarousel({ idx, onIdxChange: _onIdxChange }: Props) {
 
   return (
     <section className={s.carousel} aria-label="部署タイプ診断の仕組み">
@@ -50,8 +32,9 @@ export function HomepageCarousel({ idx, onIdxChange }: Props) {
             data-active={i === idx ? 'true' : 'false'}
             className={s.slide}
             hidden={i !== idx}
+            aria-hidden={i !== idx ? 'true' : undefined}
           >
-            {node}
+            {i === idx ? node : null}
           </div>
         ))}
       </div>

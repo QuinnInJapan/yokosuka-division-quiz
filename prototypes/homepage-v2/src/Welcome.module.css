@@ -1,0 +1,141 @@
+:root {
+  --hero-w: 420px;
+  --col-pad: var(--sp-2xl);
+  --hero-accent: #F5EBD8;
+}
+
+/* Reset prototype-level container constraints inherited from main app layout.css */
+:global(html),
+:global(body),
+:global(#root) {
+  height: 100%;
+  overflow: hidden;
+  max-width: none;
+  padding: 0;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: var(--hero-w) 1fr;
+  height: 100vh;
+  background: var(--bg);
+}
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+}
+
+.hero {
+  position: relative;
+  background: var(--hall-indigo);
+  color: white;
+  padding-inline: var(--col-pad);
+  padding-block: var(--col-pad);
+  display: flex; flex-direction: column;
+  gap: var(--sp-md);
+  overflow: hidden;
+  height: 100%;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 56px;
+  font-weight: var(--fw-black);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: white;
+}
+
+.lede {
+  font-size: 16px;
+  font-weight: var(--fw-normal);
+  color: white;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 32ch;
+}
+
+.stats {
+  list-style: none; padding: 0;
+  margin: var(--sp-xl) 0 0;
+  display: flex; gap: var(--sp-xl);
+}
+.stats li {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.statN {
+  font-size: 56px;
+  font-weight: var(--fw-black);
+  color: var(--hero-accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.statL {
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.14em;
+  color: white;
+  text-transform: uppercase;
+}
+
+.cta {
+  align-self: flex-start;
+  margin-top: var(--sp-lg);
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 28px;
+  background: white;
+  color: var(--hall-indigo);
+  border: 0; border-radius: 999px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+@media (hover: hover) {
+  .cta:hover { transform: translateY(-1px); }
+}
+.cta:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta { transition: none; }
+  .cta:hover { transform: none; }
+}
+
+.stripes {
+  position: absolute;
+  left: var(--col-pad);
+  bottom: var(--col-pad);
+  display: flex; gap: 4px;
+}
+.stripe {
+  width: 4px;
+  height: 60px;
+  border-radius: 1px;
+}
+
+.right {
+  padding-inline: var(--col-pad);
+  padding-block: var(--col-pad);
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  height: 100%;
+}
+.carouselWrap {
+  width: 100%;
+  display: flex; flex-direction: column;
+  gap: var(--sp-md);
+  min-width: 0;
+  overflow: hidden;
+}
