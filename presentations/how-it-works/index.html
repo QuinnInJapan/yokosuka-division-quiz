@@ -5,7 +5,6 @@
 <title>部署タイプ診断：その仕組み</title>
 <style>
   :root {
-    /* Palette — copied from src/styles/tokens.css */
     --A: #C0392B; --A-mid: #E8534A; --A-tint: #FFF0EE;
     --B: #2E6DB4; --B-mid: #4A90D9; --B-tint: #EBF3FC;
     --C: #1E7345; --C-mid: #4CAF7D; --C-tint: #ECF8F1;
@@ -22,6 +21,7 @@
     --border-light: #F0F2F7;
     --card-shadow: 0 2px 20px rgba(0,0,0,0.08);
     --card-r: 16px;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
 
     --font: 'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',
             Meiryo,-apple-system,sans-serif;
@@ -36,7 +36,6 @@
   }
   * { box-sizing: border-box; }
 
-  /* 1920x1080 stage, scale-to-fit */
   .stage {
     position: fixed;
     top: 50%; left: 50%;
@@ -46,13 +45,93 @@
     overflow: hidden;
   }
 
+  /* ============ Pipeline TOC ============ */
+  .pipeline {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 88px;
+    display: flex;
+    align-items: stretch;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms var(--ease);
+  }
+  .pipeline.show { opacity: 1; pointer-events: auto; }
+  .pipeline-step {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px;
+    padding: 0 24px;
+    cursor: pointer;
+    position: relative;
+    color: var(--sub);
+    transition: color 200ms var(--ease), background 200ms var(--ease);
+  }
+  .pipeline-step + .pipeline-step::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 1px; height: 32px;
+    background: var(--border);
+  }
+  .pipeline-step:hover { background: var(--bg); color: var(--text-sec); }
+  .pipeline-step .num {
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+  }
+  .pipeline-step .label {
+    font-size: 22px; font-weight: 700;
+  }
+  .pipeline-step .en {
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em;
+    opacity: 0.55;
+    text-transform: uppercase;
+  }
+  .pipeline-step::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: transparent;
+    transition: background 200ms var(--ease);
+  }
+  .pipeline-step.active { color: var(--hall-indigo); }
+  .pipeline-step.active::after { background: var(--hall-indigo); }
+  .pipeline-step.done { color: var(--text-sec); }
+  .pipeline-step.done::after { background: var(--border); }
+  .pipeline-step .arrow {
+    position: absolute;
+    right: -10px; top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    color: var(--border);
+    pointer-events: none;
+  }
+  .pipeline-step:last-child .arrow { display: none; }
+
+  /* ============ Slides ============ */
   .slide {
-    position: absolute; inset: 0;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
     padding: 96px;
     display: none;
     flex-direction: column;
   }
-  .slide.active { display: flex; }
+  .slide.has-pipeline { padding-top: 152px; }
+  .slide.active {
+    display: flex;
+    animation: slideEnter 240ms var(--ease);
+  }
+  @keyframes slideEnter {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
   .footer {
     position: absolute;
@@ -63,9 +142,18 @@
     color: var(--sub);
   }
 
-  /* ============ Slide 1: Title ============ */
+  /* ============ Slide 1: Cover ============ */
   .s1 {
-    align-items: flex-start;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 96px;
+  }
+  .s1.active { display: flex; }
+  .s1-text {
+    flex: 0 0 720px;
+    display: flex; flex-direction: column;
     justify-content: center;
   }
   .s1-eyebrow {
@@ -76,7 +164,7 @@
     margin-bottom: 24px;
   }
   .s1-title {
-    font-size: 96px;
+    font-size: 88px;
     font-weight: 700;
     line-height: 1.15;
     color: var(--hall-indigo);
@@ -84,17 +172,17 @@
     margin: 0 0 32px;
   }
   .s1-subtitle {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 400;
     color: var(--text-sec);
     line-height: 1.5;
-    max-width: 1100px;
+    max-width: 720px;
   }
   .s1-axis-bar {
-    margin-top: 64px;
+    margin-top: 56px;
     display: flex;
     height: 8px;
-    width: 480px;
+    width: 420px;
   }
   .s1-axis-bar > span { flex: 1; }
   .s1-axis-bar > span:nth-child(1) { background: var(--A-mid); }
@@ -103,46 +191,242 @@
   .s1-axis-bar > span:nth-child(4) { background: var(--D-mid); }
   .s1-axis-bar > span:nth-child(5) { background: var(--E-mid); }
 
-  /* ============ Shared: section header ============ */
-  .sec-header {
-    margin-bottom: 48px;
+  /* Cover pipeline flow */
+  .s1-flow {
+    flex: 0 0 640px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
   }
-  .sec-eyebrow {
-    font-size: 18px;
-    font-weight: 500;
+  .s1-flow-spine {
+    position: absolute;
+    left: 91px;
+    top: 16px; bottom: 16px;
+    width: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+
+  .s1-stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 18px 24px;
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: var(--card-shadow);
+    z-index: 1;
+    opacity: 0;
+    transform: translateX(12px);
+    border: 2px solid transparent;
+    transition: border-color 280ms var(--ease), box-shadow 280ms var(--ease), transform 280ms var(--ease);
+    animation: s1stageIn 480ms var(--ease) forwards;
+  }
+  .s1.active .s1-stage:nth-child(2) { animation-delay: 200ms; }
+  .s1.active .s1-stage:nth-child(3) { animation-delay: 360ms; }
+  .s1.active .s1-stage:nth-child(4) { animation-delay: 520ms; }
+  .s1.active .s1-stage:nth-child(5) { animation-delay: 680ms; }
+  @keyframes s1stageIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .s1-stage.glow {
+    border-color: var(--hall-indigo);
+    box-shadow: 0 8px 32px rgba(28,35,64,0.18);
+    transform: translateX(0) scale(1.015);
+  }
+  .s1-stage.glow .s1-stage-glyph {
+    background: var(--card);
+    border-color: var(--hall-indigo);
+  }
+
+  .s1-stage-glyph {
+    width: 88px; height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: background 280ms var(--ease), border-color 280ms var(--ease);
+  }
+  .s1-stage-meta { display: flex; flex-direction: column; gap: 4px; }
+  .s1-stage-num {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em;
     color: var(--sub);
+  }
+  .s1-stage-name {
+    font-size: 24px; font-weight: 700;
+    color: var(--hall-indigo);
+    line-height: 1.2;
+  }
+  .s1-stage-desc {
+    font-size: 14px;
+    color: var(--text-sec);
+    line-height: 1.5;
+  }
+
+  /* Glyph: 20 question dots — fixed-size circles, centered */
+  .glyph-dots {
+    display: grid;
+    grid-template-columns: repeat(5, 8px);
+    grid-template-rows: repeat(4, 8px);
+    gap: 6px;
+    justify-content: center; align-content: center;
+  }
+  .glyph-dots span {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .glyph-dots span:nth-child(5n-4) { background: var(--A-mid); }
+  .glyph-dots span:nth-child(5n-3) { background: var(--B-mid); }
+  .glyph-dots span:nth-child(5n-2) { background: var(--C-mid); }
+  .glyph-dots span:nth-child(5n-1) { background: var(--D-mid); }
+  .glyph-dots span:nth-child(5n)   { background: var(--E-mid); }
+
+  /* Glyph: 5 diverging axis bars centered on midline */
+  .glyph-bars {
+    position: relative;
+    width: 64px; height: 56px;
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 5px;
+  }
+  .glyph-bars::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 4px; bottom: 4px;
+    width: 1px;
+    background: var(--border);
+  }
+  .glyph-bars i {
+    display: block;
+    position: relative;
+    height: 5px;
+    border-radius: 3px;
+  }
+  .glyph-bars i:nth-child(1) { margin-left: 50%; width: 38%; background: var(--A-mid); }
+  .glyph-bars i:nth-child(2) { margin-left: 22%; width: 28%; background: var(--B-mid); }
+  .glyph-bars i:nth-child(3) { margin-left: 50%; width: 46%; background: var(--C-mid); }
+  .glyph-bars i:nth-child(4) { margin-left: 50%; width: 14%; background: var(--D-mid); }
+  .glyph-bars i:nth-child(5) { margin-left: 50%; width: 22%; background: var(--E-mid); }
+
+  /* Glyph: side-by-side bar stacks (you vs dept) */
+  .glyph-vs {
+    display: flex; align-items: center;
+    gap: 10px;
+  }
+  .glyph-vs .stack {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .glyph-vs .stack i {
+    display: block;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--A-mid);
+  }
+  .glyph-vs .stack.you i:nth-child(1) { width: 22px; }
+  .glyph-vs .stack.you i:nth-child(2) { width: 14px; }
+  .glyph-vs .stack.you i:nth-child(3) { width: 26px; }
+  .glyph-vs .stack.you i:nth-child(4) { width: 10px; }
+  .glyph-vs .stack.you i:nth-child(5) { width: 16px; }
+  .glyph-vs .stack.dept i {
+    background: var(--B-mid);
+    margin-left: auto;
+  }
+  .glyph-vs .stack.dept i:nth-child(1) { width: 28px; }
+  .glyph-vs .stack.dept i:nth-child(2) { width: 12px; }
+  .glyph-vs .stack.dept i:nth-child(3) { width: 24px; }
+  .glyph-vs .stack.dept i:nth-child(4) { width: 16px; }
+  .glyph-vs .stack.dept i:nth-child(5) { width: 14px; }
+  .glyph-vs .vs {
+    font-size: 9px; font-weight: 800;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
+    color: var(--sub);
+  }
+
+  /* Glyph: ranking — numbered rows with bars */
+  .glyph-rank {
+    display: flex; flex-direction: column;
+    gap: 5px;
+  }
+  .glyph-rank .row {
+    display: flex; align-items: center;
+    gap: 6px;
+  }
+  .glyph-rank .num {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--hall-indigo);
+    color: white;
+    font-size: 8px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .glyph-rank .bar {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--hall-indigo);
+  }
+  .glyph-rank .row:nth-child(1) .bar { width: 44px; background: var(--A-mid); }
+  .glyph-rank .row:nth-child(2) .bar { width: 32px; background: var(--C-mid); }
+  .glyph-rank .row:nth-child(3) .bar { width: 22px; background: var(--D-mid); }
+  .glyph-rank .row:nth-child(2) .num,
+  .glyph-rank .row:nth-child(3) .num {
+    background: var(--text-sec);
+  }
+
+  /* ============ Section header ============ */
+  .sec-header {
+    margin-bottom: 32px;
   }
   .sec-title {
-    font-size: 56px;
+    font-size: 52px;
     font-weight: 700;
     line-height: 1.2;
     margin: 0 0 16px;
     color: var(--hall-indigo);
   }
   .sec-stripe {
-    height: 8px;
-    width: 96px;
+    height: 6px;
+    width: 80px;
     background: var(--hall-indigo);
+  }
+  .sec-sub {
+    margin-top: 12px;
+    font-size: 18px;
+    color: var(--text-sec);
   }
 
   /* ============ Slide 2: Input ============ */
   .s2-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 56px;
     flex: 1;
+    align-items: start;
   }
-  .s2-axes { display: flex; flex-direction: column; gap: 16px; }
+  .s2-axes { display: flex; flex-direction: column; gap: 14px; }
   .s2-axis-row {
     display: flex; align-items: center; gap: 20px;
-    padding: 16px 20px;
+    padding: 18px 22px;
     background: var(--card);
     border-radius: 12px;
     box-shadow: var(--card-shadow);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
   }
+  .s2-axis-row:hover { transform: translateX(4px); }
+  .s2-axis-row.active {
+    border-color: currentColor;
+  }
+  .s2-axis-row.A.active { color: var(--A); }
+  .s2-axis-row.B.active { color: var(--B); }
+  .s2-axis-row.C.active { color: var(--C); }
+  .s2-axis-row.D.active { color: var(--D); }
+  .s2-axis-row.E.active { color: var(--E); }
   .s2-axis-pill {
     padding: 6px 14px;
     border-radius: 999px;
@@ -158,21 +442,42 @@
   .s2-axis-label { flex: 1; }
   .s2-axis-name { font-size: 22px; font-weight: 700; color: var(--hall-indigo); margin-bottom: 4px; }
   .s2-axis-poles { font-size: 16px; color: var(--text-sec); }
+  .s2-axis-hint {
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--sub);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .s2-axis-row.active .s2-axis-hint { opacity: 1; color: currentColor; }
 
   .s2-example {
     background: var(--card);
     border-radius: var(--card-r);
-    padding: 32px;
+    padding: 36px;
     box-shadow: var(--card-shadow);
     display: flex; flex-direction: column;
+    min-height: 540px;
+    position: relative;
+  }
+  .s2-example-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .s2-example-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em;
   }
   .s2-example-label {
-    font-size: 14px; font-weight: 500; letter-spacing: 0.08em;
-    color: var(--sub); text-transform: uppercase; margin-bottom: 12px;
+    font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--sub); text-transform: uppercase;
   }
   .s2-example-q {
     font-size: 22px; line-height: 1.75; color: var(--text);
     margin: 0 0 24px;
+    transition: opacity 200ms var(--ease);
   }
   .s2-options {
     display: flex; flex-direction: column; gap: 8px;
@@ -183,126 +488,349 @@
     background: var(--card);
   }
   .s2-foot {
-    margin-top: 32px;
-    font-size: 18px;
+    margin-top: auto; padding-top: 24px;
+    font-size: 16px;
     color: var(--sub);
     text-align: center;
   }
 
   /* ============ Slide 3: Scoring ============ */
-  .s3-body { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; flex: 1; align-items: center; }
-  .s3-diagram { display: flex; flex-direction: column; gap: 12px; }
+  .s3-body {
+    display: grid;
+    grid-template-columns: 1fr 0.95fr;
+    gap: 64px;
+    flex: 1;
+    align-items: center;
+  }
+  .s3-left { display: flex; flex-direction: column; gap: 14px; }
   .s3-q {
     display: flex; align-items: center; gap: 16px;
-    background: var(--A-tint);
-    padding: 14px 20px; border-radius: 10px;
-    font-size: 18px; color: var(--text);
-    border: 1px solid transparent;
-  }
-  .s3-q .s3-label { font-weight: 700; min-width: 48px; color: var(--A); }
-  .s3-q .s3-val { font-weight: 800; min-width: 56px; text-align: right; }
-  .s3-q.reversed {
     background: var(--card);
-    border: 1px dashed var(--A-mid);
+    padding: 16px 22px; border-radius: 12px;
+    font-size: 18px; color: var(--text);
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
   }
-  .s3-q.reversed::after {
-    content: '反転'; margin-left: auto;
-    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
-    color: var(--A); padding: 2px 10px;
-    border: 1px solid var(--A); border-radius: 999px;
+  .s3-q:hover { transform: translateX(4px); }
+  .s3-q.active { border-color: var(--A); }
+  .s3-q .s3-label {
+    font-weight: 700; min-width: 40px; color: var(--A);
+    font-size: 14px; letter-spacing: 0.08em;
   }
+  .s3-q .s3-text { flex: 1; }
+  .s3-q .s3-pos {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .s3-pos .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 200ms var(--ease), transform 200ms var(--ease);
+  }
+  .s3-pos .dot.fill { background: var(--A-mid); transform: scale(1.3); }
+
   .s3-arrow {
-    text-align: center; font-size: 22px; color: var(--sub); margin: 8px 0;
-    font-weight: 500;
+    text-align: center;
+    font-size: 18px; font-weight: 600;
+    color: var(--sub);
+    margin: 12px 0;
+    letter-spacing: 0.08em;
   }
   .s3-result {
     background: var(--A); color: white;
-    border-radius: 12px; padding: 18px 24px;
+    border-radius: 12px; padding: 22px 28px;
     font-size: 22px; font-weight: 700;
     display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 24px rgba(192,57,43,0.25);
   }
-  .s3-result .num { font-size: 36px; font-weight: 800; }
+  .s3-result .pill {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 14px; letter-spacing: 0.12em;
+  }
+  .s3-result .needle {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .s3-result .scale {
+    width: 200px; height: 6px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    position: relative;
+  }
+  .s3-result .scale::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: -3px; bottom: -3px;
+    width: 1px;
+    background: rgba(255,255,255,0.5);
+  }
+  .s3-result .scale-fill {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-radius: 3px;
+    background: white;
+    transition: left 320ms var(--ease), width 320ms var(--ease);
+  }
+  .s3-result .label-pos {
+    font-size: 14px;
+    opacity: 0.85;
+    letter-spacing: 0.06em;
+  }
 
-  .s3-explain { font-size: 22px; line-height: 1.75; color: var(--text); }
-  .s3-explain h3 { font-size: 28px; margin: 0 0 16px; color: var(--hall-indigo); }
-  .s3-explain ul { margin: 0 0 24px; padding-left: 24px; }
-  .s3-explain li { margin-bottom: 8px; }
-  .s3-eq {
-    margin-top: 24px;
-    padding: 24px;
+  .s3-right {
     background: var(--card);
-    border-radius: 12px; box-shadow: var(--card-shadow);
-    font-size: 20px; line-height: 1.6;
+    border-radius: var(--card-r);
+    padding: 36px;
+    box-shadow: var(--card-shadow);
+    min-height: 480px;
+    display: flex; flex-direction: column;
   }
-  .s3-eq .formula { font-weight: 700; color: var(--A); }
-  .s3-eq .range { font-size: 16px; color: var(--sub); display: block; margin-top: 6px; }
+  .s3-right-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .s3-right-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--A-tint); color: var(--A);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .s3-right-label {
+    font-size: 14px; font-weight: 600;
+    color: var(--sub); letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .s3-right-q {
+    font-size: 20px; line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 24px;
+  }
+  .s3-right-options {
+    display: flex; flex-direction: column; gap: 8px;
+    flex: 1;
+  }
+  .s3-right-option {
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 16px;
+    color: var(--text-sec);
+    background: var(--card);
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all 200ms var(--ease);
+  }
+  .s3-right-option.chosen {
+    border-color: var(--A);
+    background: var(--A-tint);
+    color: var(--A);
+    font-weight: 700;
+  }
+  .s3-right-option .check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+  .s3-right-option.chosen .check {
+    background: var(--A);
+    border-color: var(--A);
+    position: relative;
+  }
+  .s3-right-option.chosen .check::after {
+    content: '';
+    position: absolute;
+    left: 5px; top: 2px;
+    width: 5px; height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
 
   /* ============ Slide 4: Comparison ============ */
-  .s4-body { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; flex: 1; align-items: center; }
-  .s4-vec {
-    background: var(--card); border-radius: var(--card-r);
-    box-shadow: var(--card-shadow); padding: 32px;
+  .s4-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    flex: 1;
+    align-items: center;
   }
-  .s4-vec h3 { margin: 0 0 20px; font-size: 24px; color: var(--hall-indigo); }
-  .s4-bars { display: flex; flex-direction: column; gap: 14px; }
-  .s4-bar { display: flex; align-items: center; gap: 12px; }
-  .s4-bar .ax { width: 28px; font-weight: 700; color: var(--text-sec); }
+  .s4-card {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 36px;
+  }
+  .s4-card h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: var(--hall-indigo);
+  }
+  .s4-card .sub {
+    font-size: 14px;
+    color: var(--sub);
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+  }
+  .s4-bars { display: flex; flex-direction: column; gap: 16px; }
+  .s4-bar {
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 200ms var(--ease);
+  }
+  .s4-bar:hover { background: var(--bg); }
+  .s4-bar.active { background: var(--bg); }
+  .s4-bar .ax {
+    width: 28px; font-weight: 700;
+    color: var(--text-sec);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+  .s4-bar.active.A .ax { color: var(--A); }
+  .s4-bar.active.B .ax { color: var(--B); }
+  .s4-bar.active.C .ax { color: var(--C); }
+  .s4-bar.active.D .ax { color: var(--D); }
+  .s4-bar.active.E .ax { color: var(--E); }
   .s4-bar .track {
-    flex: 1; height: 12px; background: var(--border-light);
-    position: relative; border-radius: 6px;
+    flex: 1; height: 14px; background: var(--border-light);
+    position: relative; border-radius: 7px;
   }
   .s4-bar .track::before {
     content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px;
-    width: 1px; background: var(--sub);
+    width: 1px; background: var(--sub); opacity: 0.4;
   }
   .s4-bar .fill {
-    position: absolute; top: 0; bottom: 0; border-radius: 6px;
+    position: absolute; top: 0; bottom: 0;
+    border-radius: 7px;
+    transition: opacity 200ms var(--ease);
   }
-  .s4-bar .v { font-weight: 700; min-width: 48px; text-align: right; color: var(--text); }
+  .s4-bar.active .fill { opacity: 1; }
+  .s4-bar .gap {
+    position: absolute;
+    top: -4px; bottom: -4px;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(28,35,64,0.15),
+      rgba(28,35,64,0.15) 4px,
+      transparent 4px,
+      transparent 8px
+    );
+    border-radius: 7px;
+    opacity: 0;
+    transition: opacity 200ms var(--ease);
+  }
+  .s4-bar.active .gap { opacity: 1; }
+  .s4-bar .v {
+    font-weight: 700; min-width: 56px;
+    text-align: right; color: var(--text);
+    font-size: 16px;
+  }
 
-  .s4-formula {
-    margin-top: 32px; padding: 24px 32px;
+  .s4-match {
+    margin-top: 36px;
+    padding: 28px 36px;
     background: var(--hall-indigo); color: white;
-    border-radius: 12px;
-    font-size: 22px; line-height: 1.7;
-    text-align: center;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
   }
-  .s4-formula .formula { font-weight: 700; }
-  .s4-formula .small { font-size: 16px; opacity: 0.75; display: block; margin-top: 6px; }
+  .s4-match .label {
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+  }
+  .s4-match .pct {
+    font-size: 56px; font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .s4-match .meter {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+  }
+  .s4-match .meter-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--A-mid), var(--E-mid));
+    border-radius: 5px;
+  }
   .s4-foot {
-    position: absolute; bottom: 72px; left: 96px; right: 96px;
-    font-size: 16px; color: var(--sub); text-align: center;
+    margin-top: 16px;
+    font-size: 16px; color: var(--sub);
+    text-align: center;
   }
 
   /* ============ Slide 5: Result ============ */
-  .s5-body { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; flex: 1; align-items: center; }
+  .s5-body {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    flex: 1;
+    align-items: center;
+  }
   .s5-shot {
-    background: var(--card); border-radius: var(--card-r);
-    box-shadow: var(--card-shadow); padding: 16px;
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 16px;
     display: flex; align-items: center; justify-content: center;
   }
   .s5-shot img {
-    max-width: 100%; max-height: 600px; border-radius: 8px;
+    max-width: 100%;
+    max-height: 640px;
+    border-radius: 8px;
   }
-  .s5-explain h3 { font-size: 28px; margin: 0 0 16px; color: var(--hall-indigo); }
-  .s5-explain p { font-size: 22px; line-height: 1.75; color: var(--text); margin: 0 0 16px; }
-  .s5-explain p strong { font-weight: 800; }
-  .s5-mbti {
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    font-size: 16px;
-    line-height: 1.75;
-    color: var(--sub);
+  .s5-explain { display: flex; flex-direction: column; gap: 24px; }
+  .s5-stat {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 28px 32px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 200ms var(--ease), transform 200ms var(--ease);
   }
-  .s5-mbti strong { color: var(--text); font-weight: 700; }
+  .s5-stat:hover { transform: translateY(-2px); border-color: var(--hall-indigo); }
+  .s5-stat-row {
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  .s5-stat-num {
+    font-size: 64px; font-weight: 800;
+    color: var(--hall-indigo);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .s5-stat-label {
+    font-size: 22px; font-weight: 700;
+    color: var(--text);
+  }
+  .s5-stat-desc {
+    margin-top: 12px;
+    font-size: 16px; line-height: 1.7;
+    color: var(--text-sec);
+    max-height: 0; overflow: hidden;
+    transition: max-height 240ms var(--ease), margin-top 240ms var(--ease);
+  }
+  .s5-stat.expanded .s5-stat-desc {
+    max-height: 200px;
+    margin-top: 12px;
+  }
 
-  /* ============ Slide 6: Summary + CTA ============ */
+  /* ============ Slide 6: Summary ============ */
   .s6 { justify-content: center; }
   .s6-steps {
     display: flex; flex-direction: column;
-    gap: 28px;
-    margin: 40px 0 48px;
+    gap: 32px;
+    margin: 32px 0 64px;
   }
   .s6-step {
     display: grid;
@@ -317,21 +845,20 @@
     line-height: 1;
     letter-spacing: -0.02em;
   }
-  .s6-step-body { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
-  .s6-step-head { font-size: 28px; font-weight: 700; color: var(--hall-indigo); line-height: 1.4; }
-  .s6-step-desc { font-size: 18px; line-height: 1.75; color: var(--text-sec); }
-
-  .s6-note {
-    padding: 24px 32px;
-    background: var(--card);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-    font-size: 20px; line-height: 1.75; color: var(--text);
-    max-width: 1200px;
+  .s6-step-body {
+    display: flex; flex-direction: column;
+    gap: 8px; padding-top: 8px;
   }
-  .s6-note strong { font-weight: 700; }
+  .s6-step-head {
+    font-size: 28px; font-weight: 700;
+    color: var(--hall-indigo); line-height: 1.4;
+  }
+  .s6-step-desc {
+    font-size: 18px; line-height: 1.75;
+    color: var(--text-sec);
+  }
   .s6-cta {
-    margin-top: 48px;
+    margin-top: 16px;
     text-align: center;
   }
   .s6-cta button {
@@ -341,65 +868,158 @@
     font-size: 22px; font-weight: 700;
     font-family: var(--font);
     cursor: pointer;
+    transition: background 200ms var(--ease);
   }
   .s6-cta button:hover { background: var(--hall-indigo-hover); }
 </style>
 </head>
 <body>
   <div class="stage" id="stage">
-    <section class="slide s1 active" data-slide="1" data-section="表紙">
-      <div class="s1-eyebrow">横須賀市役所 内部ツール</div>
-      <h1 class="s1-title">部署タイプ診断<br/>その仕組み</h1>
-      <div class="s1-subtitle">5つの軸 × 20問で職員のタイプを判定し、<br/>全103部署を適合度順にランクします。</div>
-      <div class="s1-axis-bar"><span></span><span></span><span></span><span></span><span></span></div>
+
+    <!-- Pipeline TOC -->
+    <nav class="pipeline" id="pipeline">
+      <div class="pipeline-step" data-go="2">
+        <span class="num">01</span>
+        <span><span class="label">入力</span><br/><span class="en">Input</span></span>
+      </div>
+      <div class="pipeline-step" data-go="3">
+        <span class="num">02</span>
+        <span><span class="label">採点</span><br/><span class="en">Scoring</span></span>
+      </div>
+      <div class="pipeline-step" data-go="4">
+        <span class="num">03</span>
+        <span><span class="label">比較</span><br/><span class="en">Comparison</span></span>
+      </div>
+      <div class="pipeline-step" data-go="5">
+        <span class="num">04</span>
+        <span><span class="label">結果</span><br/><span class="en">Output</span></span>
+      </div>
+    </nav>
+
+    <!-- Slide 1: Cover -->
+    <section class="slide s1 active" data-slide="1" data-section="表紙" data-stage="0">
+      <div class="s1-text">
+        <div class="s1-eyebrow">横須賀市役所 内部ツール</div>
+        <h1 class="s1-title">部署タイプ診断<br/>その仕組み</h1>
+        <div class="s1-subtitle">5つの軸 × 20問で職員のタイプを判定し、<br/>全103部署を適合度順にランクします。</div>
+        <div class="s1-axis-bar"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="s1-flow">
+        <div class="s1-flow-spine"></div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-dots">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">01 — INPUT</span>
+            <span class="s1-stage-name">入力</span>
+            <span class="s1-stage-desc">20問の5段階回答</span>
+          </div>
+        </div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-bars">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">02 — SCORING</span>
+            <span class="s1-stage-name">採点</span>
+            <span class="s1-stage-desc">5軸スコアに変換</span>
+          </div>
+        </div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-vs">
+              <div class="stack you"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="vs">VS</div>
+              <div class="stack dept"><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">03 — COMPARISON</span>
+            <span class="s1-stage-name">比較</span>
+            <span class="s1-stage-desc">103部署のパターンと照合</span>
+          </div>
+        </div>
+        <div class="s1-stage">
+          <div class="s1-stage-glyph">
+            <div class="glyph-rank">
+              <div class="row"><span class="num">1</span><span class="bar"></span></div>
+              <div class="row"><span class="num">2</span><span class="bar"></span></div>
+              <div class="row"><span class="num">3</span><span class="bar"></span></div>
+            </div>
+          </div>
+          <div class="s1-stage-meta">
+            <span class="s1-stage-num">04 — OUTPUT</span>
+            <span class="s1-stage-name">結果</span>
+            <span class="s1-stage-desc">アーキタイプ＋部署ランキング</span>
+          </div>
+        </div>
+      </div>
     </section>
-    <section class="slide" data-slide="2" data-section="入力">
+
+    <!-- Slide 2: Input -->
+    <section class="slide has-pipeline" data-slide="2" data-section="入力" data-stage="1">
       <header class="sec-header">
-        <div class="sec-eyebrow">入力 / Input</div>
         <h2 class="sec-title">5つの軸 × 20の質問</h2>
         <div class="sec-stripe"></div>
+        <div class="sec-sub">職員のタイプを5つの軸で測ります。各軸をクリックすると例題が表示されます。</div>
       </header>
       <div class="s2-grid">
-        <div class="s2-axes">
-          <div class="s2-axis-row">
+        <div class="s2-axes" id="s2-axes">
+          <div class="s2-axis-row A active" data-axis="A">
             <div class="s2-axis-pill A">A</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">人との関わり方</div>
               <div class="s2-axis-poles">制度・仕組み ⇄ 市民対話</div>
             </div>
+            <div class="s2-axis-hint">例題 ▶</div>
           </div>
-          <div class="s2-axis-row">
+          <div class="s2-axis-row B" data-axis="B">
             <div class="s2-axis-pill B">B</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">仕事の進め方</div>
               <div class="s2-axis-poles">政策立案 ⇄ 現場対応</div>
             </div>
+            <div class="s2-axis-hint">例題 ▶</div>
           </div>
-          <div class="s2-axis-row">
+          <div class="s2-axis-row C" data-axis="C">
             <div class="s2-axis-pill C">C</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">担う役割</div>
               <div class="s2-axis-poles">ルール管理 ⇄ 市民支援</div>
             </div>
+            <div class="s2-axis-hint">例題 ▶</div>
           </div>
-          <div class="s2-axis-row">
+          <div class="s2-axis-row D" data-axis="D">
             <div class="s2-axis-pill D">D</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">変化への姿勢</div>
               <div class="s2-axis-poles">革新推進 ⇄ 安定運営</div>
             </div>
+            <div class="s2-axis-hint">例題 ▶</div>
           </div>
-          <div class="s2-axis-row">
+          <div class="s2-axis-row E" data-axis="E">
             <div class="s2-axis-pill E">E</div>
             <div class="s2-axis-label">
               <div class="s2-axis-name">知識のスタイル</div>
               <div class="s2-axis-poles">専門追求 ⇄ 幅広対応</div>
             </div>
+            <div class="s2-axis-hint">例題 ▶</div>
           </div>
         </div>
-        <div class="s2-example">
-          <div class="s2-example-label">質問の例：A1</div>
-          <p class="s2-example-q">高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。</p>
+        <div class="s2-example" id="s2-example">
+          <div class="s2-example-head">
+            <div class="s2-example-pill A" id="s2-ex-pill">A</div>
+            <div class="s2-example-label">質問の例</div>
+          </div>
+          <p class="s2-example-q" id="s2-ex-q">高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。</p>
           <div class="s2-options">
             <div class="s2-option">自分には向いていないと思う</div>
             <div class="s2-option">あまり気が乗らないが、こなせる</div>
@@ -411,93 +1031,136 @@
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="3" data-section="採点">
+
+    <!-- Slide 3: Scoring -->
+    <section class="slide has-pipeline" data-slide="3" data-section="採点" data-stage="2">
       <header class="sec-header">
-        <div class="sec-eyebrow">採点 / Scoring</div>
         <h2 class="sec-title">回答が軸スコアに変わる</h2>
         <div class="sec-stripe" style="background: var(--A);"></div>
+        <div class="sec-sub">各軸に寄与する質問の回答をまとめて、軸スコアを算出します。質問をクリックすると回答内容が表示されます。</div>
       </header>
       <div class="s3-body">
-        <div class="s3-diagram">
-          <div class="s3-q"><span class="s3-label">A1</span><span>窓口で介護申請を支援</span><span class="s3-val">+2</span></div>
-          <div class="s3-q"><span class="s3-label">A2</span><span>地域サークルで対話</span><span class="s3-val">+1</span></div>
-          <div class="s3-q reversed"><span class="s3-label">A3</span><span>業務フローを設計</span><span class="s3-val">−1</span></div>
-          <div class="s3-q reversed"><span class="s3-label">A4</span><span>財政データを分析</span><span class="s3-val">+0</span></div>
-          <div class="s3-arrow">↓ 平均</div>
-          <div class="s3-result"><span>A軸スコア</span><span class="num">+0.5</span></div>
-        </div>
-        <div class="s3-explain">
-          <h3>仕組み</h3>
-          <ul>
-            <li>1つの質問は、1つの軸に寄与</li>
-            <li>5段階の回答を数値（−2, −1, 0, +1, +2）に変換</li>
-            <li>「反転質問」は符号を反転してから集計</li>
-            <li>各軸ごとに、寄与する質問の <strong>平均</strong> を取る</li>
-          </ul>
-          <div class="s3-eq">
-            <span class="formula">軸スコア ＝ 各軸の（反転補正済み回答値）の 平均</span>
-            <span class="range">範囲：おおよそ −2 〜 +2</span>
+        <div class="s3-left" id="s3-left">
+          <div class="s3-q active" data-q="0">
+            <span class="s3-label">A1</span>
+            <span class="s3-text">窓口で介護申請を支援</span>
+            <span class="s3-pos" data-pos="4"></span>
           </div>
+          <div class="s3-q" data-q="1">
+            <span class="s3-label">A2</span>
+            <span class="s3-text">地域サークルで対話</span>
+            <span class="s3-pos" data-pos="3"></span>
+          </div>
+          <div class="s3-q" data-q="2">
+            <span class="s3-label">A3</span>
+            <span class="s3-text">業務フローを設計</span>
+            <span class="s3-pos" data-pos="1"></span>
+          </div>
+          <div class="s3-q" data-q="3">
+            <span class="s3-label">A4</span>
+            <span class="s3-text">財政データを分析</span>
+            <span class="s3-pos" data-pos="2"></span>
+          </div>
+          <div class="s3-arrow">▼ 集計</div>
+          <div class="s3-result">
+            <span class="pill">A軸スコア</span>
+            <div class="needle">
+              <span class="label-pos">仕組み</span>
+              <span class="scale"><span class="scale-fill" id="s3-fill"></span></span>
+              <span class="label-pos">対話</span>
+            </div>
+          </div>
+        </div>
+        <div class="s3-right" id="s3-right">
+          <div class="s3-right-head">
+            <div class="s3-right-pill">A1</div>
+            <div class="s3-right-label">回答内容</div>
+          </div>
+          <p class="s3-right-q" id="s3-right-q">高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。</p>
+          <div class="s3-right-options" id="s3-right-options"></div>
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="4" data-section="比較">
+
+    <!-- Slide 4: Comparison -->
+    <section class="slide has-pipeline" data-slide="4" data-section="比較" data-stage="3">
       <header class="sec-header">
-        <div class="sec-eyebrow">比較 / Comparison</div>
-        <h2 class="sec-title">5次元ベクトル vs 103部署</h2>
+        <h2 class="sec-title">受検者 vs 103部署</h2>
         <div class="sec-stripe"></div>
+        <div class="sec-sub">5軸のパターンを部署ごとに比較し、最も近い部署を見つけます。軸をクリックすると差分がハイライトされます。</div>
       </header>
       <div class="s4-body">
-        <div class="s4-vec">
-          <h3>受検者の結果（例）</h3>
-          <div class="s4-bars">
-            <div class="s4-bar"><span class="ax">A</span><span class="track"><span class="fill" style="left:50%;width:15%;background:var(--A-mid)"></span></span><span class="v">+0.6</span></div>
-            <div class="s4-bar"><span class="ax">B</span><span class="track"><span class="fill" style="left:25%;width:25%;background:var(--B-mid)"></span></span><span class="v">−1.0</span></div>
-            <div class="s4-bar"><span class="ax">C</span><span class="track"><span class="fill" style="left:50%;width:30%;background:var(--C-mid)"></span></span><span class="v">+1.2</span></div>
-            <div class="s4-bar"><span class="ax">D</span><span class="track"><span class="fill" style="left:50%;width:5%;background:var(--D-mid)"></span></span><span class="v">+0.2</span></div>
-            <div class="s4-bar"><span class="ax">E</span><span class="track"><span class="fill" style="left:50%;width:10%;background:var(--E-mid)"></span></span><span class="v">+0.4</span></div>
+        <div class="s4-card">
+          <h3>受検者の結果</h3>
+          <div class="sub">5軸パターン</div>
+          <div class="s4-bars" id="s4-user">
+            <div class="s4-bar A" data-axis="A"><span class="ax">A</span><span class="track"><span class="fill" data-fill="user-A"></span><span class="gap" data-gap="A"></span></span><span class="v">+0.6</span></div>
+            <div class="s4-bar B" data-axis="B"><span class="ax">B</span><span class="track"><span class="fill" data-fill="user-B"></span><span class="gap" data-gap="B"></span></span><span class="v">−1.0</span></div>
+            <div class="s4-bar C" data-axis="C"><span class="ax">C</span><span class="track"><span class="fill" data-fill="user-C"></span><span class="gap" data-gap="C"></span></span><span class="v">+1.2</span></div>
+            <div class="s4-bar D" data-axis="D"><span class="ax">D</span><span class="track"><span class="fill" data-fill="user-D"></span><span class="gap" data-gap="D"></span></span><span class="v">+0.2</span></div>
+            <div class="s4-bar E" data-axis="E"><span class="ax">E</span><span class="track"><span class="fill" data-fill="user-E"></span><span class="gap" data-gap="E"></span></span><span class="v">+0.4</span></div>
           </div>
         </div>
-        <div class="s4-vec">
-          <h3>部署の理想ベクトル（例：地域福祉課）</h3>
-          <div class="s4-bars">
-            <div class="s4-bar"><span class="ax">A</span><span class="track"><span class="fill" style="left:50%;width:50%;background:var(--A-mid);opacity:0.6"></span></span><span class="v">+2.0</span></div>
-            <div class="s4-bar"><span class="ax">B</span><span class="track"><span class="fill" style="left:50%;width:13%;background:var(--B-mid);opacity:0.6"></span></span><span class="v">+0.5</span></div>
-            <div class="s4-bar"><span class="ax">C</span><span class="track"><span class="fill" style="left:50%;width:50%;background:var(--C-mid);opacity:0.6"></span></span><span class="v">+2.0</span></div>
-            <div class="s4-bar"><span class="ax">D</span><span class="track"><span class="fill" style="left:50%;width:13%;background:var(--D-mid);opacity:0.6"></span></span><span class="v">+0.5</span></div>
-            <div class="s4-bar"><span class="ax">E</span><span class="track"><span class="fill" style="left:50%;width:13%;background:var(--E-mid);opacity:0.6"></span></span><span class="v">+0.5</span></div>
+        <div class="s4-card">
+          <h3>部署の理想パターン</h3>
+          <div class="sub">例：地域福祉課</div>
+          <div class="s4-bars" id="s4-dept">
+            <div class="s4-bar A" data-axis="A"><span class="ax">A</span><span class="track"><span class="fill" data-fill="dept-A"></span><span class="gap" data-gap="A"></span></span><span class="v">+2.0</span></div>
+            <div class="s4-bar B" data-axis="B"><span class="ax">B</span><span class="track"><span class="fill" data-fill="dept-B"></span><span class="gap" data-gap="B"></span></span><span class="v">+0.5</span></div>
+            <div class="s4-bar C" data-axis="C"><span class="ax">C</span><span class="track"><span class="fill" data-fill="dept-C"></span><span class="gap" data-gap="C"></span></span><span class="v">+2.0</span></div>
+            <div class="s4-bar D" data-axis="D"><span class="ax">D</span><span class="track"><span class="fill" data-fill="dept-D"></span><span class="gap" data-gap="D"></span></span><span class="v">+0.5</span></div>
+            <div class="s4-bar E" data-axis="E"><span class="ax">E</span><span class="track"><span class="fill" data-fill="dept-E"></span><span class="gap" data-gap="E"></span></span><span class="v">+0.5</span></div>
           </div>
         </div>
       </div>
-      <div class="s4-formula">
-        <span class="formula">距離 ＝ √Σ（受検者ᵢ − 部署ᵢ）²　　→　　適合度% ＝ （1 − 距離 / √80）× 100</span>
-        <span class="small">距離が小さいほど、適合度が高い。最大距離 ＝ √80 ≈ 8.94</span>
+      <div class="s4-match">
+        <span class="label">適合度</span>
+        <span class="meter"><span class="meter-fill" id="s4-meter"></span></span>
+        <span class="pct" id="s4-pct">73%</span>
       </div>
-      <div class="s4-foot">部署ベクトルは103部署それぞれに事前設計（職務内容に基づく）</div>
+      <div class="s4-foot">部署ごとに5軸パターンを事前設計（職務内容に基づく）</div>
     </section>
-    <section class="slide" data-slide="5" data-section="結果">
+
+    <!-- Slide 5: Result -->
+    <section class="slide has-pipeline" data-slide="5" data-section="結果" data-stage="4">
       <header class="sec-header">
-        <div class="sec-eyebrow">結果 / Output</div>
         <h2 class="sec-title">アーキタイプ ＋ 部署ランキング</h2>
         <div class="sec-stripe"></div>
+        <div class="sec-sub">受検者ごとに1つのタイプと、103部署の適合度ランキングを提示します。</div>
       </header>
       <div class="s5-body">
         <div class="s5-shot">
           <img src="screenshots/results.png" alt="アプリの結果画面" />
         </div>
         <div class="s5-explain">
-          <h3>受検者が見る結果</h3>
-          <p><strong>32</strong>のアーキタイプ（2⁵）から1つに分類され、全<strong>103</strong>部署が適合度順にランクされます。</p>
-          <div class="s5-mbti">
-            ※ MBTI（4軸 → 16タイプ）の発想を参考に、5軸 → 32タイプへ拡張。
-            職員の性格分類ではなく、<strong>業務適性の把握</strong>を目的としています。
+          <div class="s5-stat" data-toggle>
+            <div class="s5-stat-row">
+              <div class="s5-stat-num">32</div>
+              <div class="s5-stat-label">アーキタイプ</div>
+            </div>
+            <div class="s5-stat-desc">5軸 × 2方向 ＝ 32タイプ。MBTI（4軸 → 16タイプ）の発想を5軸に拡張。</div>
+          </div>
+          <div class="s5-stat" data-toggle>
+            <div class="s5-stat-row">
+              <div class="s5-stat-num">103</div>
+              <div class="s5-stat-label">部署ランキング</div>
+            </div>
+            <div class="s5-stat-desc">全部署を適合度順に並べる。上位だけでなく下位も確認できる。</div>
+          </div>
+          <div class="s5-stat" data-toggle>
+            <div class="s5-stat-row">
+              <div class="s5-stat-num">5</div>
+              <div class="s5-stat-label">軸ごとの強み</div>
+            </div>
+            <div class="s5-stat-desc">どの軸が強い／弱いかが視覚的にわかる。</div>
           </div>
         </div>
       </div>
     </section>
-    <section class="slide s6" data-slide="6" data-section="まとめ">
+
+    <!-- Slide 6: Summary -->
+    <section class="slide s6" data-slide="6" data-section="まとめ" data-stage="0">
       <header class="sec-header">
-        <div class="sec-eyebrow">まとめ / Summary</div>
         <h2 class="sec-title">仕組みの全体像</h2>
         <div class="sec-stripe"></div>
       </header>
@@ -505,32 +1168,30 @@
         <div class="s6-step">
           <div class="s6-step-num">01</div>
           <div class="s6-step-body">
-            <div class="s6-step-head">入力：20問が5軸スコアに</div>
-            <div class="s6-step-desc">5段階回答に反転補正をかけ、軸ごとに平均を取る</div>
+            <div class="s6-step-head">入力 → 採点</div>
+            <div class="s6-step-desc">20問の回答を5つの軸スコアに変換</div>
           </div>
         </div>
         <div class="s6-step">
           <div class="s6-step-num">02</div>
           <div class="s6-step-body">
-            <div class="s6-step-head">比較：5次元距離で全103部署を採点</div>
-            <div class="s6-step-desc">受検者ベクトルと部署ベクトルのユークリッド距離から適合度を算出</div>
+            <div class="s6-step-head">比較</div>
+            <div class="s6-step-desc">受検者のパターンと103部署のパターンを照らし合わせ、近い部署ほど高い適合度に</div>
           </div>
         </div>
         <div class="s6-step">
           <div class="s6-step-num">03</div>
           <div class="s6-step-body">
-            <div class="s6-step-head">出力：アーキタイプと部署ランキング</div>
+            <div class="s6-step-head">結果</div>
             <div class="s6-step-desc">32アーキタイプから1つ、103部署を適合度順に提示</div>
           </div>
         </div>
-      </div>
-      <div class="s6-note">
-        <strong>注記：</strong>本ツールは <strong>配属判断ツールではなく</strong>、職員自身が業務適性を考えるための <strong>自己理解の補助</strong> です。配属の最終判断は人事部門が担います。
       </div>
       <div class="s6-cta">
         <button type="button" tabindex="-1">▶ ライブデモへ</button>
       </div>
     </section>
+
     <div class="footer">
       <span id="footer-section">部署タイプ診断：その仕組み</span>
       <span id="footer-page">1 / 6</span>
@@ -539,27 +1200,237 @@
 <script>
   const slides = document.querySelectorAll('.slide');
   const total = slides.length;
-  let idx = 0;
   const pageEl = document.getElementById('footer-page');
   const sectionEl = document.getElementById('footer-section');
+  const pipeline = document.getElementById('pipeline');
+  const pipelineSteps = pipeline.querySelectorAll('.pipeline-step');
+  let idx = 0;
+
+  // Slide 1 stage glow loop
+  let s1Timer = null;
+  function startS1Glow() {
+    const stages = document.querySelectorAll('.s1-stage');
+    if (!stages.length) return;
+    stopS1Glow();
+    let i = 0;
+    const tick = () => {
+      stages.forEach(s => s.classList.remove('glow'));
+      stages[i].classList.add('glow');
+      i = (i + 1) % stages.length;
+    };
+    // Wait for stagger entry to finish before starting glow loop
+    setTimeout(() => { tick(); s1Timer = setInterval(tick, 2200); }, 900);
+  }
+  function stopS1Glow() {
+    if (s1Timer) { clearInterval(s1Timer); s1Timer = null; }
+    document.querySelectorAll('.s1-stage').forEach(s => s.classList.remove('glow'));
+  }
 
   function show(n) {
     idx = Math.max(0, Math.min(total - 1, n));
     slides.forEach((el, i) => el.classList.toggle('active', i === idx));
     pageEl.textContent = `${idx + 1} / ${total}`;
-    const section = slides[idx].dataset.section;
+
+    const slide = slides[idx];
+    const section = slide.dataset.section;
     sectionEl.textContent = section
       ? `部署タイプ診断：その仕組み　${section}`
       : '部署タイプ診断：その仕組み';
+
+    const stage = parseInt(slide.dataset.stage, 10);
+    if (stage > 0 && stage <= 4) {
+      pipeline.classList.add('show');
+      pipelineSteps.forEach((step, i) => {
+        const stepIdx = i + 1;
+        step.classList.toggle('active', stepIdx === stage);
+        step.classList.toggle('done', stepIdx < stage);
+      });
+    } else {
+      pipeline.classList.remove('show');
+    }
+
+    if (idx === 0) startS1Glow();
+    else stopS1Glow();
   }
 
-  // Initialize footer text correctly on load
-  show(0);
+  pipelineSteps.forEach(step => {
+    step.addEventListener('click', () => {
+      const target = parseInt(step.dataset.go, 10);
+      show(target - 1);
+    });
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(idx + 1); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); }
   });
+
+  // ============ Slide 2 interactivity ============
+  const s2Examples = {
+    A: { pill: 'A', q: '高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。' },
+    B: { pill: 'B', q: '新しい補助金制度を設計するため、複数の関連部署と調整しながら、政策骨子をまとめる。' },
+    C: { pill: 'C', q: '建築確認申請の書類を点検し、法令に沿っているか1件ずつ判断していく。' },
+    D: { pill: 'D', q: 'これまでの紙ベースの業務フローを見直し、デジタル化を提案・推進する。' },
+    E: { pill: 'E', q: '都市計画の専門知識を深めながら、長期的な街づくりの方針を組み立てる。' }
+  };
+  const s2Axes = document.querySelectorAll('.s2-axis-row');
+  const s2ExPill = document.getElementById('s2-ex-pill');
+  const s2ExQ = document.getElementById('s2-ex-q');
+  s2Axes.forEach(row => {
+    row.addEventListener('click', () => {
+      s2Axes.forEach(r => r.classList.remove('active'));
+      row.classList.add('active');
+      const axis = row.dataset.axis;
+      const ex = s2Examples[axis];
+      s2ExPill.className = 's2-example-pill ' + axis;
+      s2ExPill.textContent = ex.pill;
+      s2ExQ.style.opacity = '0';
+      setTimeout(() => {
+        s2ExQ.textContent = ex.q;
+        s2ExQ.style.opacity = '1';
+      }, 150);
+    });
+  });
+
+  // ============ Slide 3 interactivity ============
+  const s3Questions = [
+    {
+      q: '高齢の市民が窓口を訪れ、介護申請の手続きに困っている。じっくり話を聞きながら、一緒に書類を進めていく。',
+      chosen: 4
+    },
+    {
+      q: '地域のサークル活動の場で、参加者の声を直接聞きながら新しい企画を一緒に考える。',
+      chosen: 3
+    },
+    {
+      q: '部署の業務フローを設計し、誰がいつ何をするかを文書化して整える。',
+      chosen: 1
+    },
+    {
+      q: '財政データを分析し、長期的な収支のトレンドからリスクを洗い出す。',
+      chosen: 2
+    }
+  ];
+  const s3Options = ['自分には向いていないと思う', 'あまり気が乗らないが、こなせる', 'どちらとも言えない', 'やりがいを感じながら取り組める', 'まさに自分が輝ける場面'];
+
+  const s3Qs = document.querySelectorAll('.s3-q');
+  const s3RightQ = document.getElementById('s3-right-q');
+  const s3RightOptions = document.getElementById('s3-right-options');
+  const s3RightPill = document.querySelector('.s3-right-pill');
+
+  // Render dots for each question
+  s3Qs.forEach(q => {
+    const posEl = q.querySelector('.s3-pos');
+    if (!posEl) return;
+    const pos = parseInt(posEl.dataset.pos, 10);
+    posEl.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot' + (i === pos ? ' fill' : '');
+      posEl.appendChild(dot);
+    }
+  });
+
+  function renderS3Right(qIdx) {
+    const data = s3Questions[qIdx];
+    s3RightPill.textContent = 'A' + (qIdx + 1);
+    s3RightQ.textContent = data.q;
+    s3RightOptions.innerHTML = '';
+    s3Options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 's3-right-option' + (i === data.chosen ? ' chosen' : '');
+      div.innerHTML = `<span>${opt}</span><span class="check"></span>`;
+      s3RightOptions.appendChild(div);
+    });
+  }
+
+  s3Qs.forEach((q, i) => {
+    q.addEventListener('click', () => {
+      s3Qs.forEach(o => o.classList.remove('active'));
+      q.classList.add('active');
+      renderS3Right(i);
+    });
+  });
+  renderS3Right(0);
+
+  // Score needle: average position 0..4 → -2..+2 → 0%..100%
+  const s3Fill = document.getElementById('s3-fill');
+  const positions = [4, 3, 1, 2];
+  const avg = positions.reduce((a, b) => a + b, 0) / positions.length; // 2.5 → +0.5
+  const pct = (avg / 4) * 100; // 62.5%
+  // center = 50%, fill from 50% toward avg side
+  const center = 50;
+  if (pct >= center) {
+    s3Fill.style.left = center + '%';
+    s3Fill.style.width = (pct - center) + '%';
+  } else {
+    s3Fill.style.left = pct + '%';
+    s3Fill.style.width = (center - pct) + '%';
+  }
+
+  // ============ Slide 4 interactivity ============
+  const s4Vals = {
+    user: { A: 0.6, B: -1.0, C: 1.2, D: 0.2, E: 0.4 },
+    dept: { A: 2.0, B: 0.5, C: 2.0, D: 0.5, E: 0.5 }
+  };
+  const MAX = 2.0;
+  function setBar(side, axis, val) {
+    const fill = document.querySelector(`[data-fill="${side}-${axis}"]`);
+    if (!fill) return;
+    const pctVal = (Math.abs(val) / MAX) * 50;
+    if (val >= 0) {
+      fill.style.left = '50%';
+      fill.style.width = pctVal + '%';
+    } else {
+      fill.style.left = (50 - pctVal) + '%';
+      fill.style.width = pctVal + '%';
+    }
+    const colorMap = { A: 'var(--A-mid)', B: 'var(--B-mid)', C: 'var(--C-mid)', D: 'var(--D-mid)', E: 'var(--E-mid)' };
+    fill.style.background = colorMap[axis];
+    if (side === 'dept') fill.style.opacity = '0.55';
+  }
+  ['A','B','C','D','E'].forEach(axis => {
+    setBar('user', axis, s4Vals.user[axis]);
+    setBar('dept', axis, s4Vals.dept[axis]);
+  });
+
+  // Gap overlays per axis
+  function setGap(axis) {
+    ['user', 'dept'].forEach(side => {
+      const gapEl = document.querySelector(`#s4-${side} [data-gap="${axis}"]`);
+      if (!gapEl) return;
+      const u = s4Vals.user[axis], d = s4Vals.dept[axis];
+      const lo = Math.min(u, d), hi = Math.max(u, d);
+      const loPct = 50 + (lo / MAX) * 50;
+      const hiPct = 50 + (hi / MAX) * 50;
+      gapEl.style.left = loPct + '%';
+      gapEl.style.width = (hiPct - loPct) + '%';
+    });
+  }
+  ['A','B','C','D','E'].forEach(setGap);
+
+  const s4Bars = document.querySelectorAll('.s4-bar');
+  s4Bars.forEach(bar => {
+    bar.addEventListener('click', () => {
+      const axis = bar.dataset.axis;
+      const wasActive = bar.classList.contains('active');
+      s4Bars.forEach(b => b.classList.remove('active'));
+      if (!wasActive) {
+        document.querySelectorAll(`.s4-bar[data-axis="${axis}"]`).forEach(b => b.classList.add('active'));
+      }
+    });
+  });
+
+  // Match meter
+  document.getElementById('s4-meter').style.width = '73%';
+
+  // ============ Slide 5 interactivity ============
+  document.querySelectorAll('.s5-stat').forEach(card => {
+    card.addEventListener('click', () => card.classList.toggle('expanded'));
+  });
+
+  // ============ Init ============
+  show(0);
 
   // Scale-to-fit
   const stage = document.getElementById('stage');
