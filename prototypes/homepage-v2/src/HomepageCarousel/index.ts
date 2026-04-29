@@ -1,1 +1,1 @@
-export { HomepageCarousel } from './HomepageCarousel';
+export { HomepageCarousel, SLIDE_COUNT } from './HomepageCarousel';
