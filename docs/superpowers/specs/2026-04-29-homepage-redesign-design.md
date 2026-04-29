@@ -162,3 +162,44 @@ The agent rebuilds these from this spec only. No copying patterns.
 ## Open Questions
 
 None. Hand off to writing-plans.
+
+## Implementation Notes
+
+**Accent color for stat numerals:** `--hero-accent: #F5EBD8` (cream, per spec recommendation). Defined at `Welcome.module.css:4`, consumed only by `.statN` at `Welcome.module.css:67`. Not added to `tokens.css` — it is a local prototype variable, not a shared design token.
+
+**Carousel refactor (Task 3):** `idx` / `onIdxChange` were lifted to props on `HomepageCarousel`. `Welcome.tsx` owns the state via `useState(0)` and passes both down to `<HomepageCarousel idx={idx} onIdxChange={setIdx} />` and `<Stepper idx={idx} onJump={onJump} />`. No surprise diffs — exactly as planned.
+
+**New tokens added:** Zero. `--hero-w` (420px), `--col-pad` (alias for `--sp-2xl`), and `--hero-accent` (#F5EBD8) are all local CSS custom properties declared in `Welcome.module.css:root` scoped to that file. `tokens.css` is unchanged.
+
+**Box count audit:** Visible boxes (elements with a background color or visible border, excluding slide internals):
+1. Hero aside — `background: var(--hall-indigo)` — 1 box
+2. CTA button — `background: white` — 1 box
+3. Five axis stripes — `background: AXIS_COLORS[i]` — 5 colored stripes (counted as 1 group / 1 "visible box" in chrome)
+
+Total outer-chrome boxes: **3** (hero column, CTA pill, stripe row). Well under the ≤6 target. Right column has no background, no border. Stepper has no box backgrounds.
+
+**Anti-pattern audit results:**
+
+1. **Opacity-only hierarchy** — PASS. Eyebrow: `rgba(255,255,255,0.7)` (one tier, used once, `Welcome.module.css:34`). Title, lede, stat labels: all solid white. Hierarchy carried by 56px/fw-black (title), 16px/fw-normal (lede), 12px/fw-bold (eyebrow). No additional opacity tiers.
+2. **Border-radius + inset-stripe collision** — PASS. CTA has `border-radius: 999px` and zero `box-shadow` (`Welcome.module.css:86-91`). Stepper buttons have `border-bottom: 2px solid` (bottom-only underline, not inset), with `border: 0` for the outer border — no rounded container with inset stripe.
+3. **Bilingual stacked labels** — PASS. Stepper renders only numerals (`01`–`05`) and a single JP contextual label below the strip (`入力`, `採点`, etc.). No EN sub-labels anywhere in stepper or outer chrome.
+4. **Box jungle** — PASS. Box count = 3 (hero, CTA, stripes group). Target ≤6. Passes with large margin.
+5. **Stat numbers as decoration** — PASS. `.statN` is `font-size: 56px; font-weight: var(--fw-black)` (`Welcome.module.css:65-69`). Stats anchor the column between lede and CTA.
+6. **Floating sub-columns** — PASS. Outer chrome is strictly two columns (`.split` grid). No secondary content hangs in a disconnected column. Slide internals are out-of-scope verbatim port.
+7. **Inconsistent column padding** — PASS. Both `.hero` and `.right` use `padding-inline: var(--col-pad)` (`Welcome.module.css:22` and `Welcome.module.css:118`). `--col-pad` resolves to `var(--sp-2xl)` for both.
+8. **Heavy stepper chrome** — PASS. Stepper has no badges, no circles, no dotted connectors. Five numeral buttons separated by 1px hairlines (`Stepper.module.css:46-50`). Total stepper height ≈ 36px.
+9. **Wasted axis colors** — PASS. Five `4px × 60px` vertical stripes at bottom-left of hero (`Welcome.module.css:105-115`) use all five axis tokens (A/B/C/D/E) as visible color meaning cues.
+10. **Section titles competing with content** — PASS. No "How it works" or "仕組みを見る" header above the carousel. Right column is pure carousel + stepper, no section heading.
+
+**Close calls / avoidance notes:**
+
+- Anti-pattern 2 (border-radius + inset stripe) was the most likely trap given the CTA pill button. Avoided by using `transform: translateY(-1px)` on hover rather than any box-shadow decoration.
+- Anti-pattern 4 (box jungle) required consciously not wrapping the carousel or stepper in card panels. The right column is backgroundless — tempting to add a subtle card for visual separation, which was deliberately avoided.
+
+**Acceptance criteria check:** All 9 criteria met (see anti-pattern results above). E2e suite: 6/6 PASS.
+
+**Open follow-ups for future work:**
+
+- Mobile layout is stacked but untuned. Hero at 100% width with 56px title and large stats will likely need type-scale reduction and padding adjustment for small viewports.
+- Slide internals (axis cards, question pills) are verbatim port from the old design and retain their own box/padding patterns. A future pass could harmonize slide chrome with the new outer design language.
+- Reference screenshot captured at `docs/superpowers/specs/2026-04-29-homepage-v2-screenshot.png` (50.2 KB, 1440×900).
