@@ -225,6 +225,43 @@
     font-size: 20px; line-height: 1.6;
   }
   .s3-eq code { font-family: ui-monospace, monospace; font-weight: 700; color: var(--A); }
+
+  /* ============ Slide 4: Comparison ============ */
+  .s4-body { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; flex: 1; align-items: center; }
+  .s4-vec {
+    background: var(--card); border-radius: var(--card-r);
+    box-shadow: var(--card-shadow); padding: 32px;
+  }
+  .s4-vec h3 { margin: 0 0 20px; font-size: 24px; color: var(--hall-indigo); }
+  .s4-bars { display: flex; flex-direction: column; gap: 14px; }
+  .s4-bar { display: flex; align-items: center; gap: 12px; }
+  .s4-bar .ax { width: 28px; font-weight: 700; font-family: ui-monospace, monospace; }
+  .s4-bar .track {
+    flex: 1; height: 12px; background: var(--border-light, #F0F2F7);
+    position: relative; border-radius: 6px;
+  }
+  .s4-bar .track::before {
+    content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px;
+    width: 1px; background: var(--sub);
+  }
+  .s4-bar .fill {
+    position: absolute; top: 0; bottom: 0; border-radius: 6px;
+  }
+  .s4-bar .v { font-family: ui-monospace, monospace; font-weight: 700; min-width: 48px; text-align: right; }
+
+  .s4-formula {
+    margin-top: 32px; padding: 24px 32px;
+    background: var(--hall-indigo); color: white;
+    border-radius: 12px;
+    font-size: 22px; line-height: 1.7;
+    text-align: center;
+  }
+  .s4-formula code { font-family: ui-monospace, monospace; font-weight: 700; }
+  .s4-formula .small { font-size: 16px; opacity: 0.75; }
+  .s4-foot {
+    position: absolute; bottom: 72px; left: 96px; right: 96px;
+    font-size: 18px; color: var(--sub); text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -323,7 +360,41 @@
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="4"><h1>S4</h1></section>
+    <section class="slide" data-slide="4">
+      <header class="sec-header">
+        <div class="sec-eyebrow">比較 / Comparison</div>
+        <h2 class="sec-title">5次元ベクトル vs 103部署</h2>
+        <div class="sec-stripe" style="background: var(--B);"></div>
+      </header>
+      <div class="s4-body">
+        <div class="s4-vec">
+          <h3>受検者の結果（例）</h3>
+          <div class="s4-bars">
+            <div class="s4-bar"><span class="ax">A</span><span class="track"><span class="fill" style="left:50%;width:15%;background:var(--A-mid)"></span></span><span class="v">+0.6</span></div>
+            <div class="s4-bar"><span class="ax">B</span><span class="track"><span class="fill" style="left:25%;width:25%;background:var(--B-mid)"></span></span><span class="v">−1.0</span></div>
+            <div class="s4-bar"><span class="ax">C</span><span class="track"><span class="fill" style="left:50%;width:30%;background:var(--C-mid)"></span></span><span class="v">+1.2</span></div>
+            <div class="s4-bar"><span class="ax">D</span><span class="track"><span class="fill" style="left:50%;width:5%;background:var(--D-mid)"></span></span><span class="v">+0.2</span></div>
+            <div class="s4-bar"><span class="ax">E</span><span class="track"><span class="fill" style="left:50%;width:10%;background:var(--E-mid)"></span></span><span class="v">+0.4</span></div>
+          </div>
+        </div>
+        <div class="s4-vec">
+          <h3>部署の理想ベクトル（例：地域福祉課）</h3>
+          <div class="s4-bars">
+            <div class="s4-bar"><span class="ax">A</span><span class="track"><span class="fill" style="left:50%;width:50%;background:var(--A-mid);opacity:0.6"></span></span><span class="v">+2.0</span></div>
+            <div class="s4-bar"><span class="ax">B</span><span class="track"><span class="fill" style="left:50%;width:13%;background:var(--B-mid);opacity:0.6"></span></span><span class="v">+0.5</span></div>
+            <div class="s4-bar"><span class="ax">C</span><span class="track"><span class="fill" style="left:50%;width:50%;background:var(--C-mid);opacity:0.6"></span></span><span class="v">+2.0</span></div>
+            <div class="s4-bar"><span class="ax">D</span><span class="track"><span class="fill" style="left:50%;width:13%;background:var(--D-mid);opacity:0.6"></span></span><span class="v">+0.5</span></div>
+            <div class="s4-bar"><span class="ax">E</span><span class="track"><span class="fill" style="left:50%;width:13%;background:var(--E-mid);opacity:0.6"></span></span><span class="v">+0.5</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="s4-formula">
+        <code>距離 = √Σ (受検者ᵢ − 部署ᵢ)²</code> &nbsp;&nbsp; → &nbsp;&nbsp;
+        <code>適合度% = (1 − 距離 / √80) × 100</code><br/>
+        <span class="small">距離が小さいほど、適合度が高い。最大距離 = √80 ≈ 8.94</span>
+      </div>
+      <div class="s4-foot">部署ベクトルは103部署それぞれに事前設計（職務内容に基づく）</div>
+    </section>
     <section class="slide" data-slide="5"><h1>S5</h1></section>
     <section class="slide" data-slide="6"><h1>S6</h1></section>
     <div class="footer">
