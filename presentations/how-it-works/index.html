@@ -184,6 +184,47 @@
     color: var(--sub);
     text-align: center;
   }
+
+  /* ============ Slide 3: Scoring ============ */
+  .s3-body { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; flex: 1; align-items: center; }
+  .s3-diagram { display: flex; flex-direction: column; gap: 12px; }
+  .s3-q {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--A-tint); border-left: 4px solid var(--A-mid);
+    padding: 12px 16px; border-radius: 8px;
+    font-size: 18px; color: var(--text);
+  }
+  .s3-q .label { font-weight: 700; min-width: 48px; color: var(--A); }
+  .s3-q .val { font-family: ui-monospace, monospace; font-weight: 700; min-width: 56px; text-align: right; }
+  .s3-q.reversed { background: #fff; border-left-style: dashed; }
+  .s3-q.reversed::after {
+    content: '反転'; margin-left: auto;
+    font-size: 12px; color: var(--A); padding: 2px 8px;
+    border: 1px solid var(--A); border-radius: 4px;
+  }
+  .s3-arrow {
+    text-align: center; font-size: 24px; color: var(--sub); margin: 8px 0;
+  }
+  .s3-result {
+    background: var(--A); color: white;
+    border-radius: 12px; padding: 16px 20px;
+    font-size: 22px; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .s3-result .num { font-size: 36px; font-weight: 800; font-family: ui-monospace, monospace; }
+
+  .s3-explain { font-size: 22px; line-height: 1.7; color: var(--text); }
+  .s3-explain h3 { font-size: 28px; margin: 0 0 16px; color: var(--hall-indigo); }
+  .s3-explain ul { margin: 0 0 24px; padding-left: 24px; }
+  .s3-explain li { margin-bottom: 8px; }
+  .s3-eq {
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--card);
+    border-radius: 12px; box-shadow: var(--card-shadow);
+    font-size: 20px; line-height: 1.6;
+  }
+  .s3-eq code { font-family: ui-monospace, monospace; font-weight: 700; color: var(--A); }
 </style>
 </head>
 <body>
@@ -252,7 +293,36 @@
         </div>
       </div>
     </section>
-    <section class="slide" data-slide="3"><h1>S3</h1></section>
+    <section class="slide" data-slide="3">
+      <header class="sec-header">
+        <div class="sec-eyebrow">採点 / Scoring</div>
+        <h2 class="sec-title">回答が軸スコアに変わる</h2>
+        <div class="sec-stripe" style="background: var(--A);"></div>
+      </header>
+      <div class="s3-body">
+        <div class="s3-diagram">
+          <div class="s3-q"><span class="label">A1</span><span>窓口で介護申請を支援</span><span class="val">+2</span></div>
+          <div class="s3-q"><span class="label">A2</span><span>地域サークルで対話</span><span class="val">+1</span></div>
+          <div class="s3-q reversed"><span class="label">A3</span><span>業務フローを設計</span><span class="val">−1</span></div>
+          <div class="s3-q reversed"><span class="label">A4</span><span>財政データを分析</span><span class="val">+0</span></div>
+          <div class="s3-arrow">↓ 平均</div>
+          <div class="s3-result"><span>A軸スコア</span><span class="num">+0.5</span></div>
+        </div>
+        <div class="s3-explain">
+          <h3>仕組み</h3>
+          <ul>
+            <li>1つの質問は、1つの軸に寄与</li>
+            <li>5段階の回答 → 数値 (−2, −1, 0, +1, +2)</li>
+            <li>「反転質問」は符号を反転してから集計</li>
+            <li>各軸ごとに、寄与する質問の <strong>平均</strong> を取る</li>
+          </ul>
+          <div class="s3-eq">
+            <code>軸スコア = 各軸の(反転補正済み回答値) の 平均</code><br/>
+            <span style="font-size:16px;color:var(--sub)">範囲：おおよそ −2 〜 +2</span>
+          </div>
+        </div>
+      </div>
+    </section>
     <section class="slide" data-slide="4"><h1>S4</h1></section>
     <section class="slide" data-slide="5"><h1>S5</h1></section>
     <section class="slide" data-slide="6"><h1>S6</h1></section>
