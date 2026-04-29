@@ -33,7 +33,7 @@ export function Slide2Input() {
   return (
     <div className={s.slide}>
       <header className={s.head}>
-        <h2 className={s.title}>5つの軸 × 20の質問</h2>
+        <h2 className={s.title}>STEP 01 · 入力</h2>
         <div className={s.stripe} />
         <div className={s.sub}>職員のタイプを5つの軸で測ります。</div>
       </header>

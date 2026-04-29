@@ -23,7 +23,7 @@ export function Slide6Example() {
   return (
     <div className={s.slide}>
       <header className={s.head}>
-        <h2 className={s.title}>受検者の結果（例）</h2>
+        <h2 className={s.title}>STEP 05 · 例</h2>
         <div className={s.stripe} />
         <div className={s.sub}>DASCG 型の受検者が見る画面の構成。</div>
       </header>

@@ -4,7 +4,7 @@ export function Slide5Result() {
   return (
     <div className={s.slide}>
       <header className={s.head}>
-        <h2 className={s.title}>結果に含まれる3つの要素</h2>
+        <h2 className={s.title}>STEP 04 · 結果</h2>
         <div className={s.stripe} />
         <div className={s.sub}>受検者は、自身のアーキタイプ・適合部署のランキング・5軸プロファイルを得る。</div>
       </header>

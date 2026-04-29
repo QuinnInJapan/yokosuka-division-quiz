@@ -26,7 +26,7 @@ export function Slide3Scoring() {
   return (
     <div className={s.slide}>
       <header className={s.head}>
-        <h2 className={s.title}>回答が軸スコアに変わる</h2>
+        <h2 className={s.title}>STEP 02 · 採点</h2>
         <div className={s.stripe} />
         <div className={s.sub}>各軸に寄与する質問の回答をまとめて、軸スコアを算出します。</div>
       </header>

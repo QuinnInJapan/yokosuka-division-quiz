@@ -22,7 +22,7 @@ export function Slide4Comparison() {
   return (
     <div className={s.slide}>
       <header className={s.head}>
-        <h2 className={s.title}>受検者 vs 103部署</h2>
+        <h2 className={s.title}>STEP 03 · 比較</h2>
         <div className={s.stripe} />
         <div className={s.sub}>5軸のパターンを部署ごとに比較し、最も近い部署を見つけます。</div>
       </header>
