@@ -1,6 +1,6 @@
 import s from './Stepper.module.css';
 
-const TOTAL = 5;
+const TOTAL = 4;
 
 type Props = {
   idx: number;

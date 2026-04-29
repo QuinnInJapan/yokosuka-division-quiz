@@ -4,16 +4,14 @@ import { Slide2Input } from './slides/Slide2Input';
 import { Slide3Scoring } from './slides/Slide3Scoring';
 import { Slide4Comparison } from './slides/Slide4Comparison';
 import { Slide5Result } from './slides/Slide5Result';
-import { Slide6Example } from './slides/Slide6Example';
 
-export const SLIDE_COUNT = 5;
+export const SLIDE_COUNT = 4;
 
 const slides = [
   <Slide2Input />,
   <Slide3Scoring />,
   <Slide4Comparison />,
   <Slide5Result />,
-  <Slide6Example />,
 ];
 
 type Props = {
