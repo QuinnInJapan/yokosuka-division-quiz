@@ -17,7 +17,7 @@ test('deck advances through all 6 slides without console errors', async ({ page 
   for (let i = 1; i <= 6; i++) {
     await expect(page.locator(`.slide.active[data-slide="${i}"]`)).toBeVisible();
     await page.screenshot({
-      path: `presentations/how-it-works/screenshots/slide-${i}-rendered.png`,
+      path: path.join(__dirname, 'screenshots', `slide-${i}-rendered.png`),
       fullPage: false,
     });
     if (i < 6) await page.keyboard.press('ArrowRight');
