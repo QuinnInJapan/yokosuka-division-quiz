@@ -1,0 +1,24 @@
+/* ── Traits two-column grid ── */
+.traits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-md);
+  align-items: stretch;
+}
+@media (min-width: 840px) {
+  .traits-grid {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+/* ── Carousel description (left) ── */
+.tc-panel {
+  padding: var(--sp-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 5-bar panel (right) ── */
+.bars-panel {
+  padding: var(--sp-md) var(--sp-lg);
+}

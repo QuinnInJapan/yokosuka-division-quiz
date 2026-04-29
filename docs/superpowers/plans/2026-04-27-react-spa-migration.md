@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Migrate the existing vanilla-JS quiz app to an idiomatic React 18 + TypeScript SPA built with Vite, preserving all behavior except the URL-based share feature (removed; PNG export deferred).
+**Goal:** Migrate the existing vanilla-JS quiz app to an idiomatic React 19 + TypeScript SPA built with Vite, preserving all behavior except the URL-based share feature (removed; PNG export deferred).
 
 **Architecture:** By-type folder layout under `src/` — `data/` (typed modules), `lib/` (pure functions), `state/` (Context + `useReducer` store), `screens/` and `components/` (presentational React), `styles/` (global tokens + per-component CSS Modules). Derived state (`userScores`, `type`, `results`) is recomputed via `useMemo` from `resp` instead of stored, eliminating drift.
 
-**Tech Stack:** React 18, TypeScript 5+, Vite, Vitest, ESLint+Prettier defaults, CSS Modules.
+**Tech Stack:** React 19, TypeScript 6, Vite 8, Vitest, ESLint+Prettier defaults, CSS Modules. (The stack reflects what `npm create vite@latest` resolves at execution time. The plan's behavior is forward-compatible. Note that TS 6's default `verbatimModuleSyntax: true` requires all type-only imports to use `import type` — the code samples in this plan already follow that convention.)
 
 **Reference spec:** `docs/superpowers/specs/2026-04-27-react-spa-migration-design.md`.
 
@@ -573,7 +573,7 @@ cd /Users/quinnngo/Desktop/projects/yokosuka-division-quiz
 node react/scripts/gen-divisions.mjs
 ```
 
-Expected: prints `Wrote 102 divisions` and creates `react/src/data/divisions.ts`.
+Expected: prints `Wrote 103 divisions` and creates `react/src/data/divisions.ts`.
 
 - [ ] **Step 3: Spot-check first and last entry**
 

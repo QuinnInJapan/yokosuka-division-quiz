@@ -1,9 +1,9 @@
 .DS_Store
 node_modules/
 dist/
+dist-single/
 build/
 *.log
 .env
 .env.local
-__pycache__/
-*.pyc
+.vite/

@@ -1,0 +1,55 @@
+:global(.fit-display) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+:global(.fit-arc) {
+  width: 56px; height: 56px;
+  flex-shrink: 0;
+}
+:global(.fit-text) {
+  display: flex;
+  flex-direction: column;
+}
+:global(.fit-pct) {
+  font-size: 28px;
+  font-weight: var(--fw-black);
+  line-height: 1;
+}
+:global(.fit-lbl) {
+  font-size: var(--fs-xs);
+  color: var(--sub);
+  font-weight: var(--fw-bold);
+  letter-spacing: .06em;
+  margin-top: 2px;
+}
+
+/* ── Match card ── */
+.match-card {
+}
+
+/* ── Header row: fit + info ── */
+.match-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xl);
+  padding-bottom: var(--sp-lg);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--sp-lg);
+}
+
+.div-dept { font-size: var(--fs-xs); color: var(--sub); margin-bottom: 2px; }
+.div-name {
+  font-size: var(--fs-xl); font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  word-break: keep-all; overflow-wrap: break-word;
+  margin-bottom: var(--sp-sm);
+}
+.div-about {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-sec);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}

@@ -1,0 +1,36 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#root {
+  width: 100%;
+  max-width: var(--app-max);
+  padding: 0 var(--sp-lg) var(--sp-2xl);
+}
+
+.content-w {
+  max-width: var(--content-max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--card-r);
+  padding: var(--card-pad);
+  box-shadow: var(--card-shadow);
+}
+
+.section-gap { margin-top: var(--sp-lg); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.truncate {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}

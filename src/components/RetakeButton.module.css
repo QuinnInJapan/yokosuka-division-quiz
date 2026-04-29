@@ -1,0 +1,18 @@
+.btn-retake {
+  flex: 1;
+  padding: 14px;
+  border: 2px solid var(--hall-indigo);
+  border-radius: 12px;
+  font-size: 14px; font-weight: var(--fw-bold);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: background .15s ease-out, color .15s ease-out;
+  background: var(--card);
+  color: var(--hall-indigo);
+}
+.btn-retake:hover { background: var(--hall-indigo); color: white; }
+.btn-retake:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}

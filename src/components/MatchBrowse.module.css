@@ -1,0 +1,36 @@
+/* ── Match section ── */
+.match-section {
+}
+.match-section-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  margin-bottom: 4px;
+}
+.match-section-sub {
+  font-size: var(--fs-sm);
+  color: var(--sub);
+  margin-bottom: var(--sp-md);
+}
+
+/* ── Side-by-side grid ── */
+.match-browse {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-md);
+  align-items: stretch;
+}
+@media (min-width: 840px) {
+  .match-browse {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+.detail-col {
+}
+
+/* ── Bottom actions ── */
+.bottom-actions {
+  display: flex;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-md);
+}

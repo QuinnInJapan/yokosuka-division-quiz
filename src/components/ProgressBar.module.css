@@ -1,0 +1,9 @@
+.prog-wrap { padding: 20px 0 var(--sp-md); }
+.prog-bar { display: flex; gap: 3px; }
+.seg {
+  flex: 1; height: 6px; border-radius: 999px;
+  background: var(--border);
+  transition: background .25s;
+}
+.seg.done { background: var(--c); }
+.seg.cur  { background: var(--c); opacity: .4; }
