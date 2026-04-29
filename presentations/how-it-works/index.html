@@ -262,6 +262,40 @@
     position: absolute; bottom: 72px; left: 96px; right: 96px;
     font-size: 18px; color: var(--sub); text-align: center;
   }
+
+  /* ============ Slide 5: Result ============ */
+  .s5-body { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; flex: 1; align-items: center; }
+  .s5-shot {
+    background: var(--card); border-radius: var(--card-r);
+    box-shadow: var(--card-shadow); padding: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .s5-shot img {
+    max-width: 100%; max-height: 600px; border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .s5-explain h3 { font-size: 28px; margin: 0 0 16px; color: var(--hall-indigo); }
+  .s5-explain p { font-size: 22px; line-height: 1.7; color: var(--text); margin: 0 0 16px; }
+  .s5-stat {
+    display: flex; gap: 32px; margin: 32px 0;
+  }
+  .s5-stat .item {
+    flex: 1; padding: 24px;
+    background: var(--card); border-radius: 12px;
+    box-shadow: var(--card-shadow); text-align: center;
+  }
+  .s5-stat .num {
+    font-size: 56px; font-weight: 800; color: var(--hall-indigo);
+    font-family: ui-monospace, monospace; line-height: 1;
+  }
+  .s5-stat .lbl { font-size: 16px; color: var(--sub); margin-top: 8px; }
+  .s5-mbti {
+    margin-top: 32px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--D-mid);
+    background: var(--D-tint);
+    font-size: 16px; line-height: 1.7; color: var(--text-sec);
+  }
 </style>
 </head>
 <body>
@@ -395,7 +429,30 @@
       </div>
       <div class="s4-foot">部署ベクトルは103部署それぞれに事前設計（職務内容に基づく）</div>
     </section>
-    <section class="slide" data-slide="5"><h1>S5</h1></section>
+    <section class="slide" data-slide="5">
+      <header class="sec-header">
+        <div class="sec-eyebrow">結果 / Output</div>
+        <h2 class="sec-title">アーキタイプ + 部署ランキング</h2>
+        <div class="sec-stripe" style="background: var(--C);"></div>
+      </header>
+      <div class="s5-body">
+        <div class="s5-shot">
+          <img src="screenshots/results.png" alt="Results screen" />
+        </div>
+        <div class="s5-explain">
+          <h3>受検者が見る結果</h3>
+          <p>32アーキタイプから1つに分類され、全103部署が適合度順にランクされます。</p>
+          <div class="s5-stat">
+            <div class="item"><div class="num">32</div><div class="lbl">アーキタイプ<br/>(2⁵)</div></div>
+            <div class="item"><div class="num">103</div><div class="lbl">部署を<br/>適合度順</div></div>
+          </div>
+          <div class="s5-mbti">
+            ※ MBTI（4軸 → 16タイプ）の発想を参考に、5軸 → 32タイプへ拡張。
+            職員の性格分類ではなく、<strong>業務適性の把握</strong>を目的とする。
+          </div>
+        </div>
+      </div>
+    </section>
     <section class="slide" data-slide="6"><h1>S6</h1></section>
     <div class="footer">
       <span id="footer-section">部署タイプ診断 — その仕組み</span>
