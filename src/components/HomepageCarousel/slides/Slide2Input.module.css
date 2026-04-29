@@ -3,6 +3,32 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  gap: var(--sp-lg);
+}
+
+/* ── Header (mirrors sibling slides) ── */
+.head {
+  display: flex; flex-direction: column;
+  gap: var(--sp-sm);
+}
+.title {
+  font-size: 32px;
+  font-weight: var(--fw-black);
+  color: var(--hall-indigo);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.stripe {
+  height: 4px;
+  width: 56px;
+  background: var(--hall-indigo);
+}
+.sub {
+  font-size: var(--fs-base);
+  color: var(--text-sec);
+  margin: 0;
+  line-height: var(--lh-tight);
 }
 
 /* ── Meta row (mirrors Quiz.module.css .quiz-meta) ── */

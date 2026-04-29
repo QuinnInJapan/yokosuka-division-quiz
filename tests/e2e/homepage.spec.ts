@@ -17,48 +17,13 @@ test('hero: title, lede, axis chips, CTA all visible above fold', async ({ page 
   expect(box.y + box.height).toBeLessThan(900);
 });
 
-test('stepper: 4 segments visible, first filled + active', async ({ page }) => {
+test('keyboard arrows navigate carousel slides', async ({ page }) => {
   await page.goto('/');
-  for (let i = 1; i <= 4; i++) {
-    await expect(page.getByTestId(`stepper-step-${i}`)).toBeVisible();
-  }
-  await expect(page.getByTestId('stepper-step-1')).toHaveAttribute('data-active', 'true');
-  await expect(page.getByTestId('stepper-step-1')).toHaveAttribute('data-filled', 'true');
-  for (let i = 2; i <= 4; i++) {
-    await expect(page.getByTestId(`stepper-step-${i}`)).toHaveAttribute('data-active', 'false');
-    await expect(page.getByTestId(`stepper-step-${i}`)).toHaveAttribute('data-filled', 'false');
-  }
-});
-
-test('stepper: clicking segment fills 1..N and activates clicked', async ({ page }) => {
-  await page.goto('/');
-  await page.getByTestId('stepper-step-3').click();
-  await expect(page.getByTestId('stepper-step-3')).toHaveAttribute('data-active', 'true');
-  for (let i = 1; i <= 3; i++) {
-    await expect(page.getByTestId(`stepper-step-${i}`)).toHaveAttribute('data-filled', 'true');
-  }
-  await expect(page.getByTestId('stepper-step-4')).toHaveAttribute('data-filled', 'false');
-  await expect(page.getByTestId('carousel-slide-3')).toHaveAttribute('data-active', 'true');
-});
-
-test('stepper: keyboard arrows update carousel and stepper fill', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.getByTestId('stepper-step-1')).toBeVisible();
+  await expect(page.getByTestId('carousel-slide-1')).toHaveAttribute('data-active', 'true');
   await page.keyboard.press('ArrowRight');
   await expect(page.getByTestId('carousel-slide-2')).toHaveAttribute('data-active', 'true');
-  await expect(page.getByTestId('stepper-step-2')).toHaveAttribute('data-active', 'true');
-  await expect(page.getByTestId('stepper-step-2')).toHaveAttribute('data-filled', 'true');
-});
-
-test('stepper: numeral renders only on active segment', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.getByTestId('stepper-step-1')).toContainText('01');
-  for (let i = 2; i <= 4; i++) {
-    await expect(page.getByTestId(`stepper-step-${i}`)).toHaveText('');
-  }
-  await page.getByTestId('stepper-step-3').click();
-  await expect(page.getByTestId('stepper-step-3')).toContainText('03');
-  await expect(page.getByTestId('stepper-step-1')).toHaveText('');
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByTestId('carousel-slide-1')).toHaveAttribute('data-active', 'true');
 });
 
 test('explainer head: counter updates and chevrons navigate', async ({ page }) => {

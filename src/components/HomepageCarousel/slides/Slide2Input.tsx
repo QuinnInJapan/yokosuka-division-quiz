@@ -32,6 +32,12 @@ export function Slide2Input() {
 
   return (
     <div className={s.slide}>
+      <header className={s.head}>
+        <h2 className={s.title}>STEP 01 · 入力</h2>
+        <div className={s.stripe} />
+        <p className={s.sub}>ひとつの場面に、5段階で答える。</p>
+      </header>
+
       <div className={s.meta}>
         <span className={s.qNum}>
           Q.{Q.num} <span aria-hidden="true">/</span> {Q.total}

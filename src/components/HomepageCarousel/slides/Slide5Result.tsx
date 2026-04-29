@@ -71,6 +71,7 @@ export function Slide5Result() {
           <section className={s.region}>
             <span className={s.annot} aria-hidden="true">01</span>
             <div className={s.regionBody}>
+              <div className={s.regionLabel}>アーキタイプ</div>
               <div className={s.heroBanner}>
                 <div className={s.heroPre}>あなたのタイプ</div>
                 <div className={s.heroChips}>

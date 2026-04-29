@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../state/hooks';
 import { HomepageCarousel, SLIDE_COUNT } from '../components/HomepageCarousel';
-import { Stepper } from '../components/Stepper';
 import { AXES } from '../data/axes';
 import { AX } from '../data/types';
 import s from './Welcome.module.css';
@@ -44,9 +43,6 @@ export function Welcome() {
         </button>
       </aside>
 
-      <div className={s.stepperSlot}>
-        <Stepper idx={idx} onJump={onJump} />
-      </div>
       <section className={s.right}>
         <div className={s.carouselWrap}>
           <div className={s.explainerHead} data-testid="explainer-head">
