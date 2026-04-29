@@ -31,6 +31,7 @@ Build a 5-minute Japanese-language slide deck explaining how the Yokosuka City H
 | Kanji-glyph motif | **Not committed.** The app's axis kanji glyphs (人/機/動/策/援/律/守/革/幅/専) are not finalized, so the deck must not anchor visual identity on them. Axis-color stripes serve as the primary recognition device instead. |
 | Information density | **High.** Japanese business-deck convention: each slide is read as a document, not viewed as a placard. Apple-style "one word + image per slide" is an explicit anti-pattern. Body text, tables, multi-element diagrams are encouraged where they serve the content. |
 | Deck format | 16:9, 1920×1080 |
+| Heritage / inspiration | **Acknowledge openly that the design is MBTI-inspired** (5 binary axes → 32 archetype codes mirrors MBTI's 4 binary axes → 16 types). The deck should not hide this lineage — surface it as a credit/footnote so the audience reads the methodology in a familiar frame. |
 
 ## Slide-by-slide content (the spine)
 
@@ -71,6 +72,7 @@ Build a 5-minute Japanese-language slide deck explaining how the Yokosuka City H
 - **Header:** 結果 — アーキタイプ + 部署ランキング
 - **Body:** Real or simplified screenshot of the Results screen — TypeReveal hero (one of 32 archetypes) + top divisions list with fit %.
 - **Caption:** 32アーキタイプから1つ（5軸の符号の組み合わせ：2⁵ = 32）+ 全103部署を適合度順にランク
+- **Footnote (small):** ※ MBTI（4軸 → 16タイプ）の発想を参考に、5軸 → 32タイプへ拡張。職員の性格分類ではなく、業務適性の把握を目的とする。
 
 ### Slide 6 — まとめ・デモへ
 - **3-line summary** in three axis-tinted cards:
