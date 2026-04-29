@@ -36,12 +36,13 @@
 }
 
 .title {
-  font-size: 56px;
+  font-size: 44px;
   font-weight: var(--fw-black);
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -0.01em;
   margin: 0;
   color: white;
+  word-break: keep-all;
 }
 
 .lede {

@@ -1,11 +1,7 @@
 .carousel {
-  display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
-  gap: var(--sp-2xl);
-  align-items: start;
-}
-@media (max-width: 900px) {
-  .carousel { grid-template-columns: 1fr; gap: var(--sp-md); }
+  display: block;
+  width: 100%;
+  min-width: 0;
 }
 
 .viewport {
