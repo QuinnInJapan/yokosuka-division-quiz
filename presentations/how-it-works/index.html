@@ -790,34 +790,34 @@
     background: var(--card);
     border-radius: var(--card-r);
     box-shadow: var(--card-shadow);
-    padding: 32px 28px;
+    padding: 36px 32px;
     display: flex; flex-direction: column;
-    gap: 18px;
+    gap: 20px;
   }
   .s5-card-head {
-    display: flex; align-items: baseline; gap: 12px;
+    display: flex; align-items: baseline; gap: 14px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 16px;
+    padding-bottom: 18px;
   }
   .s5-card-num {
-    font-size: 48px; font-weight: 800;
+    font-size: 56px; font-weight: 800;
     color: var(--hall-indigo);
     letter-spacing: -0.02em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
-  .s5-card-title { display: flex; flex-direction: column; gap: 2px; }
+  .s5-card-title { display: flex; flex-direction: column; gap: 4px; }
   .s5-card-label {
-    font-size: 18px; font-weight: 700;
+    font-size: 20px; font-weight: 700;
     color: var(--text);
   }
   .s5-card-note {
-    font-size: 12px; font-weight: 600;
+    font-size: 13px; font-weight: 600;
     color: var(--sub);
     letter-spacing: 0.04em;
   }
   .s5-card-para {
-    font-size: 14px; line-height: 1.75;
+    font-size: 17px; line-height: 1.85;
     color: var(--text-sec);
     margin: 0;
   }
@@ -827,83 +827,115 @@
   }
   .s5-card-example {
     margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-light);
+    padding: 28px 26px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: inset 0 0 0 1px var(--border-light);
     display: flex; flex-direction: column;
-    gap: 8px;
+    gap: 16px;
+    position: relative;
   }
   .s5-card-example-eyebrow {
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.14em;
-    color: var(--sub);
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.18em;
+    color: white;
+    background: var(--hall-indigo);
     text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
   }
   /* archetype example */
+  .s5-ex-arch-chips {
+    display: flex; gap: 5px;
+  }
+  .s5-ex-arch-chips span {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800;
+    color: white;
+    font-family: ui-monospace, Menlo, monospace;
+  }
+  .s5-ex-arch-chips span:nth-child(1) { background: var(--A); }
+  .s5-ex-arch-chips span:nth-child(2) { background: var(--B); }
+  .s5-ex-arch-chips span:nth-child(3) { background: var(--C); }
+  .s5-ex-arch-chips span:nth-child(4) { background: var(--D); }
+  .s5-ex-arch-chips span:nth-child(5) { background: var(--E); }
   .s5-ex-arch-name {
-    font-size: 22px; font-weight: 800;
+    font-size: 32px; font-weight: 800;
     color: var(--hall-indigo);
-    line-height: 1.2;
+    line-height: 1.15;
     margin: 0;
   }
   .s5-ex-arch-name small {
-    font-size: 13px; font-weight: 700;
+    font-size: 17px; font-weight: 700;
     color: var(--text-sec);
     margin-left: 4px;
   }
-  .s5-ex-arch-code {
-    font-size: 11px; font-weight: 700;
-    color: var(--sub);
-    letter-spacing: 0.22em;
-    font-family: ui-monospace, Menlo, monospace;
-  }
   .s5-ex-arch-desc {
-    font-size: 12px; line-height: 1.7;
+    font-size: 14px; line-height: 1.75;
     color: var(--text-sec);
-    margin-top: 4px;
+    margin: 0;
   }
   /* ranking example */
   .s5-ex-rank {
     display: grid;
-    grid-template-columns: 28px 1fr 64px;
-    gap: 10px; align-items: center;
-    padding: 12px 14px;
-    background: linear-gradient(90deg, rgba(76,175,125,0.18), var(--bg));
-    border: 1px solid var(--C-mid);
-    border-radius: 10px;
+    grid-template-columns: 36px 1fr 78px;
+    gap: 12px; align-items: center;
+    padding: 18px 18px;
+    background: linear-gradient(90deg, rgba(76,175,125,0.22), white);
+    border: 1.5px solid var(--C-mid);
+    border-radius: 12px;
   }
   .s5-ex-rank .pos {
     font-weight: 800; color: var(--C);
-    font-size: 16px; text-align: center;
+    font-size: 22px; text-align: center;
     font-variant-numeric: tabular-nums;
+    line-height: 1;
   }
   .s5-ex-rank .name {
     font-weight: 700; color: var(--text);
-    font-size: 14px;
+    font-size: 18px;
   }
   .s5-ex-rank .pct {
     font-weight: 800; color: var(--C);
     font-variant-numeric: tabular-nums;
     text-align: right;
-    font-size: 16px;
+    font-size: 22px;
+    letter-spacing: -0.01em;
   }
   /* profile bar example (TraitBar style) */
-  .s5-ex-bar { display: flex; flex-direction: column; gap: 4px; }
+  .s5-ex-bar { display: flex; flex-direction: column; gap: 8px; }
   .s5-ex-bar-head {
-    display: flex; align-items: baseline; gap: 8px;
+    display: flex; align-items: baseline; gap: 10px;
   }
-  .s5-ex-bar-pct { font-size: 14px; font-weight: 800; color: var(--A); font-variant-numeric: tabular-nums; }
-  .s5-ex-bar-win { font-size: 12px; font-weight: 700; color: var(--A); }
-  .s5-ex-bar-row { display: flex; align-items: center; gap: 8px; }
-  .s5-ex-bar-end { width: 24px; flex-shrink: 0; font-size: 11px; color: var(--sub); text-align: center; font-weight: 600; }
-  .s5-ex-bar-track { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--A-mid); }
+  .s5-ex-bar-pct { font-size: 22px; font-weight: 800; color: var(--A); font-variant-numeric: tabular-nums; }
+  .s5-ex-bar-win { font-size: 15px; font-weight: 700; color: var(--A); }
+  .s5-ex-bar-row { display: flex; align-items: center; gap: 10px; }
+  .s5-ex-bar-end { width: 28px; flex-shrink: 0; font-size: 13px; color: var(--sub); text-align: center; font-weight: 600; }
+  .s5-ex-bar-track { position: relative; flex: 1; height: 12px; border-radius: 999px; background: var(--A-mid); }
   .s5-ex-bar-dot {
     position: absolute; top: 50%;
     transform: translate(-50%, -50%);
-    width: 12px; height: 12px;
+    width: 16px; height: 16px;
     border-radius: 50%;
     background: white;
-    border: 2.5px solid var(--A);
-    box-shadow: 0 1px 3px rgba(0,0,0,.18);
+    border: 3px solid var(--A);
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  }
+  .s5-ex-bar-foot {
+    font-size: 13px; line-height: 1.65;
+    color: var(--text-sec);
+  }
+  .s5-ex-rank-foot {
+    display: flex; flex-direction: column; gap: 3px;
+    font-size: 13px; line-height: 1.5;
+    color: var(--text-sec);
+  }
+  .s5-ex-rank-foot span:first-child {
+    font-weight: 700; color: var(--text);
   }
 
   /* ============ Slide 6: Example result ============ */
@@ -1374,8 +1406,10 @@
           </p>
           <div class="s5-card-example">
             <div class="s5-card-example-eyebrow">例</div>
+            <div class="s5-ex-arch-chips">
+              <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
+            </div>
             <h4 class="s5-ex-arch-name">街のよろず屋<small>型</small></h4>
-            <div class="s5-ex-arch-code">DASCG</div>
             <div class="s5-ex-arch-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。</div>
           </div>
         </div>
@@ -1396,6 +1430,10 @@
             <div class="s5-card-example-eyebrow">例：上位</div>
             <div class="s5-ex-rank">
               <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
+            </div>
+            <div class="s5-ex-rank-foot">
+              <span>上位 3 / 103 部署</span>
+              <span>下位は 18.4%（監査委員事務局）</span>
             </div>
           </div>
         </div>
@@ -1424,6 +1462,9 @@
                 <div class="s5-ex-bar-track"><span class="s5-ex-bar-dot" style="left:65%"></span></div>
                 <span class="s5-ex-bar-end">人</span>
               </div>
+            </div>
+            <div class="s5-ex-bar-foot">
+              制度・仕組みより市民との対話を重視する傾向。残り4軸も同様に表示される。
             </div>
           </div>
         </div>
