@@ -1,12 +1,19 @@
 .carousel {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   min-width: 0;
+  min-height: 0;
+  flex: 1;
 }
 
 .viewport {
   min-width: 0;
+  min-height: 0;
+  flex: 1;
   position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .slide[hidden] { display: none; }
 .slide {
