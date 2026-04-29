@@ -778,177 +778,114 @@
     text-align: center;
   }
 
-  /* ============ Slide 5: Result components ============ */
+  /* ============ Slide 5: Result components (paragraph + 1 example) ============ */
   .s5-body {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 28px;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
     flex: 1;
-    align-items: stretch;
+    align-items: start;
   }
-  .s5-card {
-    background: var(--card);
-    border-radius: var(--card-r);
-    box-shadow: var(--card-shadow);
-    padding: 32px 28px;
+  .s5-explain {
     display: flex; flex-direction: column;
-    gap: 16px;
+    gap: 24px;
+    padding-top: 12px;
   }
-  .s5-card-head {
-    display: flex; align-items: baseline; gap: 12px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 16px;
+  .s5-para {
+    font-size: 19px; line-height: 1.85;
+    color: var(--text);
+    margin: 0;
   }
-  .s5-card-num {
-    font-size: 48px; font-weight: 800;
+  .s5-para strong {
+    font-weight: 700;
     color: var(--hall-indigo);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
   }
-  .s5-card-title { display: flex; flex-direction: column; gap: 2px; }
-  .s5-card-label {
-    font-size: 18px; font-weight: 700;
+  .s5-key-list {
+    display: flex; flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .s5-key {
+    display: grid;
+    grid-template-columns: 6px 1fr 96px;
+    gap: 16px; align-items: center;
+    padding: 14px 18px;
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+  }
+  .s5-key::before {
+    content: ''; align-self: stretch;
+    border-radius: 3px;
+  }
+  .s5-key.k1::before { background: var(--A); }
+  .s5-key.k2::before { background: var(--B); }
+  .s5-key.k3::before { background: var(--C); }
+  .s5-key-label {
+    font-size: 16px; font-weight: 700;
     color: var(--text);
   }
-  .s5-card-note {
-    font-size: 12px; font-weight: 600;
+  .s5-key-count {
+    font-size: 13px; font-weight: 600;
     color: var(--sub);
-    letter-spacing: 0.04em;
-  }
-
-  /* 32 アーキタイプ — encoding strip */
-  .s5-encoding {
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .s5-axis-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 8px; align-items: center;
-    font-size: 13px;
-  }
-  .s5-axis-row .pole {
-    padding: 6px 10px;
-    border-radius: 8px;
-    text-align: center;
-    line-height: 1.2;
-  }
-  .s5-axis-row .pole .letter {
-    font-weight: 800; font-size: 14px;
-    margin-right: 4px;
-  }
-  .s5-axis-row.A .pole.lo { background: var(--A-tint); color: var(--A); }
-  .s5-axis-row.A .pole.hi { background: var(--A); color: white; }
-  .s5-axis-row.B .pole.lo { background: var(--B-tint); color: var(--B); }
-  .s5-axis-row.B .pole.hi { background: var(--B); color: white; }
-  .s5-axis-row.C .pole.lo { background: var(--C-tint); color: var(--C); }
-  .s5-axis-row.C .pole.hi { background: var(--C); color: white; }
-  .s5-axis-row.D .pole.lo { background: var(--D-tint); color: var(--D); }
-  .s5-axis-row.D .pole.hi { background: var(--D); color: white; }
-  .s5-axis-row.E .pole.lo { background: var(--E-tint); color: var(--E); }
-  .s5-axis-row.E .pole.hi { background: var(--E); color: white; }
-  .s5-axis-row .pole.hi { font-weight: 700; }
-  .s5-axis-row .vs {
-    font-size: 10px; font-weight: 700;
-    color: var(--sub);
-    letter-spacing: 0.08em;
-  }
-  .s5-encoding-foot {
-    margin-top: auto;
-    padding-top: 12px;
-    font-size: 12px; line-height: 1.6;
-    color: var(--text-sec);
-    border-top: 1px solid var(--border-light);
-  }
-  .s5-encoding-foot strong {
-    font-weight: 800; color: var(--hall-indigo);
-    font-family: monospace;
-  }
-
-  /* 103 部署ランキング — top + bottom preview */
-  .s5-rank {
-    display: flex; flex-direction: column;
-    gap: 6px;
-  }
-  .s5-rank-row {
-    display: grid;
-    grid-template-columns: 24px 1fr 56px;
-    gap: 10px; align-items: center;
-    font-size: 14px;
-    padding: 8px 10px;
-    background: var(--bg);
-    border-radius: 8px;
-  }
-  .s5-rank-row .pos {
-    font-weight: 800; color: var(--text-sec);
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-  .s5-rank-row .name {
-    font-weight: 600; color: var(--text);
-  }
-  .s5-rank-row .pct {
-    font-weight: 700; color: var(--hall-indigo);
     text-align: right;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
   }
-  .s5-rank-row.top .pct { color: var(--C); }
-  .s5-rank-row.bottom .pct { color: var(--A); }
-  .s5-rank-divider {
-    text-align: center;
-    font-size: 14px; font-weight: 700;
-    color: var(--sub);
-    letter-spacing: 0.2em;
-    padding: 4px 0;
-  }
-
-  /* 5 軸プロファイル — mini bars */
-  .s5-profile {
+  .s5-example-wrap {
     display: flex; flex-direction: column;
     gap: 12px;
   }
-  .s5-prof-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 4px;
+  .s5-example-eyebrow {
+    font-size: 12px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
-  .s5-prof-row .head {
-    display: flex; justify-content: space-between;
-    font-size: 13px;
+  .s5-example {
+    background: var(--card);
+    border-radius: var(--card-r);
+    box-shadow: var(--card-shadow);
+    padding: 32px 36px;
+    display: flex; flex-direction: column;
+    gap: 14px;
   }
-  .s5-prof-row .head .lbl {
-    font-weight: 600; color: var(--text);
+  .s5-example-banner {
+    display: flex; flex-direction: column;
+    gap: 6px;
   }
-  .s5-prof-row .head .pole {
-    font-size: 11px; color: var(--sub);
-    font-weight: 600;
+  .s5-example-pre {
+    font-size: 11px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
-  .s5-prof-row .track {
-    height: 10px;
-    background: var(--border-light);
-    border-radius: 5px;
-    position: relative;
+  .s5-example-name {
+    font-size: 38px; font-weight: 800;
+    color: var(--hall-indigo);
+    line-height: 1.15;
   }
-  .s5-prof-row .track::before {
-    content: ''; position: absolute;
-    left: 50%; top: -2px; bottom: -2px;
-    width: 1px; background: var(--sub); opacity: 0.4;
+  .s5-example-name small {
+    font-size: 18px; font-weight: 700;
+    color: var(--text-sec);
+    margin-left: 4px;
   }
-  .s5-prof-row .fill {
-    position: absolute;
-    top: 0; bottom: 0;
-    border-radius: 5px;
+  .s5-example-code {
+    font-size: 13px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.2em;
+    font-family: ui-monospace, Menlo, monospace;
   }
-  .s5-prof-row.A .fill { background: var(--A-mid); }
-  .s5-prof-row.B .fill { background: var(--B-mid); }
-  .s5-prof-row.C .fill { background: var(--C-mid); }
-  .s5-prof-row.D .fill { background: var(--D-mid); }
-  .s5-prof-row.E .fill { background: var(--E-mid); }
+  .s5-example-desc {
+    font-size: 15px; line-height: 1.75;
+    color: var(--text-sec);
+    margin: 0;
+  }
 
   /* ============ Slide 6: Example result ============ */
   .s6-body {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: 1.15fr 0.85fr;
     gap: 32px;
     flex: 1;
   }
@@ -956,97 +893,114 @@
     background: var(--card);
     border-radius: var(--card-r);
     box-shadow: var(--card-shadow);
-    padding: 36px 40px;
-    border-left: 6px solid var(--A);
+    padding: 32px 36px;
     display: flex; flex-direction: column;
-    gap: 16px;
+    gap: 18px;
   }
   .s6-archetype-eyebrow {
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 0.16em;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em;
     color: var(--sub);
     text-transform: uppercase;
   }
-  .s6-archetype-code {
-    display: flex; gap: 8px;
-  }
-  .s6-archetype-code span {
-    width: 56px; height: 56px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; font-weight: 800;
-    color: white;
-  }
-  .s6-archetype-code span:nth-child(1) { background: var(--A); }
-  .s6-archetype-code span:nth-child(2) { background: var(--B); }
-  .s6-archetype-code span:nth-child(3) { background: var(--C); }
-  .s6-archetype-code span:nth-child(4) { background: var(--D); }
-  .s6-archetype-code span:nth-child(5) { background: var(--E); }
   .s6-archetype-name {
-    font-size: 44px; font-weight: 800;
+    font-size: 46px; font-weight: 800;
     color: var(--hall-indigo);
-    line-height: 1.2;
+    line-height: 1.15;
+    margin: 0;
   }
   .s6-archetype-name small {
-    font-size: 18px; font-weight: 600;
+    font-size: 20px; font-weight: 700;
     color: var(--text-sec);
-    margin-left: 8px;
+    margin-left: 6px;
+  }
+  .s6-archetype-code {
+    font-size: 13px; font-weight: 700;
+    color: var(--sub);
+    letter-spacing: 0.24em;
+    font-family: ui-monospace, Menlo, monospace;
+    margin-top: -8px;
   }
   .s6-archetype-desc {
-    font-size: 17px; line-height: 1.75;
+    font-size: 15px; line-height: 1.7;
     color: var(--text-sec);
+    margin: 0;
   }
   .s6-archetype-profile {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
     display: flex; flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-light);
   }
-  .s6-archetype-profile .head {
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 0.12em;
+  .s6-archetype-profile .ph {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em;
     color: var(--sub);
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
-  .s6-archetype-profile .row {
-    display: grid;
-    grid-template-columns: 140px 1fr 56px;
-    gap: 12px; align-items: center;
-    font-size: 13px;
+  .s6-trait {
+    display: flex; flex-direction: column;
+    gap: 4px;
   }
-  .s6-archetype-profile .row .lbl {
-    font-weight: 600;
-    color: var(--text);
+  .s6-trait-head {
+    display: flex; align-items: baseline;
+    gap: 10px;
   }
-  .s6-archetype-profile .row .track {
-    position: relative;
-    height: 8px;
-    background: var(--border-light);
-    border-radius: 4px;
-  }
-  .s6-archetype-profile .row .track::before {
-    content: ''; position: absolute;
-    left: 50%; top: -2px; bottom: -2px;
-    width: 1px; background: var(--sub); opacity: 0.4;
-  }
-  .s6-archetype-profile .row .fill {
-    position: absolute;
-    top: 0; bottom: 0;
-    border-radius: 4px;
-  }
-  .s6-archetype-profile .row.A .fill { background: var(--A-mid); }
-  .s6-archetype-profile .row.B .fill { background: var(--B-mid); }
-  .s6-archetype-profile .row.C .fill { background: var(--C-mid); }
-  .s6-archetype-profile .row.D .fill { background: var(--D-mid); }
-  .s6-archetype-profile .row.E .fill { background: var(--E-mid); }
-  .s6-archetype-profile .row .v {
-    font-size: 12px; font-weight: 700;
-    color: var(--text-sec);
-    text-align: right;
+  .s6-trait-pct {
+    font-size: 16px; font-weight: 800;
     font-variant-numeric: tabular-nums;
   }
+  .s6-trait-win {
+    font-size: 13px; font-weight: 700;
+  }
+  .s6-trait-row {
+    display: flex; align-items: center;
+    gap: 10px;
+  }
+  .s6-trait-end {
+    width: 28px; flex-shrink: 0;
+    font-size: 12px; color: var(--sub);
+    text-align: center;
+    font-weight: 600;
+  }
+  .s6-trait-track {
+    position: relative;
+    flex: 1;
+    height: 10px;
+    border-radius: 999px;
+  }
+  .s6-trait-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 2.5px solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,.18);
+    z-index: 2;
+  }
+  .s6-trait.A .s6-trait-pct,
+  .s6-trait.A .s6-trait-win { color: var(--A); }
+  .s6-trait.A .s6-trait-track { background: var(--A-mid); }
+  .s6-trait.A .s6-trait-dot { border-color: var(--A); }
+  .s6-trait.B .s6-trait-pct,
+  .s6-trait.B .s6-trait-win { color: var(--B); }
+  .s6-trait.B .s6-trait-track { background: var(--B-mid); }
+  .s6-trait.B .s6-trait-dot { border-color: var(--B); }
+  .s6-trait.C .s6-trait-pct,
+  .s6-trait.C .s6-trait-win { color: var(--C); }
+  .s6-trait.C .s6-trait-track { background: var(--C-mid); }
+  .s6-trait.C .s6-trait-dot { border-color: var(--C); }
+  .s6-trait.D .s6-trait-pct,
+  .s6-trait.D .s6-trait-win { color: var(--D); }
+  .s6-trait.D .s6-trait-track { background: var(--D-mid); }
+  .s6-trait.D .s6-trait-dot { border-color: var(--D); }
+  .s6-trait.E .s6-trait-pct,
+  .s6-trait.E .s6-trait-win { color: var(--E); }
+  .s6-trait.E .s6-trait-track { background: var(--E-mid); }
+  .s6-trait.E .s6-trait-dot { border-color: var(--E); }
 
   .s6-rank-card {
     background: var(--card);
@@ -1093,14 +1047,12 @@
     color: var(--text);
     font-size: 15px;
   }
-  .s6-rank-item .meter {
-    display: flex; align-items: center; gap: 8px;
-  }
   .s6-rank-item .pct {
     font-weight: 800;
     color: var(--hall-indigo);
     font-variant-numeric: tabular-nums;
     font-size: 16px;
+    text-align: right;
   }
   .s6-rank-foot {
     margin-top: 16px;
@@ -1110,133 +1062,6 @@
     font-size: 13px;
     color: var(--sub);
   }
-  .s5-explain { display: flex; flex-direction: column; gap: 28px; }
-
-  .s5-archetype {
-    background: var(--card);
-    border-radius: var(--card-r);
-    box-shadow: var(--card-shadow);
-    padding: 36px 40px;
-    border-left: 6px solid var(--A);
-  }
-  .s5-archetype-eyebrow {
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 0.16em;
-    color: var(--sub);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .s5-archetype-code {
-    display: flex; gap: 6px;
-    margin-bottom: 16px;
-  }
-  .s5-archetype-code span {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: 800;
-    color: white;
-    font-family: -apple-system, sans-serif;
-  }
-  .s5-archetype-code span:nth-child(1) { background: var(--A); }
-  .s5-archetype-code span:nth-child(2) { background: var(--B); }
-  .s5-archetype-code span:nth-child(3) { background: var(--C); }
-  .s5-archetype-code span:nth-child(4) { background: var(--D); }
-  .s5-archetype-code span:nth-child(5) { background: var(--E); }
-  .s5-archetype-name {
-    font-size: 36px; font-weight: 800;
-    color: var(--hall-indigo);
-    line-height: 1.2;
-    margin-bottom: 12px;
-  }
-  .s5-archetype-name small {
-    font-size: 18px; font-weight: 600;
-    color: var(--text-sec);
-    margin-left: 6px;
-  }
-  .s5-archetype-desc {
-    font-size: 16px; line-height: 1.75;
-    color: var(--text-sec);
-  }
-
-  .s5-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    background: var(--card);
-    border-radius: var(--card-r);
-    box-shadow: var(--card-shadow);
-    overflow: hidden;
-  }
-  .s5-stats > div {
-    padding: 20px 24px;
-    text-align: center;
-    border-right: 1px solid var(--border-light);
-  }
-  .s5-stats > div:last-child { border-right: none; }
-  .s5-stats .num {
-    font-size: 36px; font-weight: 800;
-    color: var(--hall-indigo);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-  .s5-stats .lbl {
-    margin-top: 6px;
-    font-size: 13px; font-weight: 600;
-    color: var(--text-sec);
-  }
-  .s5-stats .note {
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--sub);
-  }
-
-  /* ============ Slide 6: Summary ============ */
-  .s6 { justify-content: center; }
-  .s6-steps {
-    display: flex; flex-direction: column;
-    gap: 32px;
-    margin: 32px 0 64px;
-  }
-  .s6-step {
-    display: grid;
-    grid-template-columns: 96px 1fr;
-    gap: 32px;
-    align-items: baseline;
-  }
-  .s6-step-num {
-    font-size: 64px;
-    font-weight: 800;
-    color: var(--hall-indigo);
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .s6-step-body {
-    display: flex; flex-direction: column;
-    gap: 8px; padding-top: 8px;
-  }
-  .s6-step-head {
-    font-size: 28px; font-weight: 700;
-    color: var(--hall-indigo); line-height: 1.4;
-  }
-  .s6-step-desc {
-    font-size: 18px; line-height: 1.75;
-    color: var(--text-sec);
-  }
-  .s6-cta {
-    margin-top: 16px;
-    text-align: center;
-  }
-  .s6-cta button {
-    background: var(--hall-indigo); color: white;
-    border: none; border-radius: 14px;
-    padding: 18px 48px;
-    font-size: 22px; font-weight: 700;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: background 200ms var(--ease);
-  }
-  .s6-cta button:hover { background: var(--hall-indigo-hover); }
 </style>
 </head>
 <body>
@@ -1507,119 +1332,46 @@
       <header class="sec-header">
         <h2 class="sec-title">結果に含まれる3つの要素</h2>
         <div class="sec-stripe"></div>
-        <div class="sec-sub">受検者ごとに、アーキタイプ・部署ランキング・軸プロファイルが提示されます。</div>
+        <div class="sec-sub">受検者は、自身のアーキタイプ・適合部署のランキング・5軸プロファイルを得る。</div>
       </header>
       <div class="s5-body">
-
-        <div class="s5-card">
-          <div class="s5-card-head">
-            <div class="s5-card-num">32</div>
-            <div class="s5-card-title">
-              <div class="s5-card-label">アーキタイプ</div>
-              <div class="s5-card-note">5軸 × 2方向 ＝ 32タイプ</div>
+        <div class="s5-explain">
+          <p class="s5-para">
+            回答結果から、受検者は<strong>1つのアーキタイプ</strong>に分類される。
+            あわせて、横須賀市役所の<strong>全103部署</strong>を適合度順にランクづけし、
+            <strong>5軸プロファイル</strong>で個人の傾向を可視化する。
+          </p>
+          <p class="s5-para">
+            自分のタイプを知るだけでなく、相性のよい部署・苦手な部署、
+            そして自分の強み・伸びしろを一画面で確認できる。
+          </p>
+          <div class="s5-key-list">
+            <div class="s5-key k1">
+              <span class="s5-key-label">アーキタイプ</span>
+              <span class="s5-key-count">32種類</span>
             </div>
-          </div>
-          <div class="s5-encoding">
-            <div class="s5-axis-row A">
-              <div class="pole lo"><span class="letter">F</span>制度・仕組み</div>
-              <div class="vs">／</div>
-              <div class="pole hi"><span class="letter">D</span>市民対話</div>
+            <div class="s5-key k2">
+              <span class="s5-key-label">部署ランキング</span>
+              <span class="s5-key-count">103部署</span>
             </div>
-            <div class="s5-axis-row B">
-              <div class="pole lo"><span class="letter">P</span>政策立案</div>
-              <div class="vs">／</div>
-              <div class="pole hi"><span class="letter">A</span>現場対応</div>
+            <div class="s5-key k3">
+              <span class="s5-key-label">5軸プロファイル</span>
+              <span class="s5-key-count">個人傾向</span>
             </div>
-            <div class="s5-axis-row C">
-              <div class="pole lo"><span class="letter">R</span>ルール管理</div>
-              <div class="vs">／</div>
-              <div class="pole hi"><span class="letter">S</span>市民支援</div>
-            </div>
-            <div class="s5-axis-row D">
-              <div class="pole lo"><span class="letter">I</span>革新推進</div>
-              <div class="vs">／</div>
-              <div class="pole hi"><span class="letter">C</span>安定運営</div>
-            </div>
-            <div class="s5-axis-row E">
-              <div class="pole lo"><span class="letter">X</span>専門追求</div>
-              <div class="vs">／</div>
-              <div class="pole hi"><span class="letter">G</span>幅広対応</div>
-            </div>
-          </div>
-          <div class="s5-encoding-foot">
-            各軸で2極のうち1つを選び、5文字コードでタイプが決まる。<br/>
-            例：<strong>DASCG</strong> 型（5軸すべて＋方向）
           </div>
         </div>
 
-        <div class="s5-card">
-          <div class="s5-card-head">
-            <div class="s5-card-num">103</div>
-            <div class="s5-card-title">
-              <div class="s5-card-label">部署ランキング</div>
-              <div class="s5-card-note">全部署を適合度順</div>
+        <div class="s5-example-wrap">
+          <div class="s5-example-eyebrow">例：DASCG 型のアーキタイプ</div>
+          <div class="s5-example">
+            <div class="s5-example-banner">
+              <div class="s5-example-pre">あなたのタイプ</div>
+              <div class="s5-example-name">街のよろず屋<small>型</small></div>
+              <div class="s5-example-code">DASCG</div>
             </div>
-          </div>
-          <div class="s5-rank">
-            <div class="s5-rank-row top">
-              <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
-            </div>
-            <div class="s5-rank-row top">
-              <span class="pos">2</span><span class="name">健康総務課</span><span class="pct">87.5%</span>
-            </div>
-            <div class="s5-rank-row top">
-              <span class="pos">3</span><span class="name">子育て支援課</span><span class="pct">84.3%</span>
-            </div>
-            <div class="s5-rank-divider">⋯</div>
-            <div class="s5-rank-row bottom">
-              <span class="pos">102</span><span class="name">財政課</span><span class="pct">22.1%</span>
-            </div>
-            <div class="s5-rank-row bottom">
-              <span class="pos">103</span><span class="name">監査委員事務局</span><span class="pct">18.4%</span>
-            </div>
-          </div>
-          <div class="s5-encoding-foot">
-            上位だけでなく下位も確認できる。<br/>
-            「なぜ向かないのか」も含めた自己理解に。
+            <p class="s5-example-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在です。</p>
           </div>
         </div>
-
-        <div class="s5-card">
-          <div class="s5-card-head">
-            <div class="s5-card-num">5</div>
-            <div class="s5-card-title">
-              <div class="s5-card-label">軸プロファイル</div>
-              <div class="s5-card-note">あなたの傾向</div>
-            </div>
-          </div>
-          <div class="s5-profile">
-            <div class="s5-prof-row A">
-              <div class="head"><span class="lbl">人との関わり方</span><span class="pole">市民対話寄り</span></div>
-              <div class="track"><span class="fill" style="left:50%;width:15%"></span></div>
-            </div>
-            <div class="s5-prof-row B">
-              <div class="head"><span class="lbl">仕事の進め方</span><span class="pole">政策立案寄り</span></div>
-              <div class="track"><span class="fill" style="left:25%;width:25%"></span></div>
-            </div>
-            <div class="s5-prof-row C">
-              <div class="head"><span class="lbl">担う役割</span><span class="pole">市民支援寄り</span></div>
-              <div class="track"><span class="fill" style="left:50%;width:30%"></span></div>
-            </div>
-            <div class="s5-prof-row D">
-              <div class="head"><span class="lbl">変化への姿勢</span><span class="pole">中間</span></div>
-              <div class="track"><span class="fill" style="left:50%;width:5%"></span></div>
-            </div>
-            <div class="s5-prof-row E">
-              <div class="head"><span class="lbl">知識のスタイル</span><span class="pole">幅広対応寄り</span></div>
-              <div class="track"><span class="fill" style="left:50%;width:10%"></span></div>
-            </div>
-          </div>
-          <div class="s5-encoding-foot">
-            どの軸が強い／弱いかが視覚的にわかる。<br/>
-            軸ごとの伸びしろも把握できる。
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -1633,18 +1385,66 @@
       <div class="s6-body">
         <div class="s6-archetype">
           <div class="s6-archetype-eyebrow">あなたのタイプ</div>
-          <div class="s6-archetype-code">
-            <span>D</span><span>A</span><span>S</span><span>C</span><span>G</span>
-          </div>
-          <div class="s6-archetype-name">街のよろず屋<small>型</small></div>
-          <div class="s6-archetype-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在です。</div>
+          <h3 class="s6-archetype-name">街のよろず屋<small>型</small></h3>
+          <div class="s6-archetype-code">DASCG</div>
+          <p class="s6-archetype-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在です。</p>
           <div class="s6-archetype-profile">
-            <div class="head">5軸プロファイル</div>
-            <div class="row A"><span class="lbl">人との関わり方</span><span class="track"><span class="fill" style="left:50%;width:15%"></span></span><span class="v">+0.6</span></div>
-            <div class="row B"><span class="lbl">仕事の進め方</span><span class="track"><span class="fill" style="left:25%;width:25%"></span></span><span class="v">−1.0</span></div>
-            <div class="row C"><span class="lbl">担う役割</span><span class="track"><span class="fill" style="left:50%;width:30%"></span></span><span class="v">+1.2</span></div>
-            <div class="row D"><span class="lbl">変化への姿勢</span><span class="track"><span class="fill" style="left:50%;width:5%"></span></span><span class="v">+0.2</span></div>
-            <div class="row E"><span class="lbl">知識のスタイル</span><span class="track"><span class="fill" style="left:50%;width:10%"></span></span><span class="v">+0.4</span></div>
+            <div class="ph">5軸プロファイル</div>
+            <div class="s6-trait A">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">65%</span>
+                <span class="s6-trait-win">市民対話 ／ 人との関わり方</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">機</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:65%"></span></div>
+                <span class="s6-trait-end">人</span>
+              </div>
+            </div>
+            <div class="s6-trait B">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">75%</span>
+                <span class="s6-trait-win">現場対応 ／ 仕事の進め方</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">策</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:75%"></span></div>
+                <span class="s6-trait-end">動</span>
+              </div>
+            </div>
+            <div class="s6-trait C">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">80%</span>
+                <span class="s6-trait-win">市民支援 ／ 担う役割</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">律</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:80%"></span></div>
+                <span class="s6-trait-end">援</span>
+              </div>
+            </div>
+            <div class="s6-trait D">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">70%</span>
+                <span class="s6-trait-win">安定運営 ／ 変化への姿勢</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">革</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:70%"></span></div>
+                <span class="s6-trait-end">守</span>
+              </div>
+            </div>
+            <div class="s6-trait E">
+              <div class="s6-trait-head">
+                <span class="s6-trait-pct">85%</span>
+                <span class="s6-trait-win">幅広対応 ／ 知識のスタイル</span>
+              </div>
+              <div class="s6-trait-row">
+                <span class="s6-trait-end">専</span>
+                <div class="s6-trait-track"><span class="s6-trait-dot" style="left:85%"></span></div>
+                <span class="s6-trait-end">幅</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="s6-rank-card">
