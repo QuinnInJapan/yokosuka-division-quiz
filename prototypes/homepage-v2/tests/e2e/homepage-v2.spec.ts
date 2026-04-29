@@ -52,6 +52,17 @@ test('stepper: keyboard arrows update carousel and stepper fill', async ({ page 
   await expect(page.getByTestId('stepper-step-2')).toHaveAttribute('data-filled', 'true');
 });
 
+test('stepper: numeral renders only on active segment', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('stepper-step-1')).toContainText('01');
+  for (let i = 2; i <= 5; i++) {
+    await expect(page.getByTestId(`stepper-step-${i}`)).toHaveText('');
+  }
+  await page.getByTestId('stepper-step-3').click();
+  await expect(page.getByTestId('stepper-step-3')).toContainText('03');
+  await expect(page.getByTestId('stepper-step-1')).toHaveText('');
+});
+
 test('layout: page does not scroll vertically at 1440x900', async ({ page }) => {
   await page.goto('/');
   const overflow = await page.evaluate(() =>

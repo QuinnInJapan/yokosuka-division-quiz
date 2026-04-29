@@ -38,9 +38,11 @@ export function Welcome() {
         </button>
       </aside>
 
+      <div className={s.stepperSlot}>
+        <Stepper idx={idx} onJump={onJump} />
+      </div>
       <section className={s.right}>
         <div className={s.carouselWrap}>
-          <Stepper idx={idx} onJump={onJump} />
           <HomepageCarousel idx={idx} onIdxChange={setIdx} />
         </div>
       </section>
