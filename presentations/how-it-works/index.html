@@ -778,108 +778,132 @@
     text-align: center;
   }
 
-  /* ============ Slide 5: Result components (paragraph + 1 example) ============ */
+  /* ============ Slide 5: Result components (3 cards, paragraph + 1 example) ============ */
   .s5-body {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 56px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
     flex: 1;
-    align-items: start;
+    align-items: stretch;
   }
-  .s5-explain {
-    display: flex; flex-direction: column;
-    gap: 24px;
-    padding-top: 12px;
-  }
-  .s5-para {
-    font-size: 19px; line-height: 1.85;
-    color: var(--text);
-    margin: 0;
-  }
-  .s5-para strong {
-    font-weight: 700;
-    color: var(--hall-indigo);
-  }
-  .s5-key-list {
-    display: flex; flex-direction: column;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .s5-key {
-    display: grid;
-    grid-template-columns: 6px 1fr 96px;
-    gap: 16px; align-items: center;
-    padding: 14px 18px;
-    background: var(--card);
-    border-radius: 10px;
-    box-shadow: var(--card-shadow);
-  }
-  .s5-key::before {
-    content: ''; align-self: stretch;
-    border-radius: 3px;
-  }
-  .s5-key.k1::before { background: var(--A); }
-  .s5-key.k2::before { background: var(--B); }
-  .s5-key.k3::before { background: var(--C); }
-  .s5-key-label {
-    font-size: 16px; font-weight: 700;
-    color: var(--text);
-  }
-  .s5-key-count {
-    font-size: 13px; font-weight: 600;
-    color: var(--sub);
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-  }
-  .s5-example-wrap {
-    display: flex; flex-direction: column;
-    gap: 12px;
-  }
-  .s5-example-eyebrow {
-    font-size: 12px; font-weight: 700;
-    color: var(--sub);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .s5-example {
+  .s5-card {
     background: var(--card);
     border-radius: var(--card-r);
     box-shadow: var(--card-shadow);
-    padding: 32px 36px;
+    padding: 32px 28px;
     display: flex; flex-direction: column;
-    gap: 14px;
+    gap: 18px;
   }
-  .s5-example-banner {
-    display: flex; flex-direction: column;
-    gap: 6px;
+  .s5-card-head {
+    display: flex; align-items: baseline; gap: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
   }
-  .s5-example-pre {
-    font-size: 11px; font-weight: 700;
+  .s5-card-num {
+    font-size: 48px; font-weight: 800;
+    color: var(--hall-indigo);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .s5-card-title { display: flex; flex-direction: column; gap: 2px; }
+  .s5-card-label {
+    font-size: 18px; font-weight: 700;
+    color: var(--text);
+  }
+  .s5-card-note {
+    font-size: 12px; font-weight: 600;
     color: var(--sub);
-    letter-spacing: 0.16em;
+    letter-spacing: 0.04em;
+  }
+  .s5-card-para {
+    font-size: 14px; line-height: 1.75;
+    color: var(--text-sec);
+    margin: 0;
+  }
+  .s5-card-para strong {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .s5-card-example {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-light);
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .s5-card-example-eyebrow {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--sub);
     text-transform: uppercase;
   }
-  .s5-example-name {
-    font-size: 38px; font-weight: 800;
+  /* archetype example */
+  .s5-ex-arch-name {
+    font-size: 22px; font-weight: 800;
     color: var(--hall-indigo);
-    line-height: 1.15;
+    line-height: 1.2;
+    margin: 0;
   }
-  .s5-example-name small {
-    font-size: 18px; font-weight: 700;
+  .s5-ex-arch-name small {
+    font-size: 13px; font-weight: 700;
     color: var(--text-sec);
     margin-left: 4px;
   }
-  .s5-example-code {
-    font-size: 13px; font-weight: 700;
+  .s5-ex-arch-code {
+    font-size: 11px; font-weight: 700;
     color: var(--sub);
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     font-family: ui-monospace, Menlo, monospace;
   }
-  .s5-example-desc {
-    font-size: 15px; line-height: 1.75;
+  .s5-ex-arch-desc {
+    font-size: 12px; line-height: 1.7;
     color: var(--text-sec);
-    margin: 0;
+    margin-top: 4px;
+  }
+  /* ranking example */
+  .s5-ex-rank {
+    display: grid;
+    grid-template-columns: 28px 1fr 64px;
+    gap: 10px; align-items: center;
+    padding: 12px 14px;
+    background: linear-gradient(90deg, rgba(76,175,125,0.18), var(--bg));
+    border: 1px solid var(--C-mid);
+    border-radius: 10px;
+  }
+  .s5-ex-rank .pos {
+    font-weight: 800; color: var(--C);
+    font-size: 16px; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .s5-ex-rank .name {
+    font-weight: 700; color: var(--text);
+    font-size: 14px;
+  }
+  .s5-ex-rank .pct {
+    font-weight: 800; color: var(--C);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-size: 16px;
+  }
+  /* profile bar example (TraitBar style) */
+  .s5-ex-bar { display: flex; flex-direction: column; gap: 4px; }
+  .s5-ex-bar-head {
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .s5-ex-bar-pct { font-size: 14px; font-weight: 800; color: var(--A); font-variant-numeric: tabular-nums; }
+  .s5-ex-bar-win { font-size: 12px; font-weight: 700; color: var(--A); }
+  .s5-ex-bar-row { display: flex; align-items: center; gap: 8px; }
+  .s5-ex-bar-end { width: 24px; flex-shrink: 0; font-size: 11px; color: var(--sub); text-align: center; font-weight: 600; }
+  .s5-ex-bar-track { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--A-mid); }
+  .s5-ex-bar-dot {
+    position: absolute; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: white;
+    border: 2.5px solid var(--A);
+    box-shadow: 0 1px 3px rgba(0,0,0,.18);
   }
 
   /* ============ Slide 6: Example result ============ */
@@ -1335,43 +1359,75 @@
         <div class="sec-sub">受検者は、自身のアーキタイプ・適合部署のランキング・5軸プロファイルを得る。</div>
       </header>
       <div class="s5-body">
-        <div class="s5-explain">
-          <p class="s5-para">
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-num">32</div>
+            <div class="s5-card-title">
+              <div class="s5-card-label">アーキタイプ</div>
+              <div class="s5-card-note">5軸 × 2方向 ＝ 32タイプ</div>
+            </div>
+          </div>
+          <p class="s5-card-para">
             回答結果から、受検者は<strong>1つのアーキタイプ</strong>に分類される。
-            あわせて、横須賀市役所の<strong>全103部署</strong>を適合度順にランクづけし、
-            <strong>5軸プロファイル</strong>で個人の傾向を可視化する。
+            5軸それぞれで2極のうち1つが選ばれ、5文字コードでタイプが決まる。
           </p>
-          <p class="s5-para">
-            自分のタイプを知るだけでなく、相性のよい部署・苦手な部署、
-            そして自分の強み・伸びしろを一画面で確認できる。
+          <div class="s5-card-example">
+            <div class="s5-card-example-eyebrow">例</div>
+            <h4 class="s5-ex-arch-name">街のよろず屋<small>型</small></h4>
+            <div class="s5-ex-arch-code">DASCG</div>
+            <div class="s5-ex-arch-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。</div>
+          </div>
+        </div>
+
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-num">103</div>
+            <div class="s5-card-title">
+              <div class="s5-card-label">部署ランキング</div>
+              <div class="s5-card-note">全部署を適合度順</div>
+            </div>
+          </div>
+          <p class="s5-card-para">
+            横須賀市役所の<strong>全103部署</strong>が適合度順にランクづけされる。
+            上位だけでなく下位も確認でき、「なぜ向かないのか」も含めて自己理解につながる。
           </p>
-          <div class="s5-key-list">
-            <div class="s5-key k1">
-              <span class="s5-key-label">アーキタイプ</span>
-              <span class="s5-key-count">32種類</span>
-            </div>
-            <div class="s5-key k2">
-              <span class="s5-key-label">部署ランキング</span>
-              <span class="s5-key-count">103部署</span>
-            </div>
-            <div class="s5-key k3">
-              <span class="s5-key-label">5軸プロファイル</span>
-              <span class="s5-key-count">個人傾向</span>
+          <div class="s5-card-example">
+            <div class="s5-card-example-eyebrow">例：上位</div>
+            <div class="s5-ex-rank">
+              <span class="pos">1</span><span class="name">教職員課</span><span class="pct">88.8%</span>
             </div>
           </div>
         </div>
 
-        <div class="s5-example-wrap">
-          <div class="s5-example-eyebrow">例：DASCG 型のアーキタイプ</div>
-          <div class="s5-example">
-            <div class="s5-example-banner">
-              <div class="s5-example-pre">あなたのタイプ</div>
-              <div class="s5-example-name">街のよろず屋<small>型</small></div>
-              <div class="s5-example-code">DASCG</div>
+        <div class="s5-card">
+          <div class="s5-card-head">
+            <div class="s5-card-num">5</div>
+            <div class="s5-card-title">
+              <div class="s5-card-label">軸プロファイル</div>
+              <div class="s5-card-note">あなたの傾向</div>
             </div>
-            <p class="s5-example-desc">市民に寄り添いながら現場を駆け回り、幅広く対応できる万能タイプ。窓口でも地域でも「あの人に聞けば大丈夫」と頼られる存在です。</p>
+          </div>
+          <p class="s5-card-para">
+            <strong>5軸ごとに自分の傾向</strong>が可視化される。
+            どの軸が強いか・弱いかを一目で把握でき、軸ごとの伸びしろもわかる。
+          </p>
+          <div class="s5-card-example">
+            <div class="s5-card-example-eyebrow">例：人との関わり方</div>
+            <div class="s5-ex-bar">
+              <div class="s5-ex-bar-head">
+                <span class="s5-ex-bar-pct">65%</span>
+                <span class="s5-ex-bar-win">市民対話</span>
+              </div>
+              <div class="s5-ex-bar-row">
+                <span class="s5-ex-bar-end">機</span>
+                <div class="s5-ex-bar-track"><span class="s5-ex-bar-dot" style="left:65%"></span></div>
+                <span class="s5-ex-bar-end">人</span>
+              </div>
+            </div>
           </div>
         </div>
+
       </div>
     </section>
 
