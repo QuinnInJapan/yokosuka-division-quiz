@@ -2,6 +2,7 @@ import { useStore, useDerived } from '../state/hooks';
 import { MatchList } from './MatchList';
 import { MatchDetail } from './MatchDetail';
 import { RetakeButton } from './RetakeButton';
+import { ExportButton } from './ExportButton';
 import s from './MatchBrowse.module.css';
 
 export function MatchBrowse() {
@@ -22,6 +23,7 @@ export function MatchBrowse() {
         </div>
       </div>
       <div className={s['bottom-actions']}>
+        <ExportButton />
         <RetakeButton />
       </div>
     </div>
