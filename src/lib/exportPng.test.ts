@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeFilename, formatDateForFilename, formatDateForDisplay, topNBestFits, bottomNWorstFits, formatPct, axisDotPct } from './exportPng';
+import {
+  sanitizeFilename,
+  formatDateForFilename,
+  formatDateForDisplay,
+  topNBestFits,
+  bottomNWorstFits,
+  formatPct,
+  axisDotPct,
+} from './exportPng';
 import type { RankedDivision } from '../data/types';
 
 describe('sanitizeFilename', () => {
