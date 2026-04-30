@@ -9,6 +9,7 @@ import {
   axisDotPct,
   wrapJapanese,
   buildExportData,
+  loadImage,
 } from './exportPng';
 import type { RankedDivision } from '../data/types';
 
@@ -136,5 +137,15 @@ describe('buildExportData', () => {
     // Worst 5 reversed — worst rank 102 first, climbing up to 98.
     expect(data.worst.map(r => r.rank)).toEqual([102, 101, 100, 99, 98]);
     expect(data.date).toBe(date);
+  });
+});
+
+describe('loadImage', () => {
+  it('resolves null when src is undefined', async () => {
+    expect(await loadImage(undefined)).toBeNull();
+  });
+
+  it('resolves null when src is empty string', async () => {
+    expect(await loadImage('')).toBeNull();
   });
 });
