@@ -8,6 +8,7 @@ import {
   formatPct,
   axisDotPct,
   wrapJapanese,
+  buildExportData,
 } from './exportPng';
 import type { RankedDivision } from '../data/types';
 
@@ -108,5 +109,30 @@ describe('wrapJapanese', () => {
   it('returns empty array on empty input', () => {
     const fakeMeasure = (s: string) => ({ width: s.length * 10 } as TextMetrics);
     expect(wrapJapanese(fakeMeasure as (s: string) => TextMetrics, '', 100)).toEqual([]);
+  });
+});
+
+describe('buildExportData', () => {
+  it('packages type, scores, top5, bottom3, date', () => {
+    const ranked: RankedDivision[] = [];
+    for (let i = 0; i < 102; i++) {
+      ranked.push({
+        dept: 'D', name: `課${i}`, en: '',
+        A: 0, B: 0, C: 0, D: 0, E: 0,
+        user: { A: 0, B: 0, C: 0, D: 0, E: 0 },
+        fit: 100 - i,
+      } as RankedDivision);
+    }
+    const date = new Date(2026, 3, 30);
+    const data = buildExportData(
+      { code: 'DASCG', name: '街のよろず屋', desc: '...' },
+      { A: 1, B: 0, C: 1, D: 0, E: 0 },
+      ranked,
+      date,
+    );
+    expect(data.type.name).toBe('街のよろず屋');
+    expect(data.best.map(r => r.rank)).toEqual([1, 2, 3, 4, 5]);
+    expect(data.worst.map(r => r.rank)).toEqual([100, 101, 102]);
+    expect(data.date).toBe(date);
   });
 });

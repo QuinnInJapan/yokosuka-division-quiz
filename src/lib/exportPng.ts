@@ -1,4 +1,4 @@
-import type { AxisKey, RankedDivision } from '../data/types';
+import type { AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
 import { AXES } from '../data/axes';
 
@@ -427,6 +427,24 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
   );
 
   drawFooter(ctx, data);
+}
+
+export const BEST_COUNT = 5;
+export const WORST_COUNT = 3;
+
+export function buildExportData(
+  type: ResolvedArchetype,
+  userScores: Record<AxisKey, number>,
+  ranked: RankedDivision[],
+  date: Date,
+): ExportData {
+  return {
+    type: { name: type.name, desc: type.desc },
+    userScores,
+    best: topNBestFits(ranked, BEST_COUNT),
+    worst: bottomNWorstFits(ranked, WORST_COUNT),
+    date,
+  };
 }
 
 type Measure = (text: string) => TextMetrics;
