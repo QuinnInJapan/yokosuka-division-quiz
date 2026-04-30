@@ -3,6 +3,16 @@ import { AX } from '../data/types';
 import { AXES } from '../data/axes';
 import { TYPES } from '../data/archetypes';
 
+export function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
+  if (!src) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
 function dateParts(d: Date): { yyyy: number; mm: string; dd: string } {
   return {
     yyyy: d.getFullYear(),
