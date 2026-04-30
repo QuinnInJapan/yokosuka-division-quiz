@@ -86,6 +86,7 @@ const NAME_BREAKS: Record<string, number> = {
   FPRIX: 3, // 戦略の / アーキテクト
 };
 
+// @ts-expect-error unused — see follow-up cleanup
 function titleLines(code: string, name: string): string[] {
   const breakAt = NAME_BREAKS[code];
   if (breakAt === undefined) return [name];
@@ -94,6 +95,7 @@ function titleLines(code: string, name: string): string[] {
 }
 
 // Pick top-3 axes by |score|; emit their winning-pole label.
+// @ts-expect-error unused — see follow-up cleanup
 function topStrengths(scores: Record<AxisKey, number>): string[] {
   return [...AX]
     .sort((a, b) => Math.abs(scores[b]) - Math.abs(scores[a]))
@@ -107,6 +109,7 @@ export type ExportData = {
   best: RankedRow[];
   worst: RankedRow[];
   date: Date;
+  sukarinImage?: HTMLImageElement | null;
 };
 
 export const EXPORT_W = 794;
@@ -120,6 +123,7 @@ const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
 const MASTHEAD_H = 360;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
+// @ts-expect-error unused — see follow-up cleanup
 const MINCHO_FAMILY = "'Hiragino Mincho ProN','Yu Mincho','MS Mincho','Noto Serif JP',serif";
 
 const PROFILE_TOP = MASTHEAD_H + 32;
@@ -220,6 +224,7 @@ function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
   return text.slice(0, lo) + '…';
 }
 
+// @ts-expect-error unused — see follow-up cleanup
 function drawOutlinePill(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -255,6 +260,7 @@ function drawOutlinePill(
   return totalW;
 }
 
+// @ts-expect-error unused — see follow-up cleanup
 function drawArchetypeGrid(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -318,77 +324,135 @@ function drawArchetypeGrid(
   ctx.fillText('32 タイプから 1 つ — あなたの座標', x, y + h - 2);
 }
 
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+  fill: boolean,
+  stroke: boolean,
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  if (fill) ctx.fill();
+  if (stroke) ctx.stroke();
+}
+
+function measureTracked(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  trackEm: number,
+): number {
+  const sizePx = fontSizePx(ctx);
+  const chars = Array.from(text);
+  let total = 0;
+  for (const ch of chars) {
+    total += ctx.measureText(ch).width + trackEm * sizePx;
+  }
+  return total - trackEm * sizePx;
+}
+
 function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   const innerW = EXPORT_W - PAGE_PAD_X * 2;
-  const gridW = 280;
-  const leftW = innerW - gridW - 24;
 
-  // Header row
+  // Top header row (Yokosuka label + date) — keep as before, indigo bg already filled.
   ctx.fillStyle = '#FFFFFF';
   setFont(ctx, 10.5, 700);
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
   drawTrackedText(ctx, 'YOKOSUKA · 課適性診断', PAGE_PAD_X, 40, 0.3);
-
   ctx.textAlign = 'right';
   ctx.fillStyle = 'rgba(255,255,255,0.65)';
   ctx.fillText(formatDateForDisplay(data.date), EXPORT_W - PAGE_PAD_X, 40);
 
-  // Title (Mincho display, optional 2-line break, demoted 型 trailing)
-  ctx.textAlign = 'left';
+  // Card frame: white bg, B-tint border, on top of the indigo masthead band.
+  const cardX = PAGE_PAD_X;
+  const cardY = 64;
+  const cardW = innerW;
+  const cardH = MASTHEAD_H - cardY - 16;
   ctx.fillStyle = '#FFFFFF';
-  const lines = titleLines(data.type.code, data.type.name);
-  const titleSize = 56;
-  const titleLineH = titleSize * 1.05;
-  const titleTop = 88;
-  setFont(ctx, titleSize, 700, MINCHO_FAMILY);
-  for (let i = 0; i < lines.length; i++) {
-    const lineY = titleTop + i * titleLineH + titleSize;
-    setFont(ctx, titleSize, 700, MINCHO_FAMILY);
-    ctx.fillText(lines[i], PAGE_PAD_X, lineY);
-    if (i === lines.length - 1) {
-      const lineW = ctx.measureText(lines[i]).width;
-      // 型 sits inline at end of last line, demoted
-      setFont(ctx, 22, 400, MINCHO_FAMILY);
-      ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.fillText('型', PAGE_PAD_X + lineW + 8, lineY - 4);
-      ctx.fillStyle = '#FFFFFF';
-    }
+  roundRect(ctx, cardX, cardY, cardW, cardH, 16, true, false);
+  ctx.strokeStyle = '#EBF3FC'; // var(--B-tint)
+  ctx.lineWidth = 2;
+  roundRect(ctx, cardX, cardY, cardW, cardH, 16, false, true);
+
+  // Eyebrow
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#2E6DB4'; // var(--B)
+  setFont(ctx, 11, 700);
+  const eyebrow = 'あなたのスカリン';
+  const eyebrowW = measureTracked(ctx, eyebrow, 0.18);
+  drawTrackedText(ctx, eyebrow, cardX + cardW / 2 - eyebrowW / 2, cardY + 28, 0.18);
+
+  // Sukarin image (centered)
+  const imgSize = 130;
+  const imgX = cardX + (cardW - imgSize) / 2;
+  const imgY = cardY + 44;
+  if (data.sukarinImage) {
+    ctx.drawImage(data.sukarinImage, imgX, imgY, imgSize, imgSize);
   }
 
-  const titleEndY = titleTop + lines.length * titleLineH;
+  // Type code
+  const codeY = imgY + imgSize + 22;
+  ctx.fillStyle = '#C0392B'; // var(--A)
+  setFont(ctx, 11, 800);
+  const codeW = measureTracked(ctx, data.type.code, 0.22);
+  drawTrackedText(ctx, data.type.code, cardX + cardW / 2 - codeW / 2, codeY, 0.22);
 
-  // Description (wrapped)
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  setFont(ctx, 12.5, 400);
-  const descMaxW = leftW;
+  // Type name (centered)
+  const nameY = codeY + 28;
+  ctx.fillStyle = '#1C2340'; // var(--text)
+  setFont(ctx, 26, 800);
+  const nameText = `「${data.type.name}」型`;
+  const nameMetricsW = ctx.measureText(nameText).width;
+  ctx.fillText(nameText, cardX + cardW / 2 - nameMetricsW / 2, nameY);
+
+  // Axis chips (5)
+  const chipsY = nameY + 26;
+  const chipSize = 28;
+  const chipGap = 6;
+  const totalChipsW = chipSize * 5 + chipGap * 4;
+  let chipX = cardX + (cardW - totalChipsW) / 2;
+  for (const ax of AX) {
+    const a = AXES[ax];
+    const kanji = data.userScores[ax] >= 0 ? a.kanji_plus : a.kanji_minus;
+    ctx.fillStyle = a.tint;
+    roundRect(ctx, chipX, chipsY, chipSize, chipSize, 6, true, false);
+    ctx.fillStyle = a.dark;
+    setFont(ctx, 16, 700);
+    const kw = ctx.measureText(kanji).width;
+    ctx.fillText(kanji, chipX + chipSize / 2 - kw / 2, chipsY + 20);
+    chipX += chipSize + chipGap;
+  }
+
+  // Description (wrapped, centered, capped at 3 lines)
+  const descY = chipsY + chipSize + 22;
+  ctx.fillStyle = '#4A5568'; // var(--text-sec)
+  setFont(ctx, 12, 400);
+  const descMaxW = cardW - 48;
   const measure: Measure = (s: string) => ctx.measureText(s);
   const descLines = wrapJapanese(measure, data.type.desc, descMaxW);
-  let descY = titleEndY + 18;
-  const descLineH = 12.5 * 1.85;
-  for (const line of descLines) {
-    ctx.fillText(line, PAGE_PAD_X, descY);
-    descY += descLineH;
+  let curY = descY;
+  const descLineH = 12 * 1.85;
+  for (const line of descLines.slice(0, 3)) {
+    const lw = ctx.measureText(line).width;
+    ctx.fillText(line, cardX + cardW / 2 - lw / 2, curY);
+    curY += descLineH;
   }
 
-  // Outline cream pills (top-3 strengths)
-  const strengths = topStrengths(data.userScores);
-  const pillsY = descY + 8;
-  let pillCursor = PAGE_PAD_X;
-  for (const s of strengths) {
-    const pillW = drawOutlinePill(ctx, s, pillCursor, pillsY, CREAM);
-    pillCursor += pillW + 8;
-  }
-
-  // 32-archetype grid (right side)
-  drawArchetypeGrid(
-    ctx,
-    PAGE_PAD_X + leftW + 24,
-    88,
-    gridW,
-    MASTHEAD_H - 88 - 24,
-    data.type.code,
-  );
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
 }
 
 function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
@@ -632,6 +696,7 @@ export function buildExportData(
   userScores: Record<AxisKey, number>,
   ranked: RankedDivision[],
   date: Date,
+  sukarinImage?: HTMLImageElement | null,
 ): ExportData {
   return {
     type: { code: type.code, name: type.name, desc: type.desc },
@@ -640,6 +705,7 @@ export function buildExportData(
     // Reverse worst so the actual worst (highest rank number) appears first — list "climbs out".
     worst: bottomNWorstFits(ranked, WORST_COUNT).reverse(),
     date,
+    sukarinImage: sukarinImage ?? null,
   };
 }
 
