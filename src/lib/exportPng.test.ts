@@ -113,7 +113,7 @@ describe('wrapJapanese', () => {
 });
 
 describe('buildExportData', () => {
-  it('packages type, scores, top5, bottom3, date', () => {
+  it('packages type+code, scores, top5, worst5 reversed, date', () => {
     const ranked: RankedDivision[] = [];
     for (let i = 0; i < 102; i++) {
       ranked.push({
@@ -130,9 +130,11 @@ describe('buildExportData', () => {
       ranked,
       date,
     );
+    expect(data.type.code).toBe('DASCG');
     expect(data.type.name).toBe('街のよろず屋');
     expect(data.best.map(r => r.rank)).toEqual([1, 2, 3, 4, 5]);
-    expect(data.worst.map(r => r.rank)).toEqual([100, 101, 102]);
+    // Worst 5 reversed — worst rank 102 first, climbing up to 98.
+    expect(data.worst.map(r => r.rank)).toEqual([102, 101, 100, 99, 98]);
     expect(data.date).toBe(date);
   });
 });
