@@ -26,7 +26,9 @@ const Q = {
   ],
 };
 
-export function Slide2Input() {
+type Props = { onAdvance?: () => void };
+
+export function Slide2Input({ onAdvance }: Props = {}) {
   const [picked, setPicked] = useState<number | null>(null);
   const ax = AXES[Q.axis];
 
@@ -69,7 +71,10 @@ export function Slide2Input() {
                   ? { borderColor: ax.dark, background: ax.tint }
                   : undefined
               }
-              onClick={() => setPicked(value)}
+              onClick={() => {
+                setPicked(value);
+                onAdvance?.();
+              }}
             >
               <span className={s.optNum} style={{ color: ax.dark }}>
                 {value}

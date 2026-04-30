@@ -52,12 +52,34 @@
   color: var(--sub);
   text-transform: uppercase;
 }
-.explainerCount {
-  font-size: 11px;
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.06em;
-  color: var(--hall-indigo);
-  font-variant-numeric: tabular-nums;
+.dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--hall-indigo);
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.dot[data-active='true'] {
+  background: var(--hall-indigo);
+  transform: scale(1.15);
+}
+@media (hover: hover) {
+  .dot:not([data-active='true']):hover { background: var(--hover-wash); }
+}
+.dot:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dot { transition: none; }
 }
 .navBtn {
   background: transparent;

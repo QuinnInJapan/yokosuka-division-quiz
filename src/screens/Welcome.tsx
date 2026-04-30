@@ -60,8 +60,25 @@ export function Welcome() {
             </button>
             <span className={s.explainerLabel}>
               <span className={s.explainerEyebrow}>仕組み · HOW IT WORKS</span>
-              <span className={s.explainerCount} data-testid="explainer-count">
-                {idx + 1} / {SLIDE_COUNT}
+              <span
+                className={s.dots}
+                role="tablist"
+                aria-label="ステップを選ぶ"
+                data-testid="explainer-dots"
+              >
+                {Array.from({ length: SLIDE_COUNT }).map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === idx}
+                    aria-label={`ステップ ${i + 1} / ${SLIDE_COUNT}`}
+                    data-testid={`explainer-dot-${i + 1}`}
+                    className={s.dot}
+                    data-active={i === idx ? 'true' : 'false'}
+                    onClick={() => onJump(i)}
+                  />
+                ))}
               </span>
             </span>
             <button
