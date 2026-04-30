@@ -16,7 +16,12 @@ export function MatchDetail({ division }: { division: RankedDivision }) {
           <div className={s['div-about']}>{division.about ?? ''}</div>
         </div>
       </div>
-      <ComparisonBars user={division.user} division={division} />
+      <ComparisonBars
+        user={division.user}
+        division={division}
+        divisionName={division.name}
+        fit={division.fit}
+      />
     </div>
   );
 }
