@@ -7,6 +7,7 @@ import {
   bottomNWorstFits,
   formatPct,
   axisDotPct,
+  wrapJapanese,
 } from './exportPng';
 import type { RankedDivision } from '../data/types';
 
@@ -86,5 +87,26 @@ describe('axisDotPct', () => {
   it('clamps out-of-range values', () => {
     expect(axisDotPct(-3)).toBe(0);
     expect(axisDotPct(3)).toBe(100);
+  });
+});
+
+describe('wrapJapanese', () => {
+  it('returns single line when text fits', () => {
+    const fakeMeasure = (s: string) => ({ width: s.length * 10 } as TextMetrics);
+    const lines = wrapJapanese(fakeMeasure as (s: string) => TextMetrics, 'あいうえお', 100);
+    expect(lines).toEqual(['あいうえお']);
+  });
+  it('breaks at the char that overflows', () => {
+    const fakeMeasure = (s: string) => ({ width: s.length * 10 } as TextMetrics);
+    const lines = wrapJapanese(fakeMeasure as (s: string) => TextMetrics, 'あいうえおかきくけこ', 50);
+    expect(lines.length).toBeGreaterThan(1);
+    expect(lines.join('')).toBe('あいうえおかきくけこ');
+    for (const line of lines) {
+      expect(line.length * 10).toBeLessThanOrEqual(50);
+    }
+  });
+  it('returns empty array on empty input', () => {
+    const fakeMeasure = (s: string) => ({ width: s.length * 10 } as TextMetrics);
+    expect(wrapJapanese(fakeMeasure as (s: string) => TextMetrics, '', 100)).toEqual([]);
   });
 });
