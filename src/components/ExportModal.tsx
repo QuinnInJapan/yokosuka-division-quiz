@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDerived } from '../state/hooks';
-import { buildExportData, renderExport, sanitizeFilename } from '../lib/exportPng';
+import { buildExportData, renderExport, sanitizeFilename, loadImage } from '../lib/exportPng';
+import { sukarinSrc } from '../lib/sukarinImages';
 import s from './ExportModal.module.css';
 
 export function ExportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -14,13 +15,23 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
     if (!open) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const data = buildExportData(type, userScores, results, new Date());
-    const draw = () => renderExport(canvas, data);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(draw).catch(draw);
-    } else {
-      draw();
-    }
+
+    let cancelled = false;
+    const fontsReady =
+      document.fonts && document.fonts.ready
+        ? document.fonts.ready
+        : Promise.resolve();
+    const imageReady = loadImage(sukarinSrc(type.code));
+
+    Promise.all([fontsReady, imageReady]).then(([, img]) => {
+      if (cancelled) return;
+      const data = buildExportData(type, userScores, results, new Date(), img);
+      renderExport(canvas, data);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [open, type, userScores, results]);
 
   // Focus management + ESC to close
