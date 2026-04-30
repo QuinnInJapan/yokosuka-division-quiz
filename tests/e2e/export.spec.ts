@@ -32,6 +32,16 @@ test('export modal: opens, shows canvas, saves PNG', async ({ page }) => {
   await page.getByTestId('export-save').click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/^yokosuka-quiz-.+-\d{4}-\d{2}-\d{2}\.png$/);
+
+  // Asset embed sanity check: PNG should be larger than a text-only baseline.
+  const path = await download.path();
+  if (path) {
+    const fs = await import('node:fs/promises');
+    const stat = await fs.stat(path);
+    // Arbitrary lower bound — the previous masthead-only PNG was ~80 KB; with the
+    // embedded Sukarin image the file should comfortably exceed 200 KB.
+    expect(stat.size).toBeGreaterThan(200 * 1024);
+  }
 });
 
 test('export modal: ESC closes', async ({ page }) => {
