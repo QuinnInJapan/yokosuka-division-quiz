@@ -43,12 +43,17 @@
 
 /* ── Scenario (hero question) ── */
 .scenario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   padding: var(--sp-xl) var(--sp-md);
   margin-bottom: var(--sp-lg);
   font-size: var(--fs-xl);
   line-height: 1.7;
   font-weight: var(--fw-bold);
+  /* Reserve space for up to 3 lines so 2-line and 3-line questions share one box height. */
+  min-height: calc(3 * var(--fs-xl) * 1.7 + var(--sp-xl) * 2);
 }
 
 /* ── Options ── */
