@@ -34,13 +34,16 @@ export function Welcome() {
           ))}
         </ul>
 
-        <button
-          type="button"
-          className={s.cta}
-          onClick={() => dispatch({ type: 'START' })}
-        >
-          診断をはじめる <span aria-hidden="true">→</span>
-        </button>
+        <div className={s.ctaWrap}>
+          <button
+            type="button"
+            className={s.cta}
+            onClick={() => dispatch({ type: 'START' })}
+          >
+            診断をはじめる <span aria-hidden="true" className={s.ctaArrow}>→</span>
+          </button>
+          <span className={s.ctaHint} aria-hidden="true">▼ ここから始まります</span>
+        </div>
       </aside>
 
       <section className={s.right}>
