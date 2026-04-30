@@ -75,6 +75,11 @@ function setFont(ctx: CanvasRenderingContext2D, sizePx: number, weight: number =
   ctx.font = `${weight} ${sizePx}px ${FONT_FAMILY}`;
 }
 
+function fontSizePx(ctx: CanvasRenderingContext2D): number {
+  const m = ctx.font.match(/(\d+(?:\.\d+)?)px/);
+  return m ? parseFloat(m[1]) : 16;
+}
+
 function drawTrackedText(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -82,13 +87,13 @@ function drawTrackedText(
   y: number,
   trackEm: number,
 ): void {
-  // Char-by-char draw with letter-spacing in em.
   const chars = Array.from(text);
+  const sizePx = fontSizePx(ctx);
   let cursor = x;
   for (const ch of chars) {
     ctx.fillText(ch, cursor, y);
     const w = ctx.measureText(ch).width;
-    cursor += w + trackEm * parseFloat(ctx.font);
+    cursor += w + trackEm * sizePx;
   }
 }
 
