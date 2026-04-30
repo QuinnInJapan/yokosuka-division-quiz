@@ -1,7 +1,6 @@
 import type { AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
 import { AXES } from '../data/axes';
-import { TYPES } from '../data/archetypes';
 
 export function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
   if (!src) return Promise.resolve(null);
@@ -65,44 +64,6 @@ export function axisDotPct(score: number): number {
   return ((clamped + 2) / 4) * 100;
 }
 
-// Manually-authored title break index per archetype code. Names with ≤6 chars
-// fit on one line and don't appear here. Index = char position where line 2 begins.
-const NAME_BREAKS: Record<string, number> = {
-  DARIG: 3, // 改革の / 現場指揮官
-  DARIX: 6, // 制度を変える / 技術者
-  DPSCX: 5, // 福祉政策の / 知恵袋
-  DPSIG: 3, // 共創の / プロデューサー
-  DPSIX: 5, // 社会変革の / 仕掛人
-  DPRIX: 2, // 政策 / イノベーター
-  FASCG: 4, // 縁の下の / 万能選手
-  FASCX: 3, // 技術で / 支える人
-  FASIG: 4, // 現場発の / 改善者
-  FASIX: 5, // 技術革新の / 推進者
-  FARIG: 5, // 現場改革の / 実行者
-  FARIX: 5, // 技術革新の / 先導者
-  FPSCX: 5, // 制度設計の / 専門家
-  FPSIX: 5, // 未来を描く / 技術者
-  FPRIG: 4, // DX推進 / リーダー
-  FPRIX: 3, // 戦略の / アーキテクト
-};
-
-// @ts-expect-error unused — see follow-up cleanup
-function titleLines(code: string, name: string): string[] {
-  const breakAt = NAME_BREAKS[code];
-  if (breakAt === undefined) return [name];
-  const chars = Array.from(name);
-  return [chars.slice(0, breakAt).join(''), chars.slice(breakAt).join('')];
-}
-
-// Pick top-3 axes by |score|; emit their winning-pole label.
-// @ts-expect-error unused — see follow-up cleanup
-function topStrengths(scores: Record<AxisKey, number>): string[] {
-  return [...AX]
-    .sort((a, b) => Math.abs(scores[b]) - Math.abs(scores[a]))
-    .slice(0, 3)
-    .map(ax => (scores[ax] >= 0 ? AXES[ax].plus : AXES[ax].minus));
-}
-
 export type ExportData = {
   type: { code: string; name: string; desc: string };
   userScores: Record<AxisKey, number>;
@@ -117,14 +78,11 @@ export const EXPORT_H = 1123;
 export const EXPORT_SCALE = 2;
 
 const INDIGO = '#1C2340';
-const CREAM = '#F5EBD8';
 const TEXT_FAINT = '#9CA3AF';
 const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
 const MASTHEAD_H = 360;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
-// @ts-expect-error unused — see follow-up cleanup
-const MINCHO_FAMILY = "'Hiragino Mincho ProN','Yu Mincho','MS Mincho','Noto Serif JP',serif";
 
 const PROFILE_TOP = MASTHEAD_H + 32;
 const PROFILE_LABEL_COL = 110;
@@ -222,106 +180,6 @@ function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
     else hi = mid - 1;
   }
   return text.slice(0, lo) + '…';
-}
-
-// @ts-expect-error unused — see follow-up cleanup
-function drawOutlinePill(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  color: string,
-): number {
-  setFont(ctx, 10.5, 500);
-  const padX = 12;
-  const padY = 4;
-  const lineH = 20;
-  const textW = ctx.measureText(text).width;
-  const totalW = textW + padX * 2;
-  const r = lineH / 2;
-
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + totalW - r, y);
-  ctx.arc(x + totalW - r, y + r, r, -Math.PI / 2, Math.PI / 2);
-  ctx.lineTo(x + r, y + lineH);
-  ctx.arc(x + r, y + r, r, Math.PI / 2, -Math.PI / 2);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.fillStyle = color;
-  ctx.textBaseline = 'alphabetic';
-  ctx.textAlign = 'left';
-  ctx.fillText(text, x + padX, y + lineH - padY - 1);
-  return totalW;
-}
-
-// @ts-expect-error unused — see follow-up cleanup
-function drawArchetypeGrid(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  highlightCode: string,
-): void {
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  setFont(ctx, 9, 700);
-  ctx.textBaseline = 'alphabetic';
-  ctx.textAlign = 'left';
-  drawTrackedText(ctx, '32 アーキタイプ', x, y, 0.2);
-
-  const codes = Object.keys(TYPES);
-  const cols = 4;
-  const rows = 8;
-  const gridTop = y + 12;
-  const gridH = h - 28;
-  const cellW = (w - (cols - 1) * 3) / cols;
-  const cellH = gridH / rows;
-
-  for (let i = 0; i < codes.length; i++) {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const cx = x + col * (cellW + 3);
-    const cy = gridTop + row * cellH;
-    const code = codes[i];
-    const name = TYPES[code].name;
-    const isUser = code === highlightCode;
-
-    if (isUser) {
-      ctx.fillStyle = CREAM;
-      const r = 2;
-      ctx.beginPath();
-      ctx.moveTo(cx + r, cy);
-      ctx.lineTo(cx + cellW - r, cy);
-      ctx.quadraticCurveTo(cx + cellW, cy, cx + cellW, cy + r);
-      ctx.lineTo(cx + cellW, cy + cellH - 2 - r);
-      ctx.quadraticCurveTo(cx + cellW, cy + cellH - 2, cx + cellW - r, cy + cellH - 2);
-      ctx.lineTo(cx + r, cy + cellH - 2);
-      ctx.quadraticCurveTo(cx, cy + cellH - 2, cx, cy + cellH - 2 - r);
-      ctx.lineTo(cx, cy + r);
-      ctx.quadraticCurveTo(cx, cy, cx + r, cy);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = INDIGO;
-      setFont(ctx, 7.5, 700);
-    } else {
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      setFont(ctx, 7.5, 400);
-    }
-
-    const padX = 4;
-    const truncated = truncateToWidth(ctx, name, cellW - padX * 2);
-    ctx.fillText(truncated, cx + padX, cy + cellH - 8);
-  }
-
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  setFont(ctx, 8.5, 400);
-  ctx.fillText('32 タイプから 1 つ — あなたの座標', x, y + h - 2);
 }
 
 function roundRect(
