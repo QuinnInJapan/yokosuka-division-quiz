@@ -7,19 +7,18 @@ import { Slide5Result } from './slides/Slide5Result';
 
 export const SLIDE_COUNT = 4;
 
-const slides = [
-  <Slide2Input />,
-  <Slide3Scoring />,
-  <Slide4Comparison />,
-  <Slide5Result />,
-];
-
 type Props = {
   idx: number;
   onIdxChange: (i: number) => void;
 };
 
 export function HomepageCarousel({ idx, onIdxChange }: Props) {
+  const slides = [
+    <Slide2Input onAdvance={() => onIdxChange(1)} />,
+    <Slide3Scoring />,
+    <Slide4Comparison />,
+    <Slide5Result />,
+  ];
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ae = document.activeElement as HTMLElement | null;

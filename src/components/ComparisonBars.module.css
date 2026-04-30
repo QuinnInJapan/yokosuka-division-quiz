@@ -1,53 +1,125 @@
-/* ── Comparison breakdown ── */
-.comp-label {
+.label {
   font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
-  color: var(--sub);
-  margin-bottom: var(--sp-md);
+  color: var(--text);
+  margin-bottom: var(--sp-xs);
 }
 
-.comp-row { margin-bottom: 20px; }
-.comp-row:last-of-type { margin-bottom: 0; }
-.comp-axis {
+.summary {
   font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
-  margin-bottom: 6px;
+  color: var(--text-sec);
+  line-height: var(--lh-body);
+  margin: 0 0 var(--sp-sm);
 }
-.comp-pair { display: flex; align-items: center; gap: 8px; margin-bottom: var(--sp-xs); }
-.comp-who {
+
+.rationale {
+  font-size: var(--fs-sm);
+  color: var(--text-sec);
+  line-height: var(--lh-body);
+  margin: 0 0 var(--sp-sm);
+}
+.tierEmph {
+  font-weight: var(--fw-bold);
+}
+
+.legend {
+  display: flex;
+  gap: var(--sp-md);
   font-size: var(--fs-xs);
   color: var(--sub);
-  width: 40px; flex-shrink: 0;
-  text-align: right;
-  font-weight: var(--fw-medium);
+  margin-bottom: var(--sp-sm);
 }
-.comp-track {
-  position: relative; flex: 1;
-  height: 10px;
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legendDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.legendDot--user {
+  background: var(--text);
+  border: 2px solid var(--text);
+}
+.legendDot--div {
+  background: var(--card);
+  border: 2px solid var(--text);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+}
+
+.row {
+  padding: var(--sp-sm) 0;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-sm);
+  margin-bottom: 6px;
+}
+.axisLabel {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+
+.badge {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: var(--border-light);
+  color: var(--text-sec);
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: var(--bar-h);
+  background: var(--border);
   border-radius: 999px;
   overflow: visible;
 }
-.comp-track--div { opacity: .45; }
-.comp-dot {
+
+.segment {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+}
+
+.marker {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 14px; height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: white;
   border: 2.5px solid;
   box-shadow: 0 1px 3px rgba(0,0,0,.15);
   z-index: 2;
-  transition: left .4s ease-out;
 }
-@media (prefers-reduced-motion: reduce) {
-  .comp-dot { transition: none; }
+.marker--div {
+  background: var(--card);
 }
-.comp-ends {
+
+.poles {
   display: flex;
   justify-content: space-between;
+  margin-top: 6px;
   font-size: var(--fs-xs);
   color: var(--sub);
-  margin-top: var(--sp-xs);
-  padding-left: 48px;
+}
+.poles span { white-space: nowrap; }
+
+@media (max-width: 600px) {
+  .axisLabel { font-size: var(--fs-xs); }
 }

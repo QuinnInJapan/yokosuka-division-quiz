@@ -30,15 +30,15 @@ export function TraitBar({
         <span className={s['trait-pct']} style={{ color: a.dark }}>{pct}%</span>
         <span className={s['trait-win']} style={{ color: a.dark }}>{winLabel}</span>
       </div>
-      <div className={s['trait-bar-row']}>
-        <span className={s['trait-end']}>{a.kanji_minus}</span>
-        <div className={s['trait-track']} style={{ background: a.color }}>
-          <div
-            className={s['trait-dot']}
-            style={{ left: `${dotLeft.toFixed(0)}%`, borderColor: a.dark }}
-          />
-        </div>
-        <span className={s['trait-end']}>{a.kanji_plus}</span>
+      <div className={s['trait-track']} style={{ background: a.color }}>
+        <div
+          className={s['trait-dot']}
+          style={{ left: `${dotLeft.toFixed(0)}%`, borderColor: a.dark }}
+        />
+      </div>
+      <div className={s['trait-poles']}>
+        <span className={s['trait-pole']}>{a.minus}</span>
+        <span className={s['trait-pole']}>{a.plus}</span>
       </div>
     </button>
   );
