@@ -15,48 +15,9 @@
   gap: var(--sp-sm);
   margin-bottom: var(--sp-md);
 }
-.tc-kanji {
-  width: 44px; height: 44px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: var(--fs-xl);
-  font-weight: var(--fw-black);
-  flex-shrink: 0;
-}
 .tc-win {
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
-}
-
-/* Bar */
-.tc-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: var(--sp-md);
-}
-.tc-end {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  flex-shrink: 0;
-}
-.tc-track {
-  position: relative;
-  flex: 1;
-  height: 10px;
-  border-radius: 999px;
-  overflow: visible;
-}
-.tc-marker {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 2.5px solid;
-  box-shadow: 0 1px 3px rgba(0,0,0,.15);
-  z-index: 2;
 }
 
 /* Description */

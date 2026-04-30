@@ -18,14 +18,6 @@ describe('SukarinCard', () => {
     expect(html).toContain('市民に寄り添う万能タイプ。');
   });
 
-  it('renders five chips with kanji per axis', () => {
-    const html = renderToStaticMarkup(<SukarinCard {...props} />);
-    // positive scores → kanji_plus for A=人, B=動, C=援, D=守, E=幅
-    for (const k of ['人', '動', '援', '守', '幅']) {
-      expect(html, `missing chip kanji ${k}`).toContain(k);
-    }
-  });
-
   it('renders the eyebrow label', () => {
     const html = renderToStaticMarkup(<SukarinCard {...props} />);
     expect(html).toContain('あなたのスカリン');

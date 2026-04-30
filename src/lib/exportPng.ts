@@ -81,7 +81,7 @@ const INDIGO = '#1C2340';
 const TEXT_FAINT = '#9CA3AF';
 const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
-const MASTHEAD_H = 360;
+const MASTHEAD_H = 460;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
 
 const PROFILE_TOP = MASTHEAD_H + 32;
@@ -223,20 +223,11 @@ function measureTracked(
 
 function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   const innerW = EXPORT_W - PAGE_PAD_X * 2;
-
-  // Top header row (Yokosuka label + date) — keep as before, indigo bg already filled.
-  ctx.fillStyle = '#FFFFFF';
-  setFont(ctx, 10.5, 700);
   ctx.textBaseline = 'alphabetic';
-  ctx.textAlign = 'left';
-  drawTrackedText(ctx, 'YOKOSUKA · 課適性診断', PAGE_PAD_X, 40, 0.3);
-  ctx.textAlign = 'right';
-  ctx.fillStyle = 'rgba(255,255,255,0.65)';
-  ctx.fillText(formatDateForDisplay(data.date), EXPORT_W - PAGE_PAD_X, 40);
 
-  // Card frame: white bg, B-tint border, on top of the indigo masthead band.
+  // Card frame: white bg, B-tint border, full masthead area on white canvas.
   const cardX = PAGE_PAD_X;
-  const cardY = 64;
+  const cardY = 24;
   const cardW = innerW;
   const cardH = MASTHEAD_H - cardY - 16;
   ctx.fillStyle = '#FFFFFF';
@@ -276,26 +267,8 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   const nameMetricsW = ctx.measureText(nameText).width;
   ctx.fillText(nameText, cardX + cardW / 2 - nameMetricsW / 2, nameY);
 
-  // Axis chips (5)
-  const chipsY = nameY + 26;
-  const chipSize = 28;
-  const chipGap = 6;
-  const totalChipsW = chipSize * 5 + chipGap * 4;
-  let chipX = cardX + (cardW - totalChipsW) / 2;
-  for (const ax of AX) {
-    const a = AXES[ax];
-    const kanji = data.userScores[ax] >= 0 ? a.kanji_plus : a.kanji_minus;
-    ctx.fillStyle = a.tint;
-    roundRect(ctx, chipX, chipsY, chipSize, chipSize, 6, true, false);
-    ctx.fillStyle = a.dark;
-    setFont(ctx, 16, 700);
-    const kw = ctx.measureText(kanji).width;
-    ctx.fillText(kanji, chipX + chipSize / 2 - kw / 2, chipsY + 20);
-    chipX += chipSize + chipGap;
-  }
-
   // Description (wrapped, centered, capped at 3 lines)
-  const descY = chipsY + chipSize + 22;
+  const descY = nameY + 32;
   ctx.fillStyle = '#4A5568'; // var(--text-sec)
   setFont(ctx, 12, 400);
   const descMaxW = cardW - 48;
@@ -413,17 +386,6 @@ function drawListSection(
     ctx.textAlign = 'right';
     ctx.fillText(formatPct(pct), fitX, y);
 
-    // Dotted divider between rows
-    ctx.save();
-    ctx.globalAlpha = 0.08;
-    ctx.strokeStyle = INDIGO;
-    ctx.setLineDash([1, 3]);
-    ctx.beginPath();
-    ctx.moveTo(colX, y + 22);
-    ctx.lineTo(colX + colW, y + 22);
-    ctx.stroke();
-    ctx.restore();
-
     y += rowH;
   }
   ctx.textAlign = 'left';
@@ -509,8 +471,6 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
-  ctx.fillStyle = INDIGO;
-  ctx.fillRect(0, 0, EXPORT_W, MASTHEAD_H);
 
   drawMasthead(ctx, data);
   drawProfile(ctx, data);
