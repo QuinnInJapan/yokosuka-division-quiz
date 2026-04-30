@@ -1,4 +1,6 @@
 import type { AxisKey, RankedDivision } from '../data/types';
+import { AX } from '../data/types';
+import { AXES } from '../data/axes';
 
 function dateParts(d: Date): { yyyy: number; mm: string; dd: string } {
   return {
@@ -70,6 +72,10 @@ const INDIGO = '#1C2340';
 const MASTHEAD_H = 340;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
 const PAGE_PAD_X = 56;
+const TEXT_GRAY = '#6B7280';
+const PROFILE_TOP = MASTHEAD_H + 36;
+const PROFILE_LABEL_COL = 110;
+const PROFILE_ROW_H = 44;
 
 function setFont(ctx: CanvasRenderingContext2D, sizePx: number, weight: number = 400): void {
   ctx.font = `${weight} ${sizePx}px ${FONT_FAMILY}`;
@@ -95,6 +101,57 @@ function drawTrackedText(
     const w = ctx.measureText(ch).width;
     cursor += w + trackEm * sizePx;
   }
+}
+
+function drawHairline(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  color: string,
+  alpha: number,
+): void {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y + 0.5);
+  ctx.lineTo(x + w, y + 0.5);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawBar(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  trackColor: string,
+  dotColor: string,
+  pct: number,
+): void {
+  const barH = 6;
+  const r = barH / 2;
+  ctx.fillStyle = trackColor;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arc(x + w - r, y + r, r, -Math.PI / 2, Math.PI / 2);
+  ctx.lineTo(x + r, y + barH);
+  ctx.arc(x + r, y + r, r, Math.PI / 2, -Math.PI / 2);
+  ctx.closePath();
+  ctx.fill();
+
+  const dotX = x + (pct / 100) * w;
+  const dotY = y + barH / 2;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = dotColor;
+  ctx.stroke();
 }
 
 function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
@@ -145,6 +202,47 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   }
 }
 
+function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+
+  // Eyebrow + hairline
+  ctx.fillStyle = 'rgba(28,35,64,0.7)';
+  setFont(ctx, 11, 700);
+  drawTrackedText(ctx, 'プロファイル', PAGE_PAD_X, PROFILE_TOP, 0.28);
+  drawHairline(ctx, PAGE_PAD_X, PROFILE_TOP + 8, EXPORT_W - PAGE_PAD_X * 2, INDIGO, 0.18);
+
+  let y = PROFILE_TOP + 36;
+  const barX = PAGE_PAD_X + PROFILE_LABEL_COL + 6;
+  const barW = EXPORT_W - PAGE_PAD_X * 2 - PROFILE_LABEL_COL - 6;
+
+  for (const ax of AX) {
+    const a = AXES[ax];
+    const score = data.userScores[ax];
+    const isPlus = score >= 0;
+
+    // Axis label (left col)
+    ctx.fillStyle = a.dark;
+    setFont(ctx, 10.5, 600);
+    ctx.fillText(a.label, PAGE_PAD_X, y + 4);
+
+    // Bar
+    drawBar(ctx, barX, y, barW, a.tint, a.dark, axisDotPct(score));
+
+    // Pole anchors below bar — winning side gets axis-dark, losing side gets gray
+    setFont(ctx, 10.5, 400);
+    ctx.fillStyle = isPlus ? TEXT_GRAY : a.dark;
+    ctx.textAlign = 'left';
+    ctx.fillText(a.minus, barX, y + 22);
+    ctx.fillStyle = isPlus ? a.dark : TEXT_GRAY;
+    ctx.textAlign = 'right';
+    ctx.fillText(a.plus, barX + barW, y + 22);
+    ctx.textAlign = 'left';
+
+    y += PROFILE_ROW_H;
+  }
+}
+
 export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void {
   canvas.width = EXPORT_W * EXPORT_SCALE;
   canvas.height = EXPORT_H * EXPORT_SCALE;
@@ -154,11 +252,11 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
-
   ctx.fillStyle = INDIGO;
   ctx.fillRect(0, 0, EXPORT_W, MASTHEAD_H);
 
   drawMasthead(ctx, data);
+  drawProfile(ctx, data);
 }
 
 type Measure = (text: string) => TextMetrics;
