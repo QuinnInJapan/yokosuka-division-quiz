@@ -18,11 +18,6 @@ describe('SukarinCard', () => {
     expect(html).toContain('市民に寄り添う万能タイプ。');
   });
 
-  it('renders the eyebrow label', () => {
-    const html = renderToStaticMarkup(<SukarinCard {...props} />);
-    expect(html).toContain('あなたのスカリン');
-  });
-
   it('renders the image when imageSrc is provided', () => {
     const html = renderToStaticMarkup(<SukarinCard {...props} />);
     expect(html).toMatch(/<img[^>]+src="\/test-sukarin\.png"/);

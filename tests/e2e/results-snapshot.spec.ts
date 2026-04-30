@@ -17,7 +17,6 @@ test('results screen shows the SukarinCard for an archetype', async ({ page }) =
   const card = page.getByTestId('sukarin-card');
   await expect(card).toBeVisible();
   await expect(card.locator('img')).toHaveCount(1);
-  await expect(card).toContainText('あなたのスカリン');
   await expect(card).toContainText('型');
 
   // Pixel snapshot for visual regression. Tolerance: ~0.5% pixel diff.

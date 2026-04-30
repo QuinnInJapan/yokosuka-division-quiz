@@ -12,7 +12,6 @@ export type SukarinCardProps = {
 export function SukarinCard({ code, name, desc, imageSrc }: SukarinCardProps) {
   return (
     <div className={s.card} data-testid="sukarin-card">
-      <div className={s.eyebrow}>あなたのスカリン</div>
       {imageSrc && (
         <div className={s.imgWrap}>
           <img className={s.img} src={imageSrc} alt={`${name}型のスカリン`} />

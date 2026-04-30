@@ -8,15 +8,6 @@
   text-align: center;
 }
 
-.eyebrow {
-  color: var(--B);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-bold);
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  margin-bottom: var(--sp-md);
-}
-
 .imgWrap {
   display: flex;
   justify-content: center;
@@ -67,8 +58,6 @@
   }
   .img      { animation: sc-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
               animation-delay: 60ms; }
-  .eyebrow  { animation: sc-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-              animation-delay: 140ms; --enter-final-opacity: .9; }
   .code     { animation: sc-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
               animation-delay: 240ms; }
   .name     { animation: sc-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) backwards;

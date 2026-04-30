@@ -81,7 +81,7 @@ const INDIGO = '#1C2340';
 const TEXT_FAINT = '#9CA3AF';
 const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
-const MASTHEAD_H = 460;
+const MASTHEAD_H = 380;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
 
 const PROFILE_TOP = MASTHEAD_H + 32;
@@ -224,43 +224,29 @@ function measureTracked(
 function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   const innerW = EXPORT_W - PAGE_PAD_X * 2;
   ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
 
-  // Card frame: white bg, B-tint border, full masthead area on white canvas.
   const cardX = PAGE_PAD_X;
   const cardY = 24;
   const cardW = innerW;
-  const cardH = MASTHEAD_H - cardY - 16;
-  ctx.fillStyle = '#FFFFFF';
-  roundRect(ctx, cardX, cardY, cardW, cardH, 16, true, false);
-  ctx.strokeStyle = '#EBF3FC'; // var(--B-tint)
-  ctx.lineWidth = 2;
-  roundRect(ctx, cardX, cardY, cardW, cardH, 16, false, true);
 
-  // Eyebrow
-  ctx.textAlign = 'left';
-  ctx.fillStyle = '#2E6DB4'; // var(--B)
-  setFont(ctx, 11, 700);
-  const eyebrow = 'あなたのスカリン';
-  const eyebrowW = measureTracked(ctx, eyebrow, 0.18);
-  drawTrackedText(ctx, eyebrow, cardX + cardW / 2 - eyebrowW / 2, cardY + 28, 0.18);
-
-  // Sukarin image (centered)
-  const imgSize = 130;
+  // Sukarin image (centered, smaller)
+  const imgSize = 110;
   const imgX = cardX + (cardW - imgSize) / 2;
-  const imgY = cardY + 44;
+  const imgY = cardY + 18;
   if (data.sukarinImage) {
     ctx.drawImage(data.sukarinImage, imgX, imgY, imgSize, imgSize);
   }
 
   // Type code
-  const codeY = imgY + imgSize + 22;
+  const codeY = imgY + imgSize + 18;
   ctx.fillStyle = '#C0392B'; // var(--A)
   setFont(ctx, 11, 800);
   const codeW = measureTracked(ctx, data.type.code, 0.22);
   drawTrackedText(ctx, data.type.code, cardX + cardW / 2 - codeW / 2, codeY, 0.22);
 
   // Type name (centered)
-  const nameY = codeY + 28;
+  const nameY = codeY + 26;
   ctx.fillStyle = '#1C2340'; // var(--text)
   setFont(ctx, 26, 800);
   const nameText = `「${data.type.name}」型`;
@@ -268,7 +254,7 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   ctx.fillText(nameText, cardX + cardW / 2 - nameMetricsW / 2, nameY);
 
   // Description (wrapped, centered, capped at 3 lines)
-  const descY = nameY + 32;
+  const descY = nameY + 28;
   ctx.fillStyle = '#4A5568'; // var(--text-sec)
   setFont(ctx, 12, 400);
   const descMaxW = cardW - 48;
@@ -282,7 +268,12 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
     curY += descLineH;
   }
 
-  ctx.textAlign = 'left';
+  // Card frame stroke after content for crisp outline; bg already white canvas.
+  const cardH = (curY - cardY) + 12;
+  ctx.strokeStyle = '#EBF3FC'; // var(--B-tint)
+  ctx.lineWidth = 2;
+  roundRect(ctx, cardX, cardY, cardW, cardH, 16, false, true);
+
   ctx.textBaseline = 'alphabetic';
 }
 
@@ -303,15 +294,22 @@ function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
     const a = AXES[ax];
     const score = data.userScores[ax];
     const isPlus = score >= 0;
+    const dotPct = axisDotPct(score);
+    const winningPct = isPlus ? dotPct : 100 - dotPct;
 
+    // Axis label + winning pct on the same line, axis-dark
     ctx.fillStyle = a.dark;
     setFont(ctx, 10.5, 700);
+    ctx.textAlign = 'left';
     ctx.fillText(a.label, PAGE_PAD_X, y + 5);
+    setFont(ctx, 12, 800);
+    ctx.textAlign = 'right';
+    ctx.fillText(`${winningPct.toFixed(0)}%`, barX + barW, y + 5);
+    ctx.textAlign = 'left';
 
-    drawBar(ctx, barX, y, barW, a.color, a.dark, axisDotPct(score));
+    drawBar(ctx, barX, y, barW, a.color, a.dark, dotPct);
 
     // Pole anchors below bar — winning side bold + axis-dark, losing side gray normal
-    ctx.textAlign = 'left';
     setFont(ctx, 10, isPlus ? 400 : 700);
     ctx.fillStyle = isPlus ? TEXT_FAINT : a.dark;
     ctx.fillText(a.minus, barX, y + 26);
