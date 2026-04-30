@@ -313,6 +313,89 @@ function drawListSection(
   return y;
 }
 
+function drawQrPlaceholder(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+): void {
+  const r = 8;
+  // Outer rounded rect
+  ctx.fillStyle = '#FFFFFF';
+  ctx.strokeStyle = INDIGO;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + size - r, y);
+  ctx.quadraticCurveTo(x + size, y, x + size, y + r);
+  ctx.lineTo(x + size, y + size - r);
+  ctx.quadraticCurveTo(x + size, y + size, x + size - r, y + size);
+  ctx.lineTo(x + r, y + size);
+  ctx.quadraticCurveTo(x, y + size, x, y + size - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  // Three corner finder marks
+  const finderSize = 18;
+  const finderInset = 8;
+  const finderPositions: Array<[number, number]> = [
+    [x + finderInset, y + finderInset],
+    [x + size - finderInset - finderSize, y + finderInset],
+    [x + finderInset, y + size - finderInset - finderSize],
+  ];
+  for (const [fx, fy] of finderPositions) {
+    ctx.fillStyle = INDIGO;
+    ctx.fillRect(fx, fy, finderSize, finderSize);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(fx + 4, fy + 4, finderSize - 8, finderSize - 8);
+    ctx.fillStyle = INDIGO;
+    ctx.fillRect(fx + 7, fy + 7, finderSize - 14, finderSize - 14);
+  }
+
+  // 6×6 dot grid (deterministic pattern, avoids finder corners)
+  const gridStartX = x + 32;
+  const gridStartY = y + 32;
+  const cell = (size - 40) / 6;
+  const pattern = [
+    1, 0, 1, 1, 0, 1,
+    0, 1, 0, 0, 1, 0,
+    1, 1, 1, 0, 1, 0,
+    0, 0, 1, 1, 0, 1,
+    1, 0, 0, 1, 1, 0,
+    0, 1, 1, 0, 0, 1,
+  ];
+  ctx.fillStyle = INDIGO;
+  for (let i = 0; i < pattern.length; i++) {
+    if (!pattern[i]) continue;
+    const col = i % 6;
+    const row = Math.floor(i / 6);
+    if (col >= 4 && row <= 1) continue; // top-right finder area
+    if (col <= 1 && row >= 4) continue; // bottom-left finder area
+    ctx.fillRect(gridStartX + col * cell, gridStartY + row * cell, cell - 2, cell - 2);
+  }
+}
+
+function drawFooter(ctx: CanvasRenderingContext2D, data: ExportData): void {
+  const footerTop = EXPORT_H - 48 - 80;
+  drawHairline(ctx, PAGE_PAD_X, footerTop, EXPORT_W - PAGE_PAD_X * 2, INDIGO, 0.15);
+
+  // Left: wordmark + date
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = INDIGO;
+  setFont(ctx, 10, 700);
+  drawTrackedText(ctx, 'YOKOSUKA · 課適性診断', PAGE_PAD_X, footerTop + 28, 0.25);
+  ctx.fillStyle = TEXT_GRAY;
+  setFont(ctx, 10, 400);
+  ctx.fillText(formatDateForDisplay(data.date), PAGE_PAD_X, footerTop + 50);
+
+  // Right: 80×80 QR placeholder
+  drawQrPlaceholder(ctx, EXPORT_W - PAGE_PAD_X - 80, footerTop, 80);
+}
+
 export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void {
   canvas.width = EXPORT_W * EXPORT_SCALE;
   canvas.height = EXPORT_H * EXPORT_SCALE;
@@ -342,6 +425,8 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
     AXIS_A_RED,
     data.worst,
   );
+
+  drawFooter(ctx, data);
 }
 
 type Measure = (text: string) => TextMetrics;
