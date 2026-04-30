@@ -1,9 +1,15 @@
 import type { RankedDivision } from '../data/types';
 
+function dateParts(d: Date): { yyyy: number; mm: string; dd: string } {
+  return {
+    yyyy: d.getFullYear(),
+    mm: String(d.getMonth() + 1).padStart(2, '0'),
+    dd: String(d.getDate()).padStart(2, '0'),
+  };
+}
+
 export function formatDateForFilename(d: Date): string {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
+  const { yyyy, mm, dd } = dateParts(d);
   return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -14,9 +20,7 @@ export function sanitizeFilename(typeName: string, date: Date): string {
 }
 
 export function formatDateForDisplay(d: Date): string {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
+  const { yyyy, mm, dd } = dateParts(d);
   return `${yyyy}.${mm}.${dd}`;
 }
 

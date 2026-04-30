@@ -17,6 +17,16 @@ describe('sanitizeFilename', () => {
   });
 });
 
+describe('formatDateForFilename', () => {
+  it('returns YYYY-MM-DD with zero-padding', () => {
+    expect(formatDateForFilename(new Date(2026, 3, 30))).toBe('2026-04-30');
+    expect(formatDateForFilename(new Date(2026, 0, 5))).toBe('2026-01-05');
+  });
+  it('handles single-digit month and day', () => {
+    expect(formatDateForFilename(new Date(2026, 8, 9))).toBe('2026-09-09');
+  });
+});
+
 describe('formatDateForDisplay', () => {
   it('renders YYYY.MM.DD with zero-padding', () => {
     expect(formatDateForDisplay(new Date(2026, 3, 30))).toBe('2026.04.30');
@@ -44,6 +54,10 @@ describe('topNBestFits / bottomNWorstFits', () => {
   });
   it('clamps when N > list length', () => {
     expect(topNBestFits(ranked.slice(0, 2), 5).length).toBe(2);
+  });
+  it('returns empty array when input is empty', () => {
+    expect(topNBestFits([], 5)).toEqual([]);
+    expect(bottomNWorstFits([], 3)).toEqual([]);
   });
 });
 
