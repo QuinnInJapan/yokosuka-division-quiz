@@ -4,16 +4,14 @@ import { SukarinCard } from './SukarinCard';
 
 describe('SukarinCard', () => {
   const props = {
-    code: 'DASCG',
     name: '街のよろず屋',
     desc: '市民に寄り添う万能タイプ。',
     userScores: { A: 1.6, B: 1.2, C: 1.7, D: 1.0, E: 1.4 } as const,
     imageSrc: '/test-sukarin.png',
   };
 
-  it('renders code, name (with quoted format), and description', () => {
+  it('renders name (with quoted format) and description', () => {
     const html = renderToStaticMarkup(<SukarinCard {...props} />);
-    expect(html).toContain('DASCG');
     expect(html).toContain('「街のよろず屋」型');
     expect(html).toContain('市民に寄り添う万能タイプ。');
   });

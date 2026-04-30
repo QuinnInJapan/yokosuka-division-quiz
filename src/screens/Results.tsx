@@ -9,7 +9,6 @@ export function Results() {
   return (
     <>
       <SukarinCard
-        code={type.code}
         name={type.name}
         desc={type.desc}
         userScores={userScores}
