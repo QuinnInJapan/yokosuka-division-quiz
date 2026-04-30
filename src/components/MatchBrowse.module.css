@@ -25,6 +25,19 @@
   }
 }
 
+.list-col {
+  position: relative;
+  min-height: 0;
+}
+.list-col > * {
+  position: absolute;
+  inset: 0;
+}
+@media (max-width: 839px) {
+  .list-col { position: static; }
+  .list-col > * { position: static; }
+}
+
 .detail-col {
 }
 

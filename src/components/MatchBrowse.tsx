@@ -17,7 +17,9 @@ export function MatchBrowse() {
         5つの軸のプロファイルを比較して相性を算出しています
       </div>
       <div className={s['match-browse']}>
-        <MatchList items={results} />
+        <div className={s['list-col']}>
+          <MatchList items={results} />
+        </div>
         <div className={s['detail-col']}>
           <MatchDetail division={selected} />
         </div>

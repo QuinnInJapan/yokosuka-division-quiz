@@ -7,6 +7,9 @@
   box-shadow: var(--card-shadow);
 }
 .all-list--side {
+  max-height: none;
+  height: 100%;
+  min-height: 0;
   overflow-y: auto;
   background: var(--card);
   border-radius: var(--card-r);
