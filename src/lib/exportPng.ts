@@ -76,6 +76,10 @@ const TEXT_GRAY = '#6B7280';
 const PROFILE_TOP = MASTHEAD_H + 36;
 const PROFILE_LABEL_COL = 110;
 const PROFILE_ROW_H = 44;
+const TEXT_BODY = '#1C2340';
+const FITS_TOP = PROFILE_TOP + 36 + 5 * PROFILE_ROW_H + 24;
+const AXIS_C_GREEN = AXES.C.dark;
+const AXIS_A_RED = AXES.A.dark;
 
 function setFont(ctx: CanvasRenderingContext2D, sizePx: number, weight: number = 400): void {
   ctx.font = `${weight} ${sizePx}px ${FONT_FAMILY}`;
@@ -152,6 +156,17 @@ function drawBar(
   ctx.lineWidth = 2;
   ctx.strokeStyle = dotColor;
   ctx.stroke();
+}
+
+function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let lo = 0, hi = text.length;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (ctx.measureText(text.slice(0, mid) + '…').width <= maxWidth) lo = mid;
+    else hi = mid - 1;
+  }
+  return text.slice(0, lo) + '…';
 }
 
 function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
@@ -243,6 +258,61 @@ function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
   }
 }
 
+function drawListSection(
+  ctx: CanvasRenderingContext2D,
+  topY: number,
+  eyebrow: string,
+  accentColor: string,
+  rows: RankedRow[],
+): number {
+  const innerW = EXPORT_W - PAGE_PAD_X * 2;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+
+  // Eyebrow + hairline
+  ctx.fillStyle = accentColor;
+  setFont(ctx, 11, 700);
+  drawTrackedText(ctx, eyebrow, PAGE_PAD_X, topY, 0.28);
+  drawHairline(ctx, PAGE_PAD_X, topY + 8, innerW, accentColor, 0.3);
+
+  let y = topY + 32;
+  const rowHeight = 26;
+  const rankColW = 32;
+  const fitColW = 60;
+  const nameStartX = PAGE_PAD_X + rankColW;
+  const fitX = EXPORT_W - PAGE_PAD_X;
+  const nameMaxW = innerW - rankColW - fitColW - 8;
+
+  for (const row of rows) {
+    // Rank
+    ctx.fillStyle = TEXT_GRAY;
+    setFont(ctx, 10, 400);
+    ctx.textAlign = 'left';
+    ctx.fillText(String(row.rank).padStart(2, '0'), PAGE_PAD_X, y);
+
+    // Name (indigo) + dept (gray) inline
+    ctx.fillStyle = TEXT_BODY;
+    setFont(ctx, 13, 500);
+    const truncatedName = truncateToWidth(ctx, row.name, nameMaxW * 0.6);
+    ctx.fillText(truncatedName, nameStartX, y);
+    const nameWidth = ctx.measureText(truncatedName).width;
+
+    ctx.fillStyle = TEXT_GRAY;
+    setFont(ctx, 10, 400);
+    ctx.fillText(row.dept, nameStartX + nameWidth + 10, y);
+
+    // Fit %, right-aligned
+    ctx.fillStyle = accentColor;
+    setFont(ctx, 13, 700);
+    ctx.textAlign = 'right';
+    ctx.fillText(formatPct(row.fit), fitX, y);
+
+    y += rowHeight;
+  }
+  ctx.textAlign = 'left';
+  return y;
+}
+
 export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void {
   canvas.width = EXPORT_W * EXPORT_SCALE;
   canvas.height = EXPORT_H * EXPORT_SCALE;
@@ -257,6 +327,21 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
 
   drawMasthead(ctx, data);
   drawProfile(ctx, data);
+
+  const bestEndY = drawListSection(
+    ctx,
+    FITS_TOP,
+    '相性の高い課 — 上位5',
+    AXIS_C_GREEN,
+    data.best,
+  );
+  drawListSection(
+    ctx,
+    bestEndY + 16,
+    '相性の低い課 — 下位3',
+    AXIS_A_RED,
+    data.worst,
+  );
 }
 
 type Measure = (text: string) => TextMetrics;
