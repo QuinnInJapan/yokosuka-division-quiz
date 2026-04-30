@@ -563,8 +563,8 @@ function drawFooter(ctx: CanvasRenderingContext2D, data: ExportData): void {
 
   ctx.fillStyle = TEXT_FAINT;
   setFont(ctx, 8.5, 400);
-  ctx.textAlign = 'right';
-  drawTrackedText(ctx, 'あなたも診断 →', qrX + qrSize, footerTop + qrSize + 14, 0.05);
+  ctx.textAlign = 'center';
+  ctx.fillText('診断はこちら', qrX + qrSize / 2, footerTop + qrSize + 14);
   ctx.textAlign = 'left';
 }
 
