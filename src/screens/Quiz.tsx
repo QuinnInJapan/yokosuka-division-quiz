@@ -14,8 +14,7 @@ export function Quiz() {
   const total = ORDER.length;
   const remaining = total - state.step - 1;
   let flourish = '';
-  if (state.step === 0) flourish = 'ゆっくり考えて大丈夫です';
-  else if (remaining === 1) flourish = 'あと2問';
+  if (remaining === 1) flourish = 'あと2問';
   else if (remaining === 0) flourish = 'ラスト1問！';
 
   return (

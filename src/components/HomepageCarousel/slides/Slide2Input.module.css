@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-lg);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ── Header (mirrors sibling slides) ── */
@@ -38,12 +41,16 @@
 .qNum {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   font-size: var(--fs-sm);
   color: var(--sub);
   font-weight: var(--fw-bold);
 }
-.qNum > span[aria-hidden] { color: var(--border); }
+.qNum > span[aria-hidden] {
+  color: var(--sub);
+  opacity: 0.55;
+  margin: 0 2px;
+}
 .flourish {
   font-size: var(--fs-xs);
   font-weight: var(--fw-bold);

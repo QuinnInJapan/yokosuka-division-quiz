@@ -60,13 +60,7 @@ export function Slide5Result() {
         <p className={s.sub}>1ページに、3つの答えが並ぶ。</p>
       </header>
 
-      <figure className={s.card}>
-        <figcaption className={s.caption}>
-          <span className={s.captionLabel}>結果ページの構成</span>
-          <span className={s.captionMeta}>3 ブロック</span>
-        </figcaption>
-
-        <div className={s.preview} aria-label="結果ページのプレビュー">
+      <div className={s.preview} aria-label="結果ページのプレビュー">
           {/* ── 01 · Archetype hero (TypeReveal) ─────────────────── */}
           <section className={s.region}>
             <span className={s.annot} aria-hidden="true">01</span>
@@ -181,10 +175,9 @@ export function Slide5Result() {
           </section>
         </div>
 
-        <p className={s.foot}>
-          スクロール1枚に、アーキタイプ・プロファイル・ランキングが並ぶ。
-        </p>
-      </figure>
+      <p className={s.foot}>
+        スクロール1枚に、アーキタイプ・プロファイル・ランキングが並ぶ。
+      </p>
     </div>
   );
 }

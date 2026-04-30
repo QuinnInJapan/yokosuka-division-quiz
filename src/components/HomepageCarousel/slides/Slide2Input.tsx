@@ -41,7 +41,6 @@ export function Slide2Input() {
       <div className={s.meta}>
         <span className={s.qNum}>
           Q.{Q.num} <span aria-hidden="true">/</span> {Q.total}
-          <span className={s.flourish}>ゆっくり考えて大丈夫です</span>
         </span>
         <span className={s.axisTag} style={{ background: ax.tint, color: ax.dark }}>
           {ax.label}
