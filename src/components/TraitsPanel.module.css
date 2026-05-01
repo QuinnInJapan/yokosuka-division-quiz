@@ -22,7 +22,7 @@
 
 /* Bar list pane (right) — same white inset. */
 .bars-panel {
-  padding: var(--sp-sm) var(--sp-lg);
+  padding: var(--sp-md);
   background: rgba(255, 255, 255, 0.7);
   border-radius: 14px;
 }
