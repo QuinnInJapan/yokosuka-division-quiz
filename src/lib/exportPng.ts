@@ -75,7 +75,7 @@ export type ExportData = {
 };
 
 export const EXPORT_W = 1200;
-export const EXPORT_H = 800;
+export const EXPORT_H = 720;
 export const EXPORT_SCALE = 2;
 
 const INDIGO = '#1C2340';
@@ -88,7 +88,7 @@ const TOP_ZONE_BG = '#F7F8FA';
 const TOP_ZONE_RADIUS = 18;
 const TOP_ZONE_INNER_PAD = 28;
 const TOP_ZONE_GAP = 32;
-const TOP_TO_FITS_GAP = 36;
+const TOP_TO_FITS_GAP = 28;
 const PROFILE_ROW_H = 50;
 
 function setFont(
@@ -210,20 +210,6 @@ function roundRect(
   ctx.closePath();
 }
 
-function measureTracked(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  trackEm: number,
-): number {
-  const sizePx = fontSizePx(ctx);
-  const chars = Array.from(text);
-  let total = 0;
-  for (const ch of chars) {
-    total += ctx.measureText(ch).width + trackEm * sizePx;
-  }
-  return total - trackEm * sizePx;
-}
-
 function drawArchetypeCol(
   ctx: CanvasRenderingContext2D,
   data: ExportData,
@@ -234,10 +220,10 @@ function drawArchetypeCol(
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
 
-  // Sukarin image (centered, drop-shadow)
+  // Sukarin LEFT, text RIGHT — kills horizontal whitespace around mascot
   const imgSize = 180;
-  const imgX = colX + (colW - imgSize) / 2;
-  const imgY = colY + 12;
+  const imgX = colX;
+  const imgY = colY;
   if (data.sukarinImage) {
     ctx.save();
     ctx.shadowColor = 'rgba(28,35,64,0.18)';
@@ -247,55 +233,46 @@ function drawArchetypeCol(
     ctx.restore();
   }
 
-  // Eyebrow: muted civic/quiz framing
-  const eyebrowY = imgY + imgSize + 18;
+  // Text block to right of Sukarin
+  const textX = colX + imgSize + 24;
+  const textW = colW - imgSize - 24;
+
+  // Eyebrow
+  const eyebrowY = colY + 18;
   ctx.save();
   ctx.globalAlpha = 0.55;
   ctx.fillStyle = INDIGO;
   setFont(ctx, 10, 700);
-  const eyebrowText = '課適性診断';
-  const eyebrowW = measureTracked(ctx, eyebrowText, 0.32);
-  drawTrackedText(ctx, eyebrowText, colX + colW / 2 - eyebrowW / 2, eyebrowY, 0.32);
+  drawTrackedText(ctx, '課適性診断', textX, eyebrowY, 0.32);
   ctx.restore();
 
-  // Type name (centered) — name at full size, 型 smaller + muted (no brackets)
-  const nameY = eyebrowY + 28;
-  ctx.fillStyle = INDIGO;
-  setFont(ctx, 28, 800);
-  const nameOnly = data.type.name;
-  const nameW = ctx.measureText(nameOnly).width;
-
-  setFont(ctx, 16, 500);
-  const suffix = '型';
-  const suffixGap = 6;
-  const suffixW = ctx.measureText(suffix).width;
-  const totalW = nameW + suffixGap + suffixW;
-  const startX = colX + colW / 2 - totalW / 2;
-
+  // Type name — left-aligned (text-block flush left); name + 型 muted
+  const nameY = eyebrowY + 32;
   setFont(ctx, 28, 800);
   ctx.fillStyle = INDIGO;
-  ctx.fillText(nameOnly, startX, nameY);
+  ctx.textAlign = 'left';
+  ctx.fillText(data.type.name, textX, nameY);
+  const nameW = ctx.measureText(data.type.name).width;
 
   setFont(ctx, 16, 500);
   ctx.fillStyle = '#6B7280';
-  ctx.fillText(suffix, startX + nameW + suffixGap, nameY - 2);
+  ctx.fillText('型', textX + nameW + 6, nameY - 2);
 
-  // Description (wrapped, centered, capped at 4 lines)
-  const descY = nameY + 26;
+  // Description (wrapped, left-aligned, capped at 4 lines)
+  const descY = nameY + 24;
   ctx.fillStyle = '#4A5568';
   setFont(ctx, 12, 400);
-  const descMaxW = colW - 24;
   const measure: Measure = (s: string) => ctx.measureText(s);
-  const descLines = wrapJapanese(measure, data.type.desc, descMaxW);
+  const descLines = wrapJapanese(measure, data.type.desc, textW);
   let curY = descY;
   const descLineH = 12 * 1.75;
   for (const line of descLines.slice(0, 4)) {
-    const lw = ctx.measureText(line).width;
-    ctx.fillText(line, colX + colW / 2 - lw / 2, curY);
+    ctx.fillText(line, textX, curY);
     curY += descLineH;
   }
 
-  return curY;
+  // Return max(image bottom, text bottom) — Sukarin floor often wins
+  return Math.max(imgY + imgSize, curY);
 }
 
 function drawProfileCol(
@@ -449,16 +426,9 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
   const profileColX = archetypeColX + topColW + TOP_ZONE_GAP;
   const colY = topZoneY + TOP_ZONE_INNER_PAD;
 
-  // Two-pass: render content offscreen-conceptually to get heights, then bg + actual content.
-  // Simpler: compute predicted profile height (deterministic) and use max to set bg height.
   const profileH = 36 + 5 * PROFILE_ROW_H; // header + 5 rows
-  // Archetype height varies w/ description wrap; render first, capture endY.
-  // To keep single-pass, render archetype to measure, then bg, then re-render.
-  // Easier: render bg with generous min-height and let archetype determine actual.
-  // Use 2-pass via compositing: draw bg first w/ estimated H, then content; if content overruns,
-  // it overflows but bg remains. Estimate generously.
-  const archetypeEstH = 12 + 180 + 18 + 18 + 28 + 26 + 4 * (12 * 1.75); // sukarin + paddings + name + 4-line desc
-  const contentH = Math.max(archetypeEstH, profileH);
+  const archetypeH = 180; // Sukarin floor; text block beside fits within image height
+  const contentH = Math.max(archetypeH, profileH);
   const topZoneH = contentH + TOP_ZONE_INNER_PAD * 2;
 
   // Draw top zone background
@@ -466,8 +436,9 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
   roundRect(ctx, topZoneX, topZoneY, innerW, topZoneH, TOP_ZONE_RADIUS);
   ctx.fill();
 
-  // Draw archetype + profile cols
-  drawArchetypeCol(ctx, data, archetypeColX, colY, topColW);
+  // Vertically center archetype within content area (Sukarin shorter than profile column)
+  const archetypeY = colY + Math.max(0, (contentH - archetypeH) / 2);
+  drawArchetypeCol(ctx, data, archetypeColX, archetypeY, topColW);
   drawProfileCol(ctx, data, profileColX, colY, topColW);
 
   const fitsTop = topZoneY + topZoneH + TOP_TO_FITS_GAP;
