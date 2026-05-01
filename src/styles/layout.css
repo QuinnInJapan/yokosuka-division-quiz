@@ -24,6 +24,15 @@ body[data-screen="welcome"] #root {
   overflow: hidden;
 }
 
+/* Results screen escapes the centered/padded shell to render full-bleed bands. */
+body[data-screen="results"] {
+  align-items: stretch;
+}
+body[data-screen="results"] #root {
+  max-width: none;
+  padding: 0;
+}
+
 .content-w {
   max-width: var(--content-max);
   margin-left: auto;

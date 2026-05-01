@@ -12,12 +12,12 @@
 .tc-hero {
   display: flex;
   align-items: center;
-  gap: var(--sp-sm);
+  gap: 14px;
   margin-bottom: var(--sp-md);
 }
 .tc-win {
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-bold);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-black);
 }
 
 /* Description */

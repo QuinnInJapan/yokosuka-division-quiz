@@ -1,18 +1,16 @@
-/* ── Match section ── */
+/* src/components/MatchBrowse.module.css */
 .match-section {
-}
-.match-section-title {
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-bold);
-  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
 }
 .match-section-sub {
   font-size: var(--fs-sm);
-  color: var(--sub);
-  margin-bottom: var(--sp-md);
+  color: var(--text-sec);
+  margin: 0 0 var(--sp-md);
+  line-height: var(--lh-tight);
 }
 
-/* ── Side-by-side grid ── */
 .match-browse {
   display: grid;
   grid-template-columns: 1fr;
@@ -21,7 +19,8 @@
 }
 @media (min-width: 840px) {
   .match-browse {
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 360px 1fr;
+    gap: var(--sp-lg);
   }
 }
 
@@ -33,17 +32,10 @@
   position: absolute;
   inset: 0;
 }
+.detail-col {
+  /* Reserved hook for future per-detail-column overrides. */
+}
 @media (max-width: 839px) {
   .list-col { position: static; }
-  .list-col > * { position: static; }
-}
-
-.detail-col {
-}
-
-/* ── Bottom actions ── */
-.bottom-actions {
-  display: flex;
-  gap: var(--sp-sm);
-  margin-top: var(--sp-md);
+  .list-col > * { position: static; max-height: 420px; }
 }

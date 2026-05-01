@@ -1,0 +1,82 @@
+/* src/screens/Results.module.css */
+.band {
+  width: 100%;
+  position: relative;
+}
+.bandInner {
+  max-width: var(--app-max);
+  margin: 0 auto;
+  padding: 0 var(--sp-lg);
+  position: relative;
+  z-index: 2;
+}
+
+/* Chapter-mark pattern — small numbered rule above each section title. */
+.chapterMark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-black);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: var(--sp-lg);
+}
+.chapterMark .num {
+  font-family: ui-monospace, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.chapterMark .rule {
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+/* ── Hero ── */
+.hero {
+  color: white;
+  padding: 80px 0 96px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.heroBlob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Traits ── */
+.traits {
+  background: var(--band-traits);
+  padding: 64px 0;
+}
+.traits .chapterMark { color: var(--hall-indigo); }
+
+/* ── Match ── */
+.match {
+  background: var(--band-match);
+  padding: 64px 0;
+}
+.match .chapterMark { color: var(--C); }
+
+/* ── Actions ── */
+.actions {
+  background: var(--band-actions);
+  padding: 48px 0 64px;
+}
+.actions .bandInner {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-md);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .hero { padding: 56px 0 64px; }
+  .traits, .match { padding: 48px 0; }
+  .actions { padding: 36px 0 48px; }
+}

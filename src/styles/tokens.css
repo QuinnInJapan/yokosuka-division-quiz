@@ -64,4 +64,11 @@
   --bar-h:     12px;
   --mkr-size:  16px;
   --mkr-user:  13px;
+
+  /* ── Band backgrounds (color-banded chapters) ── */
+  --band-hero-base:   #1C2340;     /* fallback before per-archetype palette */
+  --band-traits:      var(--cream, #FAF7F2);
+  --band-match:       var(--C-tint);
+  --band-actions:     var(--hero-accent);
+  --cream:            #FAF7F2;
 }

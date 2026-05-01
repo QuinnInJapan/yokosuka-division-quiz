@@ -9,11 +9,11 @@ export function TraitsPanel() {
   const { userScores } = useDerived();
 
   return (
-    <div className={`${s['traits-grid']} section-gap`}>
-      <div className={`card ${s['tc-panel']}`}>
+    <div className={s['traits-grid']}>
+      <div className={s['tc-panel']}>
         <TraitCarousel />
       </div>
-      <div className={`card ${s['bars-panel']}`}>
+      <div className={s['bars-panel']}>
         {AX.map((ax, i) => (
           <TraitBar
             key={ax}

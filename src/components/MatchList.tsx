@@ -6,7 +6,7 @@ import s from './MatchList.module.css';
 export function MatchList({ items }: { items: RankedDivision[] }) {
   const { state, dispatch } = useStore();
   return (
-    <div className={`${s['all-list']} ${s['all-list--side']}`}>
+    <div className={s['all-list--side']}>
       {items.map((d, i) => {
         const fc = fitColor(d.fit);
         const isOn = i === state.sel;
