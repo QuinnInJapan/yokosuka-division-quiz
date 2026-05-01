@@ -29,7 +29,7 @@ export function FitRing({ pct, fillColor, textColor }: Props) {
         </svg>
       </div>
       <div className="fit-text">
-        <span className="fit-pct" style={{ color: textColor }}>{pct}%</span>
+        <span className="fit-pct" style={{ color: textColor }}>{pct.toFixed(1)}%</span>
         <span className="fit-lbl">相性度</span>
       </div>
     </div>

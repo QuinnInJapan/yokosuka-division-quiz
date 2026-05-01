@@ -23,7 +23,7 @@ export function MatchList({ items }: { items: RankedDivision[] }) {
               <div className={s['all-name']}>{d.name}</div>
               <div className={s['all-dept']}>{d.dept}</div>
             </div>
-            <span className={s['all-fit']} style={{ color: fc.text }}>{d.fit}%</span>
+            <span className={s['all-fit']} style={{ color: fc.text }}>{d.fit.toFixed(1)}%</span>
           </button>
         );
       })}
