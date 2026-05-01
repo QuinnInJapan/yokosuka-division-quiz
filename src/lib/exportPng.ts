@@ -74,8 +74,8 @@ export type ExportData = {
   sukarinImage?: HTMLImageElement | null;
 };
 
-export const EXPORT_W = 794;
-export const EXPORT_H = 1123;
+export const EXPORT_W = 1200;
+export const EXPORT_H = 800;
 export const EXPORT_SCALE = 2;
 
 const INDIGO = '#1C2340';
@@ -84,10 +84,12 @@ const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
 
-const MASTHEAD_TOP_GAP = 36;
-const PROFILE_LABEL_COL = 110;
-const PROFILE_ROW_H = 46;
-const PROFILE_TO_FITS_GAP = 28;
+const TOP_ZONE_BG = '#F7F8FA';
+const TOP_ZONE_RADIUS = 18;
+const TOP_ZONE_INNER_PAD = 28;
+const TOP_ZONE_GAP = 32;
+const TOP_TO_FITS_GAP = 36;
+const PROFILE_ROW_H = 50;
 
 function setFont(
   ctx: CanvasRenderingContext2D,
@@ -187,6 +189,27 @@ function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
   return text.slice(0, lo) + '…';
 }
 
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 function measureTracked(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -201,19 +224,20 @@ function measureTracked(
   return total - trackEm * sizePx;
 }
 
-function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): number {
-  const innerW = EXPORT_W - PAGE_PAD_X * 2;
+function drawArchetypeCol(
+  ctx: CanvasRenderingContext2D,
+  data: ExportData,
+  colX: number,
+  colY: number,
+  colW: number,
+): number {
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
 
-  const cardX = PAGE_PAD_X;
-  const cardY = 24;
-  const cardW = innerW;
-
-  // Sukarin image (centered, hero scale w/ drop-shadow)
+  // Sukarin image (centered, drop-shadow)
   const imgSize = 180;
-  const imgX = cardX + (cardW - imgSize) / 2;
-  const imgY = cardY + 24;
+  const imgX = colX + (colW - imgSize) / 2;
+  const imgY = colY + 12;
   if (data.sukarinImage) {
     ctx.save();
     ctx.shadowColor = 'rgba(28,35,64,0.18)';
@@ -223,7 +247,7 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): number {
     ctx.restore();
   }
 
-  // Eyebrow: muted civic/quiz framing (replaces type code)
+  // Eyebrow: muted civic/quiz framing
   const eyebrowY = imgY + imgSize + 18;
   ctx.save();
   ctx.globalAlpha = 0.55;
@@ -231,57 +255,68 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): number {
   setFont(ctx, 10, 700);
   const eyebrowText = '課適性診断';
   const eyebrowW = measureTracked(ctx, eyebrowText, 0.32);
-  drawTrackedText(ctx, eyebrowText, cardX + cardW / 2 - eyebrowW / 2, eyebrowY, 0.32);
+  drawTrackedText(ctx, eyebrowText, colX + colW / 2 - eyebrowW / 2, eyebrowY, 0.32);
   ctx.restore();
 
-  // Type name (centered) — manual kern between 」 and 型 to fix optical-weight gap
-  const nameY = eyebrowY + 26;
-  ctx.fillStyle = '#1C2340'; // var(--text)
-  setFont(ctx, 26, 800);
-  const quotedName = `「${data.type.name}」`;
-  const suffix = '型';
-  const kernAdjust = -6;
-  const quotedW = ctx.measureText(quotedName).width;
-  const suffixW = ctx.measureText(suffix).width;
-  const totalW = quotedW + kernAdjust + suffixW;
-  const startX = cardX + cardW / 2 - totalW / 2;
-  ctx.fillText(quotedName, startX, nameY);
-  ctx.fillText(suffix, startX + quotedW + kernAdjust, nameY);
+  // Type name (centered) — name at full size, 型 smaller + muted (no brackets)
+  const nameY = eyebrowY + 28;
+  ctx.fillStyle = INDIGO;
+  setFont(ctx, 28, 800);
+  const nameOnly = data.type.name;
+  const nameW = ctx.measureText(nameOnly).width;
 
-  // Description (wrapped, centered, capped at 3 lines)
-  const descY = nameY + 28;
-  ctx.fillStyle = '#4A5568'; // var(--text-sec)
+  setFont(ctx, 16, 500);
+  const suffix = '型';
+  const suffixGap = 6;
+  const suffixW = ctx.measureText(suffix).width;
+  const totalW = nameW + suffixGap + suffixW;
+  const startX = colX + colW / 2 - totalW / 2;
+
+  setFont(ctx, 28, 800);
+  ctx.fillStyle = INDIGO;
+  ctx.fillText(nameOnly, startX, nameY);
+
+  setFont(ctx, 16, 500);
+  ctx.fillStyle = '#6B7280';
+  ctx.fillText(suffix, startX + nameW + suffixGap, nameY - 2);
+
+  // Description (wrapped, centered, capped at 4 lines)
+  const descY = nameY + 26;
+  ctx.fillStyle = '#4A5568';
   setFont(ctx, 12, 400);
-  const descMaxW = cardW - 96;
+  const descMaxW = colW - 24;
   const measure: Measure = (s: string) => ctx.measureText(s);
   const descLines = wrapJapanese(measure, data.type.desc, descMaxW);
   let curY = descY;
-  const descLineH = 12 * 1.85;
-  for (const line of descLines.slice(0, 3)) {
+  const descLineH = 12 * 1.75;
+  for (const line of descLines.slice(0, 4)) {
     const lw = ctx.measureText(line).width;
-    ctx.fillText(line, cardX + cardW / 2 - lw / 2, curY);
+    ctx.fillText(line, colX + colW / 2 - lw / 2, curY);
     curY += descLineH;
   }
 
-  // Interior padding holds masthead block; stroke removed (was invisible at #EBF3FC).
-  const cardH = (curY - cardY) + 12;
-
-  ctx.textBaseline = 'alphabetic';
-  return cardY + cardH;
+  return curY;
 }
 
-function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData, profileTop: number): number {
+function drawProfileCol(
+  ctx: CanvasRenderingContext2D,
+  data: ExportData,
+  colX: number,
+  colY: number,
+  colW: number,
+): number {
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
 
+  // Section header
   ctx.fillStyle = 'rgba(28,35,64,0.7)';
   setFont(ctx, 11, 700);
-  drawTrackedText(ctx, 'プロファイル', PAGE_PAD_X, profileTop, 0.28);
-  drawHairline(ctx, PAGE_PAD_X, profileTop + 8, EXPORT_W - PAGE_PAD_X * 2, INDIGO, 0.18);
+  drawTrackedText(ctx, 'プロファイル', colX, colY + 10, 0.28);
+  drawHairline(ctx, colX, colY + 18, colW, INDIGO, 0.18);
 
-  let y = profileTop + 36;
-  const barX = PAGE_PAD_X + PROFILE_LABEL_COL + 6;
-  const barW = EXPORT_W - PAGE_PAD_X * 2 - PROFILE_LABEL_COL - 6;
+  let y = colY + 36;
+  const barX = colX;
+  const barW = colW;
 
   for (const ax of AX) {
     const a = AXES[ax];
@@ -290,25 +325,27 @@ function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData, profileTop
     const dotPct = axisDotPct(score);
     const winningPct = isPlus ? dotPct : 100 - dotPct;
 
-    // Axis label (right-aligned in label gutter) + winning pct (right-aligned at bar end)
+    // Line 1: axis label (left) + % (right)
     ctx.fillStyle = a.dark;
-    setFont(ctx, 10.5, 700);
-    ctx.textAlign = 'right';
-    ctx.fillText(a.label, PAGE_PAD_X + PROFILE_LABEL_COL, y + 5);
+    setFont(ctx, 11, 700);
+    ctx.textAlign = 'left';
+    ctx.fillText(a.label, barX, y + 10);
     setFont(ctx, 12, 800);
-    ctx.fillText(`${winningPct.toFixed(0)}%`, barX + barW, y + 5);
+    ctx.textAlign = 'right';
+    ctx.fillText(`${winningPct.toFixed(0)}%`, barX + barW, y + 10);
     ctx.textAlign = 'left';
 
-    drawBar(ctx, barX, y, barW, a.dark, dotPct);
+    // Line 2: bar (16px below row top → 6px gap below label baseline)
+    drawBar(ctx, barX, y + 16, barW, a.dark, dotPct);
 
-    // Pole anchors below bar — winning side bold + axis-dark, losing side gray normal
-    setFont(ctx, 10, isPlus ? 400 : 700);
+    // Line 3: poles below bar (38px below row top)
+    setFont(ctx, 9.5, isPlus ? 400 : 700);
     ctx.fillStyle = isPlus ? TEXT_FAINT : a.dark;
-    ctx.fillText(a.minus, barX, y + 26);
-    ctx.textAlign = 'right';
-    setFont(ctx, 10, isPlus ? 700 : 400);
+    ctx.fillText(a.minus, barX, y + 38);
+    setFont(ctx, 9.5, isPlus ? 700 : 400);
     ctx.fillStyle = isPlus ? a.dark : TEXT_FAINT;
-    ctx.fillText(a.plus, barX + barW, y + 26);
+    ctx.textAlign = 'right';
+    ctx.fillText(a.plus, barX + barW, y + 38);
     ctx.textAlign = 'left';
 
     y += PROFILE_ROW_H;
@@ -403,13 +440,39 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
 
-  const mastheadEnd = drawMasthead(ctx, data);
-  const profileTop = mastheadEnd + MASTHEAD_TOP_GAP;
-  const profileEnd = drawProfile(ctx, data, profileTop);
-  const fitsTop = profileEnd + PROFILE_TO_FITS_GAP;
-
-  // 2-column lists: best (left, full opacity) + worst (right, dimmed)
+  // === TOP ZONE: archetype + profile side-by-side w/ shared bg ===
   const innerW = EXPORT_W - PAGE_PAD_X * 2;
+  const topZoneX = PAGE_PAD_X;
+  const topZoneY = 24;
+  const topColW = (innerW - TOP_ZONE_INNER_PAD * 2 - TOP_ZONE_GAP) / 2;
+  const archetypeColX = topZoneX + TOP_ZONE_INNER_PAD;
+  const profileColX = archetypeColX + topColW + TOP_ZONE_GAP;
+  const colY = topZoneY + TOP_ZONE_INNER_PAD;
+
+  // Two-pass: render content offscreen-conceptually to get heights, then bg + actual content.
+  // Simpler: compute predicted profile height (deterministic) and use max to set bg height.
+  const profileH = 36 + 5 * PROFILE_ROW_H; // header + 5 rows
+  // Archetype height varies w/ description wrap; render first, capture endY.
+  // To keep single-pass, render archetype to measure, then bg, then re-render.
+  // Easier: render bg with generous min-height and let archetype determine actual.
+  // Use 2-pass via compositing: draw bg first w/ estimated H, then content; if content overruns,
+  // it overflows but bg remains. Estimate generously.
+  const archetypeEstH = 12 + 180 + 18 + 18 + 28 + 26 + 4 * (12 * 1.75); // sukarin + paddings + name + 4-line desc
+  const contentH = Math.max(archetypeEstH, profileH);
+  const topZoneH = contentH + TOP_ZONE_INNER_PAD * 2;
+
+  // Draw top zone background
+  ctx.fillStyle = TOP_ZONE_BG;
+  roundRect(ctx, topZoneX, topZoneY, innerW, topZoneH, TOP_ZONE_RADIUS);
+  ctx.fill();
+
+  // Draw archetype + profile cols
+  drawArchetypeCol(ctx, data, archetypeColX, colY, topColW);
+  drawProfileCol(ctx, data, profileColX, colY, topColW);
+
+  const fitsTop = topZoneY + topZoneH + TOP_TO_FITS_GAP;
+
+  // === FITS LISTS: 2-column, full canvas width ===
   const colGap = 32;
   const colW = (innerW - colGap) / 2;
   const leftX = PAGE_PAD_X;

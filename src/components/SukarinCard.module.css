@@ -33,6 +33,15 @@
   margin: 0 0 var(--sp-md);
 }
 
+.suffix {
+  font-size: 0.55em;
+  font-weight: var(--fw-medium, 500);
+  color: var(--text-sec);
+  margin-left: 0.18em;
+  vertical-align: 0.18em;
+  letter-spacing: 0.04em;
+}
+
 .desc {
   color: var(--text-sec);
   font-size: var(--fs-base);
