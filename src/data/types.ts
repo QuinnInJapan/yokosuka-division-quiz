@@ -35,7 +35,16 @@ export type Division = {
   about?: string;
 } & Record<AxisKey, number>;
 
-export type Archetype = { name: string; desc: string };
+export type Archetype = {
+  name: string;
+  desc: string;
+  /**
+   * Optional 2-line break index for the display name.
+   * `name.slice(0, nameBreakAt)` is line 1; `name.slice(nameBreakAt)` is line 2.
+   * When omitted, the name renders as a single line.
+   */
+  nameBreakAt?: number;
+};
 
 export type ResolvedArchetype = Archetype & { code: string };
 

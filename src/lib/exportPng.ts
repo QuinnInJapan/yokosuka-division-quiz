@@ -65,7 +65,7 @@ export function axisDotPct(score: number): number {
 }
 
 export type ExportData = {
-  type: { code: string; name: string; desc: string };
+  type: { code: string; name: string; desc: string; nameBreakAt?: number };
   userScores: Record<AxisKey, number>;
   best: RankedRow[];
   worst: RankedRow[];
@@ -245,20 +245,32 @@ function drawArchetypeCol(
   drawTrackedText(ctx, '課適性診断', textX, eyebrowY, 0.32);
   ctx.restore();
 
-  // Type name — left-aligned (text-block flush left); name + 型 muted
+  // Type name — left-aligned, optionally split into two lines via nameBreakAt
   const nameY = eyebrowY + 32;
+  const breakAt = data.type.nameBreakAt;
+  const hasBreak =
+    breakAt != null && breakAt > 0 && breakAt < data.type.name.length;
+  const nameLines = hasBreak
+    ? [data.type.name.slice(0, breakAt!), data.type.name.slice(breakAt!)]
+    : [data.type.name];
+  const nameLineH = 32;
+
   setFont(ctx, 28, 800);
   ctx.fillStyle = INDIGO;
   ctx.textAlign = 'left';
-  ctx.fillText(data.type.name, textX, nameY);
-  const nameW = ctx.measureText(data.type.name).width;
-
+  let lastNameY = nameY;
+  nameLines.forEach((line, i) => {
+    lastNameY = nameY + i * nameLineH;
+    ctx.fillText(line, textX, lastNameY);
+  });
+  // 型 suffix sits next to the LAST line
+  const lastLineW = ctx.measureText(nameLines[nameLines.length - 1]).width;
   setFont(ctx, 16, 500);
   ctx.fillStyle = '#6B7280';
-  ctx.fillText('型', textX + nameW + 6, nameY - 2);
+  ctx.fillText('型', textX + lastLineW + 6, lastNameY - 2);
 
   // Description (wrapped, left-aligned, capped at 4 lines)
-  const descY = nameY + 24;
+  const descY = lastNameY + 24;
   ctx.fillStyle = '#4A5568';
   setFont(ctx, 12, 400);
   const measure: Measure = (s: string) => ctx.measureText(s);
@@ -494,7 +506,7 @@ export function buildExportData(
   sukarinImage?: HTMLImageElement | null,
 ): ExportData {
   return {
-    type: { code: type.code, name: type.name, desc: type.desc },
+    type: { code: type.code, name: type.name, desc: type.desc, nameBreakAt: type.nameBreakAt },
     userScores,
     best: topNBestFits(ranked, BEST_COUNT),
     // Reverse worst so the actual worst (highest rank number) appears first — list "climbs out".

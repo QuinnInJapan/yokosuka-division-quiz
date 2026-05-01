@@ -45,6 +45,7 @@ export function Results() {
             desc={type.desc}
             userScores={userScores}
             imageSrc={sukarinSrc(type.code)}
+            nameBreakAt={type.nameBreakAt}
           />
         </div>
       </section>

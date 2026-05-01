@@ -31,11 +31,17 @@
   font-weight: var(--fw-black);
   line-height: 1.05;
   letter-spacing: -0.01em;
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  color: white;
+}
+.nameLine {
+  display: inline-flex;
   align-items: flex-end;
   gap: 0.18em;
-  color: white;
 }
 .suffix {
   font-size: 0.5em;
@@ -53,13 +59,13 @@
   margin: 0;
   word-break: keep-all;
   overflow-wrap: break-word;
-  max-width: 60ch;
+  max-width: 36ch;
 }
 
 @media (max-width: 720px) {
   .card { flex-direction: column; gap: 24px; text-align: center; }
   .img { width: 160px; height: 160px; }
-  .name { font-size: 34px; }
+  .name { font-size: 34px; align-items: center; }
   .desc { max-width: none; }
 }
 
