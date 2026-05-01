@@ -201,63 +201,12 @@
   white-space: nowrap;
 }
 
-/* ── Focal: the real TraitBar shape ──────────────────────────── */
-.trait {
-  display: block;
+/* ── Focal: real TraitBar mounted from Results ───────────────── */
+.traitMount {
+  pointer-events: none;
 }
-.traitHeader {
-  display: flex;
-  align-items: baseline;
-  gap: var(--sp-sm);
-  margin-bottom: 8px;
-}
-.traitPct {
-  font-size: var(--fs-2xl);
-  font-weight: var(--fw-black);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-.traitWin {
-  font-size: var(--fs-base);
-  font-weight: var(--fw-bold);
-  line-height: 1;
-}
-.traitBarRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.traitEnd {
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-bold);
-  color: var(--text-sec);
-  width: 32px;
-  flex-shrink: 0;
-  text-align: center;
-  line-height: 1;
-}
-.traitTrack {
-  position: relative;
-  flex: 1;
-  height: var(--bar-h);
-  border-radius: 999px;
-  overflow: visible;
-}
-.traitDot {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: var(--mkr-size);
-  height: var(--mkr-size);
-  border-radius: 50%;
-  background: white;
-  border: 2.5px solid;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  z-index: 2;
-  transition: left 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .traitDot { transition: none; }
+.traitMount > * {
+  width: 100%;
 }
 
 .foot {
@@ -291,7 +240,4 @@
   .rowLabel { grid-area: label; font-size: var(--fs-sm); }
   .rowDelta { grid-area: delta; font-size: var(--fs-sm); }
   .miniBar  { grid-area: bar; }
-  .traitPct { font-size: var(--fs-xl); }
-  .traitWin { font-size: var(--fs-sm); }
-  .traitEnd { font-size: var(--fs-base); width: 24px; }
 }

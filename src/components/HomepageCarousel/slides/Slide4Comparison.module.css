@@ -1,12 +1,8 @@
 /*
-  Slide 3 (Comparison)
-  Visual contract: echoes MatchDetail + ComparisonBars + MatchList from the
-  real quiz so this preview reads as a snapshot of the same product.
-    - Card: var(--card-shadow) + var(--card-r), no hairline-only chrome
-    - Top: 56px FitRing + green match% (fitColor)
-    - Body: 5 paired rows = visitor (full saturation) + division (.45 tint)
-            12px fat axis-color tracks, 16px white dots, kanji ends
-    - Footer: ranked top-3 rows in the MatchList idiom
+  STEP 03 · 比較 — slide chrome only.
+  All inner UI is the real Results screen (MatchDetail + MatchList) mounted
+  inside a pointer-events:none wrapper so clicks fall through to the
+  carousel right-panel advance handler.
 */
 
 .slide {
@@ -17,7 +13,6 @@
   min-height: 0;
 }
 
-/* ── Title block (matches Slides 1 & 2) ─────────────────────────── */
 .head {
   display: flex;
   flex-direction: column;
@@ -43,13 +38,7 @@
   line-height: var(--lh-tight);
 }
 
-/* ── Card: same chrome as MatchDetail (`.card` global) ──────────── */
-.card {
-  margin: 0;
-  background: var(--card);
-  border-radius: var(--card-r);
-  box-shadow: var(--card-shadow);
-  padding: var(--card-pad);
+.mount {
   display: flex;
   flex-direction: column;
   gap: var(--sp-lg);
@@ -57,226 +46,19 @@
   min-height: 0;
   overflow-y: auto;
 }
+.mount > * {
+  pointer-events: none;
+}
 
-/* ── Top: ring + division info (MatchDetail .match-top) ─────────── */
-.matchTop {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-xl);
-  padding-bottom: var(--sp-lg);
-  border-bottom: 1px solid var(--border);
-}
-.fitDisplay {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-.fitArc {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-}
-.fitText {
+.listWrap {
   display: flex;
   flex-direction: column;
+  gap: var(--sp-sm);
 }
-.fitPct {
-  font-size: 28px;
-  font-weight: var(--fw-black);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.fitLbl {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  font-weight: var(--fw-bold);
-  letter-spacing: .06em;
-  margin-top: 2px;
-}
-.divInfo {
-  min-width: 0;
-}
-.divDept {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  margin-bottom: 2px;
-}
-.divName {
-  font-size: var(--fs-xl);
-  font-weight: var(--fw-bold);
-  line-height: var(--lh-tight);
-  color: var(--text);
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  margin-bottom: var(--sp-sm);
-}
-.divAbout {
-  font-size: var(--fs-sm);
-  line-height: var(--lh-body);
-  color: var(--text-sec);
-  word-break: keep-all;
-  overflow-wrap: break-word;
-}
-
-/* ── Body: paired ComparisonBars rows ───────────────────────────── */
-.compBlock {
-  display: flex;
-  flex-direction: column;
-}
-.compLabel {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
-  color: var(--sub);
-  margin-bottom: var(--sp-md);
-}
-.compRow {
-  margin-bottom: 18px;
-}
-.compRow:last-of-type {
-  margin-bottom: 0;
-}
-.compAxis {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
-  margin-bottom: 6px;
-}
-.compPair {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: var(--sp-xs);
-}
-.compPair:last-child {
-  margin-bottom: 0;
-}
-.compWho {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  width: 44px;
-  flex-shrink: 0;
-  text-align: right;
-  font-weight: var(--fw-medium);
-}
-.compEnd {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  width: 18px;
-  flex-shrink: 0;
-  text-align: center;
-  font-weight: var(--fw-bold);
-}
-.compTrack {
-  position: relative;
-  flex: 1;
-  height: var(--bar-h); /* 12px fat track */
-  border-radius: 999px;
-  overflow: visible;
-}
-.compTrackDiv {
-  opacity: .45;
-}
-.compDot {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: var(--mkr-size); /* 16px */
-  height: var(--mkr-size);
-  border-radius: 50%;
-  background: white;
-  border: 2.5px solid;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
-  z-index: 2;
-  transition: left .4s ease-out;
-}
-@media (prefers-reduced-motion: reduce) {
-  .compDot { transition: none; }
-}
-
-/* ── Footer: MatchList-style ranked top-3 ───────────────────────── */
-.allList {
-  background: var(--card);
-  border-radius: var(--card-r);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.allHead {
+.listHead {
   font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--sub);
-  padding: 10px var(--sp-md);
-  border-bottom: 1px solid var(--border);
-  background: var(--hover-wash-list);
-}
-.allItem {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 12px var(--sp-md);
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  gap: 12px;
-}
-.allItem:last-child {
-  border-bottom: none;
-}
-.allItemOn {
-  background: var(--indigo-tint);
-}
-.allRn {
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-black);
-  color: var(--sub);
-  width: 26px;
-  text-align: right;
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
-.allInfo {
-  flex: 1;
-  min-width: 0;
-}
-.allName {
-  font-size: 14px;
-  font-weight: var(--fw-bold);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--text);
-}
-.allDept {
-  font-size: var(--fs-xs);
-  color: var(--sub);
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.allFit {
-  font-size: var(--fs-base);
-  font-weight: var(--fw-black);
-  flex-shrink: 0;
-  margin-left: var(--sp-sm);
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Mobile collapse (<900px) ───────────────────────────────────── */
-@media (max-width: 900px) {
-  .card {
-    padding: var(--sp-lg);
-    gap: var(--sp-md);
-  }
-  .matchTop {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--sp-md);
-  }
-  .compWho {
-    width: 36px;
-  }
-  .compRow {
-    margin-bottom: 16px;
-  }
 }

@@ -1,8 +1,6 @@
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { useStore } from '../state/hooks';
 import { HomepageCarousel, SLIDE_COUNT } from '../components/HomepageCarousel';
-import { AXES } from '../data/axes';
-import { AX } from '../data/types';
 import s from './Welcome.module.css';
 
 export function Welcome() {
@@ -10,42 +8,41 @@ export function Welcome() {
   const [idx, setIdx] = useState(0);
   const onJump = (i: number) => setIdx(Math.max(0, Math.min(SLIDE_COUNT - 1, i)));
 
+  const onRightClick = (e: MouseEvent<HTMLElement>) => {
+    if (idx >= SLIDE_COUNT - 1) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, input, textarea, select, [role="button"], [role="tab"], [contenteditable="true"]')) return;
+    onJump(idx + 1);
+  };
+
   return (
     <main className={s.split}>
       <aside className={s.hero}>
-        <div className={s.eyebrow}>YOKOSUKA CITY HALL</div>
-        <h1 className={s.title}>
-          横須賀市役所<br />部署タイプ診断
-        </h1>
-        <p className={s.lede}>3分で、あなたに合う課が見つかります。</p>
+        <div className={s.heroInner}>
+          <div className={s.eyebrow}>YOKOSUKA CITY HALL</div>
+          <h1 className={s.title}>
+            横須賀市役所<br />部署タイプ診断
+          </h1>
+          <p className={s.lede}>3分で、あなたに合う課が見つかります。</p>
 
-        <ul className={s.axisChips} aria-label="診断軸">
-          {AX.map((ax) => (
-            <li className={s.axisChip} key={ax} data-testid={`hero-axis-chip-${ax}`}>
-              <span
-                className={s.axisLetter}
-                style={{ background: AXES[ax].tint, color: AXES[ax].dark }}
-                aria-hidden="true"
-              >
-                {ax}
-              </span>
-              <span className={s.axisLabel}>{AXES[ax].label}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className={s.ctaWrap}>
+          <div className={s.ctaWrap}>
           <button
             type="button"
             className={s.cta}
             onClick={() => dispatch({ type: 'START' })}
           >
-            診断をはじめる <span aria-hidden="true" className={s.ctaArrow}>→</span>
+            診断をはじめる
           </button>
+          </div>
         </div>
       </aside>
 
-      <section className={s.right}>
+      <section
+        className={s.right}
+        onClick={onRightClick}
+        data-testid="welcome-right"
+        data-last={idx === SLIDE_COUNT - 1 ? 'true' : 'false'}
+      >
         <div className={s.carouselWrap}>
           <div className={s.explainerHead} data-testid="explainer-head">
             <button
