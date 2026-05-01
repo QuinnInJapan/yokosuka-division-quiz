@@ -25,8 +25,8 @@ test('export modal: opens, shows canvas, saves PNG', async ({ page }) => {
   const canvas = page.getByTestId('export-canvas');
   await expect(canvas).toBeVisible();
   const dims = await canvas.evaluate((el: HTMLCanvasElement) => ({ w: el.width, h: el.height }));
-  expect(dims.w).toBe(794 * 2);
-  expect(dims.h).toBe(1123 * 2);
+  expect(dims.w).toBe(1200 * 2);
+  expect(dims.h).toBe(720 * 2);
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByTestId('export-save').click();
