@@ -7,7 +7,7 @@ import s from './MatchDetail.module.css';
 export function MatchDetail({ division }: { division: RankedDivision }) {
   const fc = fitColor(division.fit);
   return (
-    <div className={`card ${s['match-card']}`}>
+    <div className={s['match-card']}>
       <div className={s['match-top']}>
         <FitRing pct={division.fit} fillColor={fc.fill} textColor={fc.text} />
         <div>

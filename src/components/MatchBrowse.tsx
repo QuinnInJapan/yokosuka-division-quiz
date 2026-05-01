@@ -1,8 +1,6 @@
 import { useStore, useDerived } from '../state/hooks';
 import { MatchList } from './MatchList';
 import { MatchDetail } from './MatchDetail';
-import { RetakeButton } from './RetakeButton';
-import { ExportButton } from './ExportButton';
 import s from './MatchBrowse.module.css';
 
 export function MatchBrowse() {
@@ -11,11 +9,10 @@ export function MatchBrowse() {
   const selected = results[state.sel];
 
   return (
-    <div className={`${s['match-section']} section-gap`}>
-      <div className={s['match-section-title']}>あなたに合う課</div>
-      <div className={s['match-section-sub']}>
+    <div className={s['match-section']}>
+      <p className={s['match-section-sub']}>
         5つの軸のプロファイルを比較して相性を算出しています
-      </div>
+      </p>
       <div className={s['match-browse']}>
         <div className={s['list-col']}>
           <MatchList items={results} />
@@ -23,10 +20,6 @@ export function MatchBrowse() {
         <div className={s['detail-col']}>
           <MatchDetail division={selected} />
         </div>
-      </div>
-      <div className={s['bottom-actions']}>
-        <ExportButton />
-        <RetakeButton />
       </div>
     </div>
   );
