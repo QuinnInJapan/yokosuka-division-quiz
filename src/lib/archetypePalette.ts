@@ -44,7 +44,7 @@ const FALLBACK: HeroPalette = {
   blobs: [
     { color: AXIS_MID.B, opacity: 0.32, left: '-120px', top: '-120px', size: '540px' },
     { color: AXIS_MID.D, opacity: 0.34, left: 'calc(100% - 400px)', top: 'calc(100% - 360px)', size: '480px' },
-    { color: '#4A90D9', opacity: 0.22, left: '60%', top: '10%', size: '340px' },
+    { color: AXIS_MID.B, opacity: 0.22, left: '60%', top: '10%', size: '340px' },
   ],
 };
 
@@ -64,9 +64,9 @@ export function archetypePalette(code: string): HeroPalette {
     decoded.push({ axis, isPlus: PLUS_LETTERS[axis] === letter });
   }
 
-  const ordered = AX.map((ax) => ({
+  const ordered = AX.map((ax, i) => ({
     axis: ax,
-    isPlus: decoded[AX.indexOf(ax)].isPlus,
+    isPlus: decoded[i].isPlus,
   }));
 
   let hash = 0;

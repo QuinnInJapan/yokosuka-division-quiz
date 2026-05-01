@@ -12,6 +12,7 @@ describe('archetypePalette', () => {
       expect(blob.opacity).toBeLessThanOrEqual(1);
       expect(typeof blob.left).toBe('string');
       expect(typeof blob.top).toBe('string');
+      expect(typeof blob.size).toBe('string');
     }
   });
 
