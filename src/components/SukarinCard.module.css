@@ -43,15 +43,17 @@
   font-weight: var(--fw-black);
   line-height: var(--lh-tight);
   margin: 0 0 var(--sp-sm);
+  display: flex;
+  align-items: flex-end;
+  gap: 0.18em;
 }
-
 .suffix {
   font-size: 0.55em;
   font-weight: var(--fw-medium, 500);
   color: var(--text-sec);
-  margin-left: 0.18em;
-  vertical-align: 0.18em;
   letter-spacing: 0.04em;
+  line-height: 1;
+  padding-bottom: 0.06em;
 }
 
 .desc {

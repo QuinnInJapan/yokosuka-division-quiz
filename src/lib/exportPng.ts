@@ -300,33 +300,39 @@ function drawProfileCol(
     const isPlus = score >= 0;
     const dotPct = axisDotPct(score);
     const winningPct = isPlus ? dotPct : 100 - dotPct;
-    const winLabel = isPlus ? a.plus : a.minus;
+    const pctStr = `${winningPct.toFixed(0)}%`;
 
-    // Header line: axis label LEFT + winLabel + pct RIGHT (matches Results)
-    ctx.fillStyle = a.dark;
-    setFont(ctx, 10, 600);
+    // Header line: just axis label (neutral)
+    ctx.fillStyle = INDIGO;
+    setFont(ctx, 11, 600);
     ctx.textAlign = 'left';
     ctx.fillText(a.label, barX, y + 10);
 
-    setFont(ctx, 11, 700);
-    ctx.textAlign = 'right';
-    const pctText = `${winningPct.toFixed(0)}%`;
-    const pctW = ctx.measureText(pctText).width;
-    ctx.fillText(pctText, barX + barW, y + 10);
-
-    setFont(ctx, 11, 700);
-    ctx.fillText(winLabel, barX + barW - pctW - 10, y + 10);
-    ctx.textAlign = 'left';
-
-    // Bar: full-color track + white dot (matches Results)
+    // Bar: full-color track + white dot
     drawBar(ctx, barX, y + 18, barW, a.color, a.dark, dotPct);
 
-    // Poles below bar — both faint, matches Results sub color
-    setFont(ctx, 9.5, 400);
-    ctx.fillStyle = TEXT_FAINT;
-    ctx.fillText(a.minus, barX, y + 42);
-    ctx.textAlign = 'right';
-    ctx.fillText(a.plus, barX + barW, y + 42);
+    // Poles: pct prefixes the WINNING side. Winning bold+axis-dark, losing faint.
+    if (isPlus) {
+      setFont(ctx, 10, 400);
+      ctx.fillStyle = TEXT_FAINT;
+      ctx.textAlign = 'left';
+      ctx.fillText(a.minus, barX, y + 42);
+
+      setFont(ctx, 11, 700);
+      ctx.fillStyle = a.dark;
+      ctx.textAlign = 'right';
+      ctx.fillText(`${pctStr} ${a.plus}`, barX + barW, y + 42);
+    } else {
+      setFont(ctx, 11, 700);
+      ctx.fillStyle = a.dark;
+      ctx.textAlign = 'left';
+      ctx.fillText(`${pctStr} ${a.minus}`, barX, y + 42);
+
+      setFont(ctx, 10, 400);
+      ctx.fillStyle = TEXT_FAINT;
+      ctx.textAlign = 'right';
+      ctx.fillText(a.plus, barX + barW, y + 42);
+    }
     ctx.textAlign = 'left';
 
     y += PROFILE_ROW_H;

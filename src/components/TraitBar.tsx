@@ -16,7 +16,6 @@ export function TraitBar({
   const { dispatch } = useStore();
   const a = AXES[axis];
   const { pct, isPlus } = scoreToPct(score);
-  const winLabel = isPlus ? a.plus : a.minus;
   const dotLeft = ((score + 2) / 4) * 100;
 
   return (
@@ -27,8 +26,7 @@ export function TraitBar({
       aria-pressed={active}
     >
       <div className={s['trait-header']}>
-        <span className={s['trait-pct']} style={{ color: a.dark }}>{pct}%</span>
-        <span className={s['trait-win']} style={{ color: a.dark }}>{winLabel}</span>
+        <span className={s['trait-label']}>{a.label}</span>
       </div>
       <div className={s['trait-track']} style={{ background: a.color }}>
         <div
@@ -37,8 +35,18 @@ export function TraitBar({
         />
       </div>
       <div className={s['trait-poles']}>
-        <span className={s['trait-pole']}>{a.minus}</span>
-        <span className={s['trait-pole']}>{a.plus}</span>
+        <span
+          className={`${s['trait-pole']}${!isPlus ? ' ' + s['trait-pole--win'] : ''}`}
+          style={!isPlus ? { color: a.dark } : undefined}
+        >
+          {!isPlus ? `${pct}% ${a.minus}` : a.minus}
+        </span>
+        <span
+          className={`${s['trait-pole']}${isPlus ? ' ' + s['trait-pole--win'] : ''}`}
+          style={isPlus ? { color: a.dark } : undefined}
+        >
+          {isPlus ? `${pct}% ${a.plus}` : a.plus}
+        </span>
       </div>
     </button>
   );

@@ -26,16 +26,18 @@
 .trait-header {
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: var(--sp-sm);
   margin-bottom: 4px;
+}
+.trait-label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--text);
 }
 .trait-pct {
   font-size: var(--fs-base);
   font-weight: var(--fw-black);
-}
-.trait-win {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
 }
 
 /* ── Bar ── */
@@ -54,6 +56,7 @@
   color: var(--sub);
 }
 .trait-pole { white-space: nowrap; }
+.trait-pole--win { font-weight: var(--fw-bold); }
 .trait-dot {
   position: absolute;
   top: 50%;
