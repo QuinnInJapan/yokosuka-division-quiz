@@ -69,6 +69,7 @@ export type ExportData = {
   userScores: Record<AxisKey, number>;
   best: RankedRow[];
   worst: RankedRow[];
+  totalCount: number;
   date: Date;
   sukarinImage?: HTMLImageElement | null;
 };
@@ -81,13 +82,12 @@ const INDIGO = '#1C2340';
 const TEXT_FAINT = '#9CA3AF';
 const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
-const MASTHEAD_H = 380;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
 
-const PROFILE_TOP = MASTHEAD_H + 32;
+const MASTHEAD_TOP_GAP = 36;
 const PROFILE_LABEL_COL = 110;
 const PROFILE_ROW_H = 46;
-const FITS_TOP = PROFILE_TOP + 32 + 5 * PROFILE_ROW_H + 28;
+const PROFILE_TO_FITS_GAP = 28;
 
 function setFont(
   ctx: CanvasRenderingContext2D,
@@ -139,18 +139,21 @@ function drawHairline(
   ctx.restore();
 }
 
+const TRACK_NEUTRAL = '#E5E7EB';
+
 function drawBar(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,
-  trackColor: string,
-  dotColor: string,
+  fillColor: string,
   pct: number,
 ): void {
   const barH = 8;
   const r = barH / 2;
-  ctx.fillStyle = trackColor;
+
+  // Neutral track (full width)
+  ctx.fillStyle = TRACK_NEUTRAL;
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.lineTo(x + w - r, y);
@@ -160,15 +163,17 @@ function drawBar(
   ctx.closePath();
   ctx.fill();
 
-  const dotX = x + (pct / 100) * w;
-  const dotY = y + barH / 2;
-  ctx.fillStyle = '#FFFFFF';
+  // Axis-color filled segment from x to (pct/100)*w
+  const fillW = Math.max(barH, (pct / 100) * w);
+  ctx.fillStyle = fillColor;
   ctx.beginPath();
-  ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + fillW - r, y);
+  ctx.arc(x + fillW - r, y + r, r, -Math.PI / 2, Math.PI / 2);
+  ctx.lineTo(x + r, y + barH);
+  ctx.arc(x + r, y + r, r, Math.PI / 2, -Math.PI / 2);
+  ctx.closePath();
   ctx.fill();
-  ctx.lineWidth = 2.5;
-  ctx.strokeStyle = dotColor;
-  ctx.stroke();
 }
 
 function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
@@ -180,31 +185,6 @@ function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
     else hi = mid - 1;
   }
   return text.slice(0, lo) + '…';
-}
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number,
-  fill: boolean,
-  stroke: boolean,
-): void {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-  if (fill) ctx.fill();
-  if (stroke) ctx.stroke();
 }
 
 function measureTracked(
@@ -221,7 +201,7 @@ function measureTracked(
   return total - trackEm * sizePx;
 }
 
-function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
+function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): number {
   const innerW = EXPORT_W - PAGE_PAD_X * 2;
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
@@ -230,34 +210,49 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
   const cardY = 24;
   const cardW = innerW;
 
-  // Sukarin image (centered, smaller)
-  const imgSize = 110;
+  // Sukarin image (centered, hero scale w/ drop-shadow)
+  const imgSize = 180;
   const imgX = cardX + (cardW - imgSize) / 2;
-  const imgY = cardY + 18;
+  const imgY = cardY + 24;
   if (data.sukarinImage) {
+    ctx.save();
+    ctx.shadowColor = 'rgba(28,35,64,0.18)';
+    ctx.shadowBlur = 24;
+    ctx.shadowOffsetY = 8;
     ctx.drawImage(data.sukarinImage, imgX, imgY, imgSize, imgSize);
+    ctx.restore();
   }
 
-  // Type code
-  const codeY = imgY + imgSize + 18;
-  ctx.fillStyle = '#C0392B'; // var(--A)
-  setFont(ctx, 11, 800);
-  const codeW = measureTracked(ctx, data.type.code, 0.22);
-  drawTrackedText(ctx, data.type.code, cardX + cardW / 2 - codeW / 2, codeY, 0.22);
+  // Eyebrow: muted civic/quiz framing (replaces type code)
+  const eyebrowY = imgY + imgSize + 18;
+  ctx.save();
+  ctx.globalAlpha = 0.55;
+  ctx.fillStyle = INDIGO;
+  setFont(ctx, 10, 700);
+  const eyebrowText = '課適性診断';
+  const eyebrowW = measureTracked(ctx, eyebrowText, 0.32);
+  drawTrackedText(ctx, eyebrowText, cardX + cardW / 2 - eyebrowW / 2, eyebrowY, 0.32);
+  ctx.restore();
 
-  // Type name (centered)
-  const nameY = codeY + 26;
+  // Type name (centered) — manual kern between 」 and 型 to fix optical-weight gap
+  const nameY = eyebrowY + 26;
   ctx.fillStyle = '#1C2340'; // var(--text)
   setFont(ctx, 26, 800);
-  const nameText = `「${data.type.name}」型`;
-  const nameMetricsW = ctx.measureText(nameText).width;
-  ctx.fillText(nameText, cardX + cardW / 2 - nameMetricsW / 2, nameY);
+  const quotedName = `「${data.type.name}」`;
+  const suffix = '型';
+  const kernAdjust = -6;
+  const quotedW = ctx.measureText(quotedName).width;
+  const suffixW = ctx.measureText(suffix).width;
+  const totalW = quotedW + kernAdjust + suffixW;
+  const startX = cardX + cardW / 2 - totalW / 2;
+  ctx.fillText(quotedName, startX, nameY);
+  ctx.fillText(suffix, startX + quotedW + kernAdjust, nameY);
 
   // Description (wrapped, centered, capped at 3 lines)
   const descY = nameY + 28;
   ctx.fillStyle = '#4A5568'; // var(--text-sec)
   setFont(ctx, 12, 400);
-  const descMaxW = cardW - 48;
+  const descMaxW = cardW - 96;
   const measure: Measure = (s: string) => ctx.measureText(s);
   const descLines = wrapJapanese(measure, data.type.desc, descMaxW);
   let curY = descY;
@@ -268,25 +263,23 @@ function drawMasthead(ctx: CanvasRenderingContext2D, data: ExportData): void {
     curY += descLineH;
   }
 
-  // Card frame stroke after content for crisp outline; bg already white canvas.
+  // Interior padding holds masthead block; stroke removed (was invisible at #EBF3FC).
   const cardH = (curY - cardY) + 12;
-  ctx.strokeStyle = '#EBF3FC'; // var(--B-tint)
-  ctx.lineWidth = 2;
-  roundRect(ctx, cardX, cardY, cardW, cardH, 16, false, true);
 
   ctx.textBaseline = 'alphabetic';
+  return cardY + cardH;
 }
 
-function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
+function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData, profileTop: number): number {
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
 
   ctx.fillStyle = 'rgba(28,35,64,0.7)';
   setFont(ctx, 11, 700);
-  drawTrackedText(ctx, 'プロファイル', PAGE_PAD_X, PROFILE_TOP, 0.28);
-  drawHairline(ctx, PAGE_PAD_X, PROFILE_TOP + 8, EXPORT_W - PAGE_PAD_X * 2, INDIGO, 0.18);
+  drawTrackedText(ctx, 'プロファイル', PAGE_PAD_X, profileTop, 0.28);
+  drawHairline(ctx, PAGE_PAD_X, profileTop + 8, EXPORT_W - PAGE_PAD_X * 2, INDIGO, 0.18);
 
-  let y = PROFILE_TOP + 36;
+  let y = profileTop + 36;
   const barX = PAGE_PAD_X + PROFILE_LABEL_COL + 6;
   const barW = EXPORT_W - PAGE_PAD_X * 2 - PROFILE_LABEL_COL - 6;
 
@@ -297,17 +290,16 @@ function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
     const dotPct = axisDotPct(score);
     const winningPct = isPlus ? dotPct : 100 - dotPct;
 
-    // Axis label + winning pct on the same line, axis-dark
+    // Axis label (right-aligned in label gutter) + winning pct (right-aligned at bar end)
     ctx.fillStyle = a.dark;
     setFont(ctx, 10.5, 700);
-    ctx.textAlign = 'left';
-    ctx.fillText(a.label, PAGE_PAD_X, y + 5);
-    setFont(ctx, 12, 800);
     ctx.textAlign = 'right';
+    ctx.fillText(a.label, PAGE_PAD_X + PROFILE_LABEL_COL, y + 5);
+    setFont(ctx, 12, 800);
     ctx.fillText(`${winningPct.toFixed(0)}%`, barX + barW, y + 5);
     ctx.textAlign = 'left';
 
-    drawBar(ctx, barX, y, barW, a.color, a.dark, dotPct);
+    drawBar(ctx, barX, y, barW, a.dark, dotPct);
 
     // Pole anchors below bar — winning side bold + axis-dark, losing side gray normal
     setFont(ctx, 10, isPlus ? 400 : 700);
@@ -321,6 +313,7 @@ function drawProfile(ctx: CanvasRenderingContext2D, data: ExportData): void {
 
     y += PROFILE_ROW_H;
   }
+  return y;
 }
 
 function drawListSection(
@@ -331,7 +324,7 @@ function drawListSection(
   headerJp: string,
   headerEn: string,
   rows: RankedRow[],
-  options: { headerOpacity: number; rankColW: number },
+  options: { headerOpacity: number; rankColW: number; pctColor: string },
 ): void {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
@@ -352,7 +345,7 @@ function drawListSection(
   drawHairline(ctx, colX, topY + 8, colW, INDIGO, options.headerOpacity * 0.6);
 
   let y = topY + 30;
-  const rowH = 36;
+  const rowH = 40;
   const fitColW = 50;
   const nameStartX = colX + options.rankColW;
   const fitX = colX + colW;
@@ -375,89 +368,29 @@ function drawListSection(
     // Dept (small grey) on second line under name
     ctx.fillStyle = TEXT_FAINT;
     setFont(ctx, 9.5, 400);
-    ctx.fillText(row.dept, nameStartX, y + 13);
+    ctx.fillText(row.dept, nameStartX, y + 16);
 
-    // Fit % — green only when ≥80, else faint grey
-    const pct = row.fit;
-    ctx.fillStyle = pct >= 80 ? AXES.C.dark : TEXT_FAINT;
+    // Fit % — column-level tier color (best=green, worst=indigo); legible regardless of value
+    ctx.fillStyle = options.pctColor;
     setFont(ctx, 14, 700);
     ctx.textAlign = 'right';
-    ctx.fillText(formatPct(pct), fitX, y);
+    ctx.fillText(formatPct(row.fit), fitX, y);
 
     y += rowH;
   }
   ctx.textAlign = 'left';
 }
 
-function drawQrPlaceholder(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-): void {
-  ctx.fillStyle = INDIGO;
-  ctx.fillRect(x, y, size, size);
-
-  const finderSize = 14;
-  const finderInset = 6;
-  const finders: Array<[number, number]> = [
-    [x + finderInset, y + finderInset],
-    [x + size - finderInset - finderSize, y + finderInset],
-    [x + finderInset, y + size - finderInset - finderSize],
-  ];
-  for (const [fx, fy] of finders) {
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(fx, fy, finderSize, finderSize);
-    ctx.fillStyle = INDIGO;
-    ctx.fillRect(fx + 3, fy + 3, finderSize - 6, finderSize - 6);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(fx + 5, fy + 5, finderSize - 10, finderSize - 10);
-  }
-
-  // Sparse white dots in body to look more QR-like
-  const cell = 4;
-  const dotPositions: Array<[number, number]> = [
-    [size * 0.42, size * 0.42],
-    [size * 0.52, size * 0.52],
-    [size * 0.42, size * 0.62],
-    [size * 0.78, size * 0.42],
-    [size * 0.78, size * 0.52],
-    [size * 0.78, size * 0.62],
-    [size * 0.42, size * 0.78],
-    [size * 0.52, size * 0.78],
-  ];
-  ctx.fillStyle = '#FFFFFF';
-  for (const [dx, dy] of dotPositions) {
-    ctx.fillRect(x + dx, y + dy, cell, cell);
-  }
-}
-
 function drawFooter(ctx: CanvasRenderingContext2D, data: ExportData): void {
   const footerTop = EXPORT_H - 32 - 64;
 
-  // Left: muted wordmark + date
+  // Left: wordmark + date (unified muted treatment)
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
-  ctx.save();
-  ctx.globalAlpha = 0.55;
-  ctx.fillStyle = INDIGO;
-  setFont(ctx, 9.5, 700);
-  drawTrackedText(ctx, 'YOKOSUKA · 課適性診断', PAGE_PAD_X, footerTop + 18, 0.32);
-  ctx.restore();
   ctx.fillStyle = TEXT_FAINT;
   setFont(ctx, 9.5, 400);
+  drawTrackedText(ctx, 'YOKOSUKA · 課適性診断', PAGE_PAD_X, footerTop + 18, 0.32);
   ctx.fillText(formatDateForDisplay(data.date), PAGE_PAD_X, footerTop + 36);
-
-  // Right: 64×64 QR + caption underneath
-  const qrSize = 64;
-  const qrX = EXPORT_W - PAGE_PAD_X - qrSize;
-  drawQrPlaceholder(ctx, qrX, footerTop, qrSize);
-
-  ctx.fillStyle = TEXT_FAINT;
-  setFont(ctx, 8.5, 400);
-  ctx.textAlign = 'center';
-  ctx.fillText('診断はこちら', qrX + qrSize / 2, footerTop + qrSize + 14);
-  ctx.textAlign = 'left';
 }
 
 export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void {
@@ -470,8 +403,10 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
 
-  drawMasthead(ctx, data);
-  drawProfile(ctx, data);
+  const mastheadEnd = drawMasthead(ctx, data);
+  const profileTop = mastheadEnd + MASTHEAD_TOP_GAP;
+  const profileEnd = drawProfile(ctx, data, profileTop);
+  const fitsTop = profileEnd + PROFILE_TO_FITS_GAP;
 
   // 2-column lists: best (left, full opacity) + worst (right, dimmed)
   const innerW = EXPORT_W - PAGE_PAD_X * 2;
@@ -482,23 +417,23 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
 
   drawListSection(
     ctx,
-    FITS_TOP,
+    fitsTop,
     leftX,
     colW,
     '相性の高い課',
-    '上位 5',
+    `上位 5 / 全${data.totalCount}課中`,
     data.best,
-    { headerOpacity: 1, rankColW: 28 },
+    { headerOpacity: 1, rankColW: 32, pctColor: AXES.C.dark },
   );
   drawListSection(
     ctx,
-    FITS_TOP,
+    fitsTop,
     rightX,
     colW,
     '相性の低い課',
-    '下位 5',
+    `下位 5 / 全${data.totalCount}課中`,
     data.worst,
-    { headerOpacity: 0.55, rankColW: 36 },
+    { headerOpacity: 0.7, rankColW: 32, pctColor: INDIGO },
   );
 
   drawFooter(ctx, data);
@@ -520,6 +455,7 @@ export function buildExportData(
     best: topNBestFits(ranked, BEST_COUNT),
     // Reverse worst so the actual worst (highest rank number) appears first — list "climbs out".
     worst: bottomNWorstFits(ranked, WORST_COUNT).reverse(),
+    totalCount: ranked.length,
     date,
     sukarinImage: sukarinImage ?? null,
   };
