@@ -3,26 +3,38 @@
   border: 2px solid var(--B-tint);
   border-radius: var(--card-r);
   box-shadow: var(--card-shadow);
-  padding: var(--sp-xl) var(--sp-lg);
+  padding: var(--sp-lg);
   margin-bottom: var(--sp-lg);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-lg);
 }
 
 .imgWrap {
+  flex-shrink: 0;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: var(--sp-md);
 }
 
 .img {
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   object-fit: contain;
   filter: drop-shadow(0 6px 14px rgba(74, 144, 217, 0.18));
 }
 
 @media (max-width: 600px) {
+  .card {
+    flex-direction: column;
+    text-align: center;
+  }
   .img { width: 140px; height: 140px; }
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
 }
 
 .name {
@@ -30,7 +42,7 @@
   font-size: var(--fs-2xl);
   font-weight: var(--fw-black);
   line-height: var(--lh-tight);
-  margin: 0 0 var(--sp-md);
+  margin: 0 0 var(--sp-sm);
 }
 
 .suffix {
@@ -46,8 +58,7 @@
   color: var(--text-sec);
   font-size: var(--fs-base);
   line-height: var(--lh-body);
-  max-width: 480px;
-  margin: 0 auto;
+  margin: 0;
   word-break: keep-all;
   overflow-wrap: break-word;
 }

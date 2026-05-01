@@ -16,8 +16,10 @@ export function SukarinCard({ name, desc, imageSrc }: SukarinCardProps) {
           <img className={s.img} src={imageSrc} alt={`${name}型のスカリン`} />
         </div>
       )}
-      <h1 className={s.name}>{name}<span className={s.suffix}>型</span></h1>
-      <p className={s.desc}>{desc}</p>
+      <div className={s.body}>
+        <h1 className={s.name}>{name}<span className={s.suffix}>型</span></h1>
+        <p className={s.desc}>{desc}</p>
+      </div>
     </div>
   );
 }

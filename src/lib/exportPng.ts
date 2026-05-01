@@ -141,21 +141,20 @@ function drawHairline(
   ctx.restore();
 }
 
-const TRACK_NEUTRAL = '#E5E7EB';
-
 function drawBar(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,
-  fillColor: string,
+  trackColor: string,
+  dotBorderColor: string,
   pct: number,
 ): void {
-  const barH = 8;
+  const barH = 10;
   const r = barH / 2;
 
-  // Neutral track (full width)
-  ctx.fillStyle = TRACK_NEUTRAL;
+  // Full-saturated axis-color track (matches Results page)
+  ctx.fillStyle = trackColor;
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.lineTo(x + w - r, y);
@@ -165,17 +164,17 @@ function drawBar(
   ctx.closePath();
   ctx.fill();
 
-  // Axis-color filled segment from x to (pct/100)*w
-  const fillW = Math.max(barH, (pct / 100) * w);
-  ctx.fillStyle = fillColor;
+  // White dot w/ axis-dark border at score position
+  const dotR = 8;
+  const dotX = x + (pct / 100) * w;
+  const dotY = y + r;
+  ctx.fillStyle = '#FFFFFF';
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + fillW - r, y);
-  ctx.arc(x + fillW - r, y + r, r, -Math.PI / 2, Math.PI / 2);
-  ctx.lineTo(x + r, y + barH);
-  ctx.arc(x + r, y + r, r, Math.PI / 2, -Math.PI / 2);
-  ctx.closePath();
+  ctx.arc(dotX, dotY, dotR, 0, Math.PI * 2);
   ctx.fill();
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = dotBorderColor;
+  ctx.stroke();
 }
 
 function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
@@ -301,28 +300,33 @@ function drawProfileCol(
     const isPlus = score >= 0;
     const dotPct = axisDotPct(score);
     const winningPct = isPlus ? dotPct : 100 - dotPct;
+    const winLabel = isPlus ? a.plus : a.minus;
 
-    // Line 1: axis label (left) + % (right)
+    // Header line: axis label LEFT + winLabel + pct RIGHT (matches Results)
     ctx.fillStyle = a.dark;
-    setFont(ctx, 11, 700);
+    setFont(ctx, 10, 600);
     ctx.textAlign = 'left';
     ctx.fillText(a.label, barX, y + 10);
-    setFont(ctx, 12, 800);
+
+    setFont(ctx, 11, 700);
     ctx.textAlign = 'right';
-    ctx.fillText(`${winningPct.toFixed(0)}%`, barX + barW, y + 10);
+    const pctText = `${winningPct.toFixed(0)}%`;
+    const pctW = ctx.measureText(pctText).width;
+    ctx.fillText(pctText, barX + barW, y + 10);
+
+    setFont(ctx, 11, 700);
+    ctx.fillText(winLabel, barX + barW - pctW - 10, y + 10);
     ctx.textAlign = 'left';
 
-    // Line 2: bar (16px below row top → 6px gap below label baseline)
-    drawBar(ctx, barX, y + 16, barW, a.dark, dotPct);
+    // Bar: full-color track + white dot (matches Results)
+    drawBar(ctx, barX, y + 18, barW, a.color, a.dark, dotPct);
 
-    // Line 3: poles below bar (38px below row top)
-    setFont(ctx, 9.5, isPlus ? 400 : 700);
-    ctx.fillStyle = isPlus ? TEXT_FAINT : a.dark;
-    ctx.fillText(a.minus, barX, y + 38);
-    setFont(ctx, 9.5, isPlus ? 700 : 400);
-    ctx.fillStyle = isPlus ? a.dark : TEXT_FAINT;
+    // Poles below bar — both faint, matches Results sub color
+    setFont(ctx, 9.5, 400);
+    ctx.fillStyle = TEXT_FAINT;
+    ctx.fillText(a.minus, barX, y + 42);
     ctx.textAlign = 'right';
-    ctx.fillText(a.plus, barX + barW, y + 38);
+    ctx.fillText(a.plus, barX + barW, y + 42);
     ctx.textAlign = 'left';
 
     y += PROFILE_ROW_H;
