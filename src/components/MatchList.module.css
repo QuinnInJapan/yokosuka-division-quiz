@@ -4,7 +4,7 @@
   flex-direction: column;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: hidden auto;
   height: 100%;
 }
 .all-item {
@@ -13,15 +13,23 @@
   width: 100%;
   padding: 14px 18px;
   background: transparent;
+  color: inherit;
   border: 0;
   border-bottom: 1px solid rgba(30, 115, 69, 0.12);
   gap: 14px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
+  transition: background 150ms ease;
 }
 .all-item:last-of-type { border-bottom: none; }
+.all-item:hover { background: rgba(255, 255, 255, 0.45); }
+.all-item:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
 .all-item.on { background: white; }
+.all-item.on:hover { background: white; }
 .all-rn {
   width: 22px;
   font-size: var(--fs-xs);

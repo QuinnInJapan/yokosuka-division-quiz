@@ -32,7 +32,10 @@
   position: absolute;
   inset: 0;
 }
+.detail-col {
+  /* Reserved hook for future per-detail-column overrides. */
+}
 @media (max-width: 839px) {
   .list-col { position: static; }
-  .list-col > * { position: static; }
+  .list-col > * { position: static; max-height: 420px; }
 }
