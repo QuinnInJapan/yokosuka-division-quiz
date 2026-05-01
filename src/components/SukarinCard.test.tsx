@@ -10,15 +10,21 @@ describe('SukarinCard', () => {
     imageSrc: '/test-sukarin.png',
   };
 
-  it('renders name (with quoted format) and description', () => {
+  it('renders the name with the 型 suffix', () => {
     const html = renderToStaticMarkup(<SukarinCard {...props} />);
-    expect(html).toContain('「街のよろず屋」型');
+    expect(html).toContain('街のよろず屋');
+    expect(html).toContain('型');
+  });
+
+  it('renders the description text', () => {
+    const html = renderToStaticMarkup(<SukarinCard {...props} />);
     expect(html).toContain('市民に寄り添う万能タイプ。');
   });
 
-  it('renders the image when imageSrc is provided', () => {
+  it('renders the sukarin image when imageSrc is provided', () => {
     const html = renderToStaticMarkup(<SukarinCard {...props} />);
     expect(html).toMatch(/<img[^>]+src="\/test-sukarin\.png"/);
+    expect(html).toMatch(/<img[^>]+alt="街のよろず屋型のスカリン"/);
   });
 
   it('omits the image when imageSrc is undefined', () => {
