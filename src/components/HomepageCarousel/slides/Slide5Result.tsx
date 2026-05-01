@@ -4,6 +4,7 @@ import type { AxisKey, RankedDivision } from '../../../data/types';
 import { DIVISIONS } from '../../../data/divisions';
 import { dist, fitPct, determineType } from '../../../lib/scoring';
 import { sukarinSrc } from '../../../lib/sukarinImages';
+import { archetypePalette } from '../../../lib/archetypePalette';
 import { SukarinCard } from '../../SukarinCard';
 import { TraitBar } from '../../TraitBar';
 import { MatchList } from '../../MatchList';
@@ -18,6 +19,7 @@ import { MatchList } from '../../MatchList';
 
 const PROFILE: Record<AxisKey, number> = { A: 2, B: 1, C: 2, D: 1, E: 0 };
 const TYPE = determineType(PROFILE);
+const PALETTE = archetypePalette(TYPE.code);
 
 const RANKED: RankedDivision[] = DIVISIONS
   .map((d) => ({ ...d, user: PROFILE, fit: fitPct(dist(PROFILE, d)) }))
@@ -35,15 +37,19 @@ export function Slide5Result() {
       </header>
 
       <div className={s.preview} aria-label="結果ページのプレビュー">
-        <section className={s.region}>
+        <section
+          className={`${s.region} ${s.regionHero}`}
+          style={{ background: PALETTE.baseGradient }}
+        >
           <span className={s.annot} aria-hidden="true">01</span>
           <div className={s.regionBody}>
-            <div className={s.regionLabel}>アーキタイプ</div>
+            <div className={`${s.regionLabel} ${s.regionLabelOnHero}`}>アーキタイプ</div>
             <SukarinCard
               name={TYPE.name}
               desc={TYPE.desc}
               userScores={PROFILE}
               imageSrc={sukarinSrc(TYPE.code)}
+              nameBreakAt={TYPE.nameBreakAt}
             />
           </div>
         </section>
