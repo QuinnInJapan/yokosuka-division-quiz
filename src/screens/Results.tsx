@@ -21,7 +21,7 @@ export function Results() {
       >
         {palette.blobs.map((b, i) => (
           <span
-            key={i}
+            key={`${type.code}-blob-${i}`}
             className={s.heroBlob}
             style={{
               background: b.color,
