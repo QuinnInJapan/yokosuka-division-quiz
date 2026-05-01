@@ -67,7 +67,12 @@
 .actions {
   background: var(--band-actions);
   padding: 48px 0 64px;
-  text-align: center;
+}
+.actions .bandInner {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-md);
+  flex-wrap: wrap;
 }
 
 @media (max-width: 600px) {
