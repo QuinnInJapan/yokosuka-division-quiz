@@ -52,7 +52,15 @@ export function Quiz() {
                   : undefined
               }
               onClick={() => dispatch({ type: 'ANSWER', value })}
+              aria-pressed={isSelected}
             >
+              <span
+                className={s['opt-mark']}
+                style={isSelected ? { color: ax.dark } : undefined}
+                aria-hidden="true"
+              >
+                {isSelected ? '✓' : ''}
+              </span>
               <span className={s['opt-num']} style={{ color: ax.dark }}>
                 {i + 1}
               </span>

@@ -2,7 +2,7 @@
 .all-list--side {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--card);
   border-radius: 14px;
   overflow: hidden auto;
   height: 100%;
@@ -15,7 +15,7 @@
   background: transparent;
   color: inherit;
   border: 0;
-  border-bottom: 1px solid rgba(30, 115, 69, 0.12);
+  border-bottom: 1px solid var(--border);
   gap: 14px;
   cursor: pointer;
   font-family: inherit;
@@ -23,13 +23,16 @@
   transition: background 150ms ease;
 }
 .all-item:last-of-type { border-bottom: none; }
-.all-item:hover { background: rgba(30, 115, 69, 0.08); }
+.all-item:hover { background: var(--hover-wash-list); }
 .all-item:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
-.all-item.on { background: rgba(30, 115, 69, 0.20); }
-.all-item.on:hover { background: rgba(30, 115, 69, 0.20); }
+.all-item.on {
+  background: var(--indigo-tint);
+  box-shadow: inset 3px 0 0 var(--hall-indigo);
+}
+.all-item.on:hover { background: var(--indigo-tint); }
 .all-rn {
   width: 22px;
   font-size: var(--fs-xs);

@@ -6,4 +6,7 @@
   transition: background .25s;
 }
 .seg.done { background: var(--c); }
-.seg.cur  { background: var(--c); opacity: .4; }
+.seg.cur  {
+  background: var(--border);
+  box-shadow: inset 0 0 0 1.5px var(--c);
+}

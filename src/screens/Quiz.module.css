@@ -87,6 +87,14 @@
   outline-offset: 2px;
 }
 .opt-num { font-weight: var(--fw-bold); margin-right: 10px; }
+.opt-mark {
+  display: inline-block;
+  width: 1em;
+  margin-right: 6px;
+  font-weight: var(--fw-bold);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
 
 /* ── Back button ── */
 .btn-back {
