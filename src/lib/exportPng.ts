@@ -1,6 +1,7 @@
 import type { AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
 import { AXES } from '../data/axes';
+import { fitColor } from './scoring';
 
 export function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
   if (!src) return Promise.resolve(null);
@@ -79,7 +80,7 @@ export const EXPORT_H = 720;
 export const EXPORT_SCALE = 2;
 
 const INDIGO = '#1C2340';
-const TEXT_FAINT = '#9CA3AF';
+const TEXT_FAINT = '#6B7280';
 const TEXT_BODY = '#1C2340';
 const PAGE_PAD_X = 56;
 const FONT_FAMILY = "'Hiragino Sans','Hiragino Kaku Gothic ProN','BIZ UDPGothic',Meiryo,sans-serif";
@@ -360,7 +361,7 @@ function drawListSection(
   headerJp: string,
   headerEn: string,
   rows: RankedRow[],
-  options: { headerOpacity: number; rankColW: number; pctColor: string },
+  options: { headerOpacity: number; rankColW: number },
 ): void {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
@@ -406,8 +407,9 @@ function drawListSection(
     setFont(ctx, 9.5, 400);
     ctx.fillText(row.dept, nameStartX, y + 16);
 
-    // Fit % — column-level tier color (best=green, worst=indigo); legible regardless of value
-    ctx.fillStyle = options.pctColor;
+    // Fit % — per-row tier color from fitColor(); on-screen MatchList uses
+    // the same function so list rows match between PNG and live UI.
+    ctx.fillStyle = fitColor(row.fit).text;
     setFont(ctx, 14, 700);
     ctx.textAlign = 'right';
     ctx.fillText(formatPct(row.fit), fitX, y);
@@ -479,7 +481,7 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
     '相性の高い課',
     `上位 5 / 全${data.totalCount}課中`,
     data.best,
-    { headerOpacity: 1, rankColW: 32, pctColor: AXES.C.dark },
+    { headerOpacity: 1, rankColW: 32 },
   );
   drawListSection(
     ctx,
@@ -489,7 +491,7 @@ export function renderExport(canvas: HTMLCanvasElement, data: ExportData): void 
     '相性の低い課',
     `下位 5 / 全${data.totalCount}課中`,
     data.worst,
-    { headerOpacity: 0.7, rankColW: 32, pctColor: INDIGO },
+    { headerOpacity: 0.7, rankColW: 32 },
   );
 
   drawFooter(ctx, data);
