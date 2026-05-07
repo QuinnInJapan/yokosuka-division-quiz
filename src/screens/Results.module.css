@@ -41,6 +41,11 @@
   overflow: hidden;
   isolation: isolate;
 }
+.hero :focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(28, 35, 64, 0.55);
+}
 .heroBlob {
   position: absolute;
   border-radius: 50%;
