@@ -65,8 +65,15 @@ export function scoreToPct(score: number): { pct: number; isPlus: boolean } {
 }
 
 export function fitColor(p: number): { text: string; fill: string; bg: string } {
-  if (p >= 80) return { text: '#1E7345', fill: '#4CAF7D', bg: '#ECF8F1' };
-  if (p >= 60) return { text: '#2E6DB4', fill: '#4A90D9', bg: '#EBF3FC' };
-  if (p >= 45) return { text: '#A16207', fill: '#EAB308', bg: '#FEF9C3' };
-  return { text: '#C0392B', fill: '#E8534A', bg: '#FFF0EE' };
+  if (p >= 80) return { text: '#1C2340', fill: '#3548A3', bg: '#E0E7FF' };
+  if (p >= 60) return { text: '#3730A3', fill: '#6366F1', bg: '#EEF2FF' };
+  if (p >= 45) return { text: '#5B21B6', fill: '#A78BFA', bg: '#F5F3FF' };
+  return { text: '#B91C1C', fill: '#DC2626', bg: '#FEE2E2' };
+}
+
+export function fitTierLabel(p: number): string {
+  if (p >= 80) return '高';
+  if (p >= 60) return '良';
+  if (p >= 45) return '中';
+  return '低';
 }

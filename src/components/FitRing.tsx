@@ -1,3 +1,5 @@
+import { fitTierLabel } from '../lib/scoring';
+
 type Props = {
   pct: number;
   fillColor: string;
@@ -9,6 +11,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export function FitRing({ pct, fillColor, textColor }: Props) {
   const filled = (pct / 100) * CIRCUMFERENCE;
+  const tier = fitTierLabel(pct);
   return (
     <div className="fit-display">
       <div className="fit-arc">
@@ -30,7 +33,7 @@ export function FitRing({ pct, fillColor, textColor }: Props) {
       </div>
       <div className="fit-text">
         <span className="fit-pct" style={{ color: textColor }}>{pct.toFixed(1)}%</span>
-        <span className="fit-lbl">相性度</span>
+        <span className="fit-lbl">{tier}・相性度</span>
       </div>
     </div>
   );
