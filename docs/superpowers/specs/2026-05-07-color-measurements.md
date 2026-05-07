@@ -417,6 +417,149 @@ Worst-case zone (highest-luminance blob composite): warm `#6E3F47` + axis-E `#F5
 
 ---
 
+## P4 candidate measurements (2026-05-07)
+
+Candidate ramp under audit (text / fill / bg per tier): hybrid sequential indigo for top/high/mid + categorical red at bottom.
+
+| Tier | Text | Fill | BG |
+|---|---|---|---|
+| top  | `#1C2340` | `#3548A3` | `#E0E7FF` |
+| high | `#3730A3` | `#6366F1` | `#EEF2FF` |
+| mid  | `#5B21B6` | `#A78BFA` | `#F5F3FF` |
+| low  | `#B91C1C` | `#EF4444` | `#FEF2F2` |
+
+### Fill L* (CIELab D65) and monotonicity
+
+| Tier | Fill | L* | a* | b* |
+|---|---|---|---|---|
+| top  | `#3548A3` | 34.06 | 23.35 | -51.54 |
+| high | `#6366F1` | 50.10 | 38.69 | -70.49 |
+| mid  | `#A78BFA` | 64.63 | 34.56 | -51.87 |
+| low  | `#EF4444` | 54.98 | 64.69 |  39.13 |
+
+Sequence top->low: 34.06, 50.10, 64.63, **54.98**. Monotonic ascending? **NO** — mid (64.63) is lighter than low (54.98). **Gate fail #1**.
+
+### Pairwise dE2000 between adjacent fills (normal vision; need >= 12)
+
+| Pair | dE2000 | Result |
+|---|---|---|
+| top <-> high  | 15.45 | ok |
+| high <-> mid  | 14.92 | ok |
+| mid <-> low   | 39.15 | ok |
+
+### Dichromat sims (Vienot-Brettel-Mollon 1999; need >= 8)
+
+| Tier | Deutan | L* | Protan | L* | Tritan | L* |
+|---|---|---|---|---|---|---|
+| top  | `#004BA1` | 33.14 | `#0055A6` | 36.46 | `#005E00` | 33.99 |
+| high | `#0071EE` | 49.47 | `#007DF6` | 53.30 | `#008700` | 48.67 |
+| mid  | `#6B9BF7` | 64.39 | `#679EFE` | 65.35 | `#94A000` | 62.88 |
+| low  | `#A0913E` | 59.95 | `#766C42` | 45.59 | `#FF000C` | 53.27 |
+
+| Pair | Deutan dE | Protan dE | Tritan dE |
+|---|---|---|---|
+| top <-> high  | 15.36 | 16.49 | 13.83 |
+| high <-> mid  | 14.14 | 11.02 | 20.87 |
+| mid <-> low   | 52.65 | 48.35 | 55.37 |
+
+All dichromat adjacent dE >= 8. ok.
+
+### Grayscale relative luminance (Y) and adjacent ratios (need >= 1.4:1)
+
+| Tier | Y |
+|---|---|
+| top  | 0.0804 |
+| high | 0.1851 |
+| mid  | 0.3358 |
+| low  | 0.2290 |
+
+| Pair | ratio | Result |
+|---|---|---|
+| top <-> high  | 2.303 | ok |
+| high <-> mid  | 1.815 | ok |
+| mid <-> low   | 1.466 | ok (but Y non-monotonic: mid > low) |
+
+Ratio gate passes, but Y is non-monotonic in the same direction as L* — confirms #1.
+
+### Contrast text/bg per tier (need >= 4.5:1 small text)
+
+| Tier | Text | BG | Ratio | On `#FFFFFF` |
+|---|---|---|---|---|
+| top  | `#1C2340` | `#E0E7FF` | 12.50:1 PASS | 15.40:1 PASS |
+| high | `#3730A3` | `#EEF2FF` |  8.88:1 PASS |  9.93:1 PASS |
+| mid  | `#5B21B6` | `#F5F3FF` |  8.19:1 PASS |  8.98:1 PASS |
+| low  | `#B91C1C` | `#FEF2F2` |  5.91:1 PASS |  6.47:1 PASS |
+
+All text passes 4.5:1 on tier-bg and on PNG `#FFFFFF`. Low red text on white is 6.47:1 — warning affordance reads.
+
+### Cross-channel collision check (dE2000 vs nearest axis token; FLAG < 5)
+
+| Candidate | Hex | Nearest axis token | Hex | dE2000 | Note |
+|---|---|---|---|---|---|
+| top_text   | `#1C2340` | `hall_indigo`   | `#1C2340` |  0.00 | intentional brand alignment (not axis) |
+| top_fill   | `#3548A3` | `hall_indigo_2` | `#2A3558` | 12.87 | ok |
+| top_bg     | `#E0E7FF` | `B_bg`          | `#EBF3FC` |  6.90 | ok |
+| high_text  | `#3730A3` | `D_text`        | `#7B3F9E` | 12.96 | ok |
+| high_fill  | `#6366F1` | `B_text`        | `#2E6DB4` | 13.09 | ok |
+| high_bg    | `#EEF2FF` | `B_bg`          | `#EBF3FC` |  **3.07** | **FLAG** axis-B bg collision |
+| mid_text   | `#5B21B6` | `D_text`        | `#7B3F9E` | 10.03 | ok |
+| mid_fill   | `#A78BFA` | `D_fill`        | `#9B59B6` | 17.31 | ok |
+| mid_bg     | `#F5F3FF` | `D_bg`          | `#F5EDF8` |  **2.77** | **FLAG** axis-D bg collision |
+| low_text   | `#B91C1C` | `A_text`        | `#C0392B` |  **4.66** | **FLAG** axis-A text near-collision |
+| low_fill   | `#EF4444` | `A_fill`        | `#E8534A` |  **2.30** | **FLAG** axis-A fill collision |
+| low_bg     | `#FEF2F2` | `A_bg`          | `#FFF0EE` |  **1.40** | **FLAG** axis-A bg collision (already shipped, unchanged) |
+
+Low-tier red is the same family as axis-A (warning red == coward red) — this re-introduces the exact P4 collision pattern the audit was supposed to retire. The low-tier *bg* collision was already present in the current ramp (unchanged); the *fill* and *text* collisions are still bad because axis-A and the new fit-low both read as "saturated red" at a glance.
+
+The high-tier and mid-tier *bg* collisions (`#EEF2FF` vs B-bg, `#F5F3FF` vs D-bg) are also dE < 5 — the candidate light tints sit perceptually on top of axis B and D backgrounds.
+
+### Cultural / red check
+
+Low text `#B91C1C` on `#FEF2F2` is the same as current low tier. Contrast on `#FFFFFF` PNG export bg = 6.47:1 -> PASS. Red-as-warning reads as expected. No new problem here vs status quo.
+
+### Verdict: **NO-GO**
+
+Failures:
+
+1. **L* not monotonic** (top 34 -> high 50 -> mid 65 -> low 55). Audit's monotonicity gate fails. Gray-printed or low-vision viewers will read mid as the *lightest* tier and infer wrong rank order.
+2. **Three collision flags** at dE < 5: high_bg/B_bg (3.07), mid_bg/D_bg (2.77), low_fill/A_fill (2.30) — and low_text vs A_text at dE 4.66 is borderline. The low-tier red family is essentially the axis-A coward family; that's the precise P4 collision the audit demanded we retire. Keeping low red **and** continuing to use axis-A for an archetype means a fit pill and an axis pill on the same page can read as "the same thing."
+
+### Proposed minimum changes to pass
+
+**Option B (recommended):** keep top/high/mid indigo as proposed, swap *low* fill to a noticeably lighter pink so L* monotonic ascends, and detune low_text to break the axis-A collision.
+
+Replace:
+
+| Tier | Text | Fill | BG |
+|---|---|---|---|
+| low | `#B91C1C` -> `#9F1239` (rose-800) | `#EF4444` -> `#FCA5A5` (red-300) | `#FEF2F2` (unchanged) |
+
+Verification of Option B fills:
+
+| Tier | Fill | L* |
+|---|---|---|
+| top  | `#3548A3` | 34.06 |
+| high | `#6366F1` | 50.10 |
+| mid  | `#A78BFA` | 64.63 |
+| low  | `#FCA5A5` | 76.27 |
+
+Monotonic ascending: **YES** (34 -> 50 -> 65 -> 76).
+
+Adjacent dE2000 normal: top<->high 15.45, high<->mid 14.92, mid<->low **31.43** — all >= 12.
+Deutan: 15.36 / 14.14 / **41.11** — all >= 8.
+Protan: 16.49 / 11.02 / **32.98** — all >= 8.
+Tritan: 13.83 / 20.87 / **30.38** — all >= 8.
+Y ratios: 2.303 / 1.815 / **1.498** — all >= 1.4.
+Collision: low_fill `#FCA5A5` vs nearest axis (A_fill `#E8534A`) dE = **19.96** — clears.
+
+Trade-off: a pink low fill is *less* viscerally "warning" than blood-red. The text however stays in the red family (rose-800 `#9F1239`) so the warning affordance is preserved by the *text* tone, while the *fill* pulls into pink to hold the ramp's monotonicity. If the brand requires the fill itself to read warning-red, the only ramp shape that satisfies BOTH "fill = warning red" AND "L* monotonic" is to use a **darker** red and re-order so red is darker than top — which inverts the semantic ("low fit = darker" instead of "low fit = warmer/lighter") and breaks the categorical-at-departure design intent. Option B is the minimum perturbation that passes the gate.
+
+**Option C (alternate, if pink low is unacceptable):** drop the L*-monotonic gate criterion in the audit and treat fit as 3-step sequential + 1-step categorical (top/high/mid sequential indigo + low categorical red, accepting the L* break at the categorical seam). This is defensible — categorical-at-departure ramps are not required to be L*-monotonic across the categorical break — but it requires the audit doc itself to be amended, not just the ramp.
+
+Recommend Option B.
+
+---
+
 ## Notes / caveats
 
 - Brettel-Vienot-Mollon (1997) full long-form simulation uses two half-planes anchored at 475nm/575nm; the 1999 Vienot reduction (used here) is the standard short-form widely deployed in browsers and design tools (Chrome DevTools, Stark). Both give qualitatively equivalent results for sRGB display imagery.
