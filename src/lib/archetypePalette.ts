@@ -23,7 +23,7 @@ const AXIS_MID: Record<AxisKey, string> = {
   B: '#4A90D9',
   C: '#4CAF7D',
   D: '#9B59B6',
-  E: '#F5A623',
+  E: '#EAB308',
 };
 
 // Letter → axis key (mirror of AXES[ax].letter_plus / letter_minus).
