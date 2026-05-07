@@ -30,7 +30,6 @@
 }
 .all-item.on {
   background: var(--indigo-tint);
-  box-shadow: inset 3px 0 0 var(--hall-indigo);
 }
 .all-item.on:hover { background: var(--indigo-tint); }
 .all-rn {

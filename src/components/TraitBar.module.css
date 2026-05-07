@@ -22,7 +22,6 @@
 .trait--active {
   background: var(--indigo-tint);
   border-bottom-color: transparent;
-  box-shadow: inset 3px 0 0 var(--hall-indigo);
 }
 
 .trait-header {
