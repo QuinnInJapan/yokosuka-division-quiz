@@ -23,13 +23,13 @@
   transition: background 150ms ease;
 }
 .all-item:last-of-type { border-bottom: none; }
-.all-item:hover { background: rgba(255, 255, 255, 0.45); }
+.all-item:hover { background: rgba(30, 115, 69, 0.08); }
 .all-item:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
-.all-item.on { background: white; }
-.all-item.on:hover { background: white; }
+.all-item.on { background: rgba(30, 115, 69, 0.20); }
+.all-item.on:hover { background: rgba(30, 115, 69, 0.20); }
 .all-rn {
   width: 22px;
   font-size: var(--fs-xs);
