@@ -88,24 +88,29 @@ export function archetypePalette(code: string): HeroPalette {
   const b = ordered[1].axis;
   const c = ordered[2].axis;
 
+  // On warm gradients, blob composites darken the hero into zones where
+  // .desc (white@0.82) and .suffix (white@0.7) drop below WCAG thresholds.
+  // Cap blob opacities so the worst-case composite stays readable.
+  const cap = warmth >= 1 ? 0.36 : 1;
+
   const blobs: [Blob, Blob, Blob] = [
     {
       color: AXIS_MID[a],
-      opacity: 0.42 + (jitter * 0.06),
+      opacity: Math.min(0.42 + jitter * 0.06, cap),
       left: `${-120 - Math.round(jitter * 30)}px`,
       top: `${-120 - Math.round(jitter * 30)}px`,
       size: '540px',
     },
     {
       color: AXIS_MID[c],
-      opacity: 0.38 + ((1 - jitter) * 0.06),
+      opacity: Math.min(0.38 + (1 - jitter) * 0.06, cap),
       left: `calc(100% - ${400 + Math.round(jitter * 60)}px)`,
       top: `calc(100% - ${360 + Math.round((1 - jitter) * 60)}px)`,
       size: '480px',
     },
     {
       color: AXIS_MID[b],
-      opacity: 0.24 + (jitter * 0.04),
+      opacity: Math.min(0.24 + jitter * 0.04, cap),
       left: `${50 + Math.round(jitter * 20)}%`,
       top: `${5 + Math.round(jitter * 12)}%`,
       size: '340px',
