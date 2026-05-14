@@ -15,10 +15,11 @@ import {
   getInitialAdminSection,
   type AdminSection,
 } from './adminShell';
+import { AdminManual } from './adminManual';
 import {
   AdminButton,
+  AdminSelect,
   Breadcrumbs,
-  DangerZone,
   DirectoryList,
   DirectoryRow,
   FormFooter,
@@ -106,6 +107,22 @@ const AXIS_COLOR_FIELDS: { key: keyof Axis; label: string }[] = [
   { key: 'tint', label: '背景色' },
 ];
 
+const AXIS_COLOR_PRESETS = [
+  { id: 'crimson', label: '赤', color: '#E8534A', dark: '#C0392B', tint: '#FFF0EE' },
+  { id: 'cobalt', label: '青', color: '#4A90D9', dark: '#2E6DB4', tint: '#EBF3FC' },
+  { id: 'forest', label: '緑', color: '#4CAF7D', dark: '#1E7345', tint: '#ECF8F1' },
+  { id: 'plum', label: '紫', color: '#9B59B6', dark: '#7B3F9E', tint: '#F5EDF8' },
+  { id: 'bronze', label: '黄', color: '#EAB308', dark: '#A16207', tint: '#FEF9C3' },
+  { id: 'teal', label: '青緑', color: '#22A6B3', dark: '#0E7490', tint: '#E6F7FA' },
+  { id: 'indigo', label: '藍', color: '#5B6FD8', dark: '#344C9A', tint: '#EEF1FF' },
+  { id: 'rose', label: '桃', color: '#E85C8A', dark: '#BE2F64', tint: '#FFF0F6' },
+  { id: 'orange', label: '橙', color: '#F28C28', dark: '#B85C00', tint: '#FFF3E6' },
+  { id: 'slate', label: '灰青', color: '#64748B', dark: '#475569', tint: '#F1F5F9' },
+] as const;
+
+const NEW_DEPT_OPTION = '__new_department__';
+const DIVISION_WEIGHT_TICKS = Array.from({ length: 21 }, (_, index) => index - 10);
+
 function freshDraft(config: RuntimeConfig): AppConfig {
   return JSON.parse(exportAdminConfig(runtimeToAppConfig(config))) as AppConfig;
 }
@@ -145,12 +162,12 @@ function RowDeleteButton({ label, onClick }: { label: string; onClick: () => voi
 }
 
 function questionOptionLabel(question: Pick<Question, 'axis' | 'reversed'>, optionIndex: number, axes: RuntimeConfig['axes']): string {
-  if (optionIndex === 2) return `選択肢${optionIndex + 1}（中間）`;
+  if (optionIndex === 2) return '中間';
   const axis = axes[question.axis];
   const isHighResponse = optionIndex > 2;
   const rightTrait = question.reversed ? !isHighResponse : isHighResponse;
   const strength = optionIndex === 0 || optionIndex === 4 ? '強い' : 'やや';
-  return `選択肢${optionIndex + 1}（${strength} ${rightTrait ? axis.plus : axis.minus}）`;
+  return `${strength} ${rightTrait ? axis.plus : axis.minus}`;
 }
 
 function questionToForm(question: Question): QuestionForm {
@@ -258,6 +275,23 @@ function axisToForm(axis: Axis, descriptions: AxisDescTiers): AxisForm {
     axis: { ...axis },
     descriptions: { ...descriptions },
   };
+}
+
+function matchingAxisColorPreset(axis: Axis): string | null {
+  const preset = AXIS_COLOR_PRESETS.find(item =>
+    item.color.toLowerCase() === axis.color.toLowerCase()
+    && item.dark.toLowerCase() === axis.dark.toLowerCase()
+    && item.tint.toLowerCase() === axis.tint.toLowerCase(),
+  );
+  return preset?.id ?? null;
+}
+
+function axisUsingColorPreset(
+  axes: Record<AxisKey, Axis>,
+  presetId: string,
+  currentAxis: AxisKey,
+): AxisKey | null {
+  return AX.find(axis => axis !== currentAxis && matchingAxisColorPreset(axes[axis]) === presetId) ?? null;
 }
 
 function validateAxisForm(form: AxisForm): AxisFormIssue[] {
@@ -540,10 +574,82 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
   );
   const showAxisFormErrors = axisSaveAttempted && axisFormIssues.length > 0;
   const axisFormDirty = JSON.stringify(axisForm) !== axisFormBaseline;
+  const activeEditorDirty =
+    (activeTab === 'divisions' && divisionView.mode !== 'list' && divisionFormDirty)
+    || (activeTab === 'questions' && questionView.mode !== 'list' && questionFormDirty)
+    || (activeTab === 'archetypes' && archetypeView.mode !== 'list' && archetypeFormDirty)
+    || (activeTab === 'axes' && axisView.mode !== 'list' && axisFormDirty);
+
+  useEffect(() => {
+    if (!activeEditorDirty) return undefined;
+    function handleBeforeUnload(event: BeforeUnloadEvent): void {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [activeEditorDirty]);
 
   function replaceDraft(next: AppConfig, message?: AdminStatus): void {
     setDraft(next);
     if (message) setStatusMessage(message);
+  }
+
+  function confirmLeaveUnsavedEditor(): boolean {
+    return window.confirm('保存していない変更があります。この画面を離れると変更は下書きに保存されません。保存せずに移動しますか？');
+  }
+
+  function discardDivisionForm(): void {
+    setDivisionForm(JSON.parse(divisionFormBaseline) as DivisionForm);
+    setDivisionView({ mode: 'list' });
+    setDivisionSaveAttempted(false);
+    setDivisionSavedMessage('');
+  }
+
+  function discardQuestionForm(): void {
+    setQuestionForm(JSON.parse(questionFormBaseline) as QuestionForm);
+    setQuestionView({ mode: 'list' });
+    setQuestionSaveAttempted(false);
+    setQuestionSavedMessage('');
+  }
+
+  function discardArchetypeForm(): void {
+    setArchetypeForm(JSON.parse(archetypeFormBaseline) as ArchetypeForm);
+    setArchetypeView({ mode: 'list' });
+    setArchetypeSaveAttempted(false);
+    setArchetypeSavedMessage('');
+  }
+
+  function discardAxisForm(): void {
+    const parsed = JSON.parse(axisFormBaseline) as AxisForm;
+    setAxisForm(parsed);
+    setAxisView({ mode: 'list' });
+    setAxisSaveAttempted(false);
+    setAxisSavedMessage('');
+  }
+
+  function hasActiveEditorUnsavedChanges(): boolean {
+    return activeEditorDirty;
+  }
+
+  function discardActiveEditor(): void {
+    if (activeTab === 'divisions') discardDivisionForm();
+    if (activeTab === 'questions') discardQuestionForm();
+    if (activeTab === 'archetypes') discardArchetypeForm();
+    if (activeTab === 'axes') discardAxisForm();
+  }
+
+  function canLeaveActiveEditor(): boolean {
+    if (!hasActiveEditorUnsavedChanges()) return true;
+    if (!confirmLeaveUnsavedEditor()) return false;
+    discardActiveEditor();
+    return true;
+  }
+
+  function selectAdminSection(section: AdminSection): void {
+    if (section === activeTab) return;
+    if (!canLeaveActiveEditor()) return;
+    setActiveTab(section);
   }
 
   function setDivisionFormDraft(next: DivisionForm): void {
@@ -555,7 +661,9 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
 
   function canLeaveDivisionForm(): boolean {
     if (divisionView.mode === 'list' || !divisionFormDirty) return true;
-    return window.confirm('保存していない変更があります。この画面を離れますか？');
+    if (!confirmLeaveUnsavedEditor()) return false;
+    discardDivisionForm();
+    return true;
   }
 
   function openDivisionList(): void {
@@ -586,6 +694,13 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
   function updateDivisionForm<K extends keyof DivisionForm>(key: K, value: DivisionForm[K]): void {
     setDivisionSavedMessage('');
     setDivisionForm(form => ({ ...form, [key]: value }));
+  }
+
+  function updateDivisionDeptSelection(value: string): void {
+    setDivisionSavedMessage('');
+    setDivisionForm(form => value === NEW_DEPT_OPTION
+      ? { ...form, deptMode: 'new', dept: '' }
+      : { ...form, deptMode: 'existing', dept: value });
   }
 
   function saveDivisionForm(): void {
@@ -644,7 +759,9 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
 
   function canLeaveQuestionForm(): boolean {
     if (questionView.mode === 'list' || !questionFormDirty) return true;
-    return window.confirm('保存していない変更があります。この画面を離れますか？');
+    if (!confirmLeaveUnsavedEditor()) return false;
+    discardQuestionForm();
+    return true;
   }
 
   function openQuestionList(): void {
@@ -726,7 +843,9 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
 
   function canLeaveArchetypeForm(): boolean {
     if (archetypeView.mode === 'list' || !archetypeFormDirty) return true;
-    return window.confirm('保存していない変更があります。この画面を離れますか？');
+    if (!confirmLeaveUnsavedEditor()) return false;
+    discardArchetypeForm();
+    return true;
   }
 
   function openEditArchetype(code: string): void {
@@ -787,7 +906,9 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
 
   function canLeaveAxisForm(): boolean {
     if (axisView.mode === 'list' || !axisFormDirty) return true;
-    return window.confirm('保存していない変更があります。この画面を離れますか？');
+    if (!confirmLeaveUnsavedEditor()) return false;
+    discardAxisForm();
+    return true;
   }
 
   function openEditAxis(axis: AxisKey): void {
@@ -804,6 +925,14 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
   function updateAxisForm(patch: Partial<Axis>): void {
     setAxisSavedMessage('');
     setAxisForm(form => ({ ...form, axis: { ...form.axis, ...patch } }));
+  }
+
+  function updateAxisColorPreset(preset: typeof AXIS_COLOR_PRESETS[number]): void {
+    updateAxisForm({
+      color: preset.color,
+      dark: preset.dark,
+      tint: preset.tint,
+    });
   }
 
   function updateAxisFormDesc(tier: keyof AxisDescTiers, value: string): void {
@@ -858,9 +987,7 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
           activeSection={activeTab}
           dirty={dirty}
           validationOk={validation.ok}
-          onSelect={(section) => {
-            setActiveTab(section);
-          }}
+          onSelect={selectAdminSection}
         />
       }
     >
@@ -933,24 +1060,19 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
               <section className={s.formSection}>
                 <h3>基本情報</h3>
                 <div className={s.formGrid}>
-                  <label>
-                    部
-                    {divisionForm.deptMode === 'existing' ? (
-                      <select
-                        className={showDivisionFormErrors && divisionFormIssueFields.has('dept') ? s.invalid : undefined}
-                        value={divisionForm.dept}
-                        onChange={e => updateDivisionForm('dept', e.target.value)}
-                      >
-                        {existingDepts.map(dept => <option key={dept} value={dept}>{dept}</option>)}
-                      </select>
-                    ) : (
-                      <input
-                        className={showDivisionFormErrors && divisionFormIssueFields.has('dept') ? s.invalid : undefined}
-                        value={divisionForm.dept}
-                        onChange={e => updateDivisionForm('dept', e.target.value)}
-                      />
-                    )}
-                  </label>
+                  <div className={s.formField}>
+                    <span>部</span>
+                    <AdminSelect
+                      ariaLabel="部"
+                      invalid={showDivisionFormErrors && divisionFormIssueFields.has('dept')}
+                      value={divisionForm.deptMode === 'new' ? NEW_DEPT_OPTION : divisionForm.dept}
+                      onChange={updateDivisionDeptSelection}
+                      options={[
+                        ...existingDepts.map(dept => ({ value: dept, label: dept })),
+                        { value: NEW_DEPT_OPTION, label: '新しい部を作成', intent: 'action' as const },
+                      ]}
+                    />
+                  </div>
                   <label>
                     課名
                     <input
@@ -960,8 +1082,18 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                     />
                   </label>
                 </div>
-                <div className={s.inlineActions}>
-                  {showDivisionFormErrors && divisionDuplicateIssue?.duplicateIndex !== undefined && (
+                {divisionForm.deptMode === 'new' && (
+                  <label className={s.fullLabel}>
+                    新しい部名
+                    <input
+                      className={showDivisionFormErrors && divisionFormIssueFields.has('dept') ? s.invalid : undefined}
+                      value={divisionForm.dept}
+                      onChange={e => updateDivisionForm('dept', e.target.value)}
+                    />
+                  </label>
+                )}
+                {showDivisionFormErrors && divisionDuplicateIssue?.duplicateIndex !== undefined && (
+                  <div className={s.inlineActions}>
                     <AdminButton
                       variant="tertiary"
                       onClick={() => {
@@ -970,24 +1102,8 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                     >
                       既存の課を編集する
                     </AdminButton>
-                  )}
-                  {divisionForm.deptMode === 'existing' ? (
-                    <AdminButton
-                      variant="secondary"
-                      onClick={() => setDivisionForm(form => ({ ...form, deptMode: 'new', dept: '' }))}
-                    >
-                      新しい部を入力する
-                    </AdminButton>
-                  ) : (
-                    <AdminButton
-                      variant="secondary"
-                      onClick={() => setDivisionForm(form => ({ ...form, deptMode: 'existing', dept: existingDepts[0] ?? '' }))}
-                      disabled={existingDepts.length === 0}
-                    >
-                      既存の部から選ぶ
-                    </AdminButton>
-                  )}
-                </div>
+                  </div>
+                )}
               </section>
 
               <section className={s.formSection}>
@@ -1020,6 +1136,22 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                                 '--axis-pos': `${divisionWeightPct(value)}%`,
                               } as CSSProperties}
                             >
+                              <div className={s.axisTicks} aria-hidden="true">
+                                {DIVISION_WEIGHT_TICKS.map(tick => (
+                                  <span
+                                    key={tick}
+                                    className={tick === 0 ? s.axisTickCenter : undefined}
+                                    style={{ left: `${divisionWeightPct(tick)}%` }}
+                                  />
+                                ))}
+                              </div>
+                              <div className={s.axisTickLabels} aria-hidden="true">
+                                {DIVISION_WEIGHT_TICKS.map(tick => (
+                                  <span key={tick} style={{ left: `${divisionWeightPct(tick)}%` }}>
+                                    {Math.abs(tick)}
+                                  </span>
+                                ))}
+                              </div>
                               <input
                                 className={s.axisSlider}
                                 type="range"
@@ -1061,22 +1193,27 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                 <p className={s.muted}>{divisionForm.about.trim().length}文字</p>
               </section>
 
-              <FormFooter onSave={saveDivisionForm} savedMessage={divisionSavedMessage} saveLabel="課を保存" />
-              {divisionView.mode === 'edit' && currentDivisionIndex >= 0 && (
-                <DangerZone>
-                  <AdminButton
-                    variant="tertiary"
-                    onClick={() => {
-                      if (canLeaveDivisionForm()) openDuplicateDivision(currentDivisionIndex);
-                    }}
-                  >
-                    この課を複製する
-                  </AdminButton>
-                  <AdminButton variant="danger" onClick={() => deleteDivision(currentDivisionIndex)}>
-                    この課を削除する
-                  </AdminButton>
-                </DangerZone>
-              )}
+              <div className={s.editorActionBar}>
+                <div className={s.editorPrimaryActions}>
+                  <AdminButton variant="primary" onClick={saveDivisionForm}>課を保存</AdminButton>
+                  {divisionSavedMessage && <p className={s.formFooterMessage}>{divisionSavedMessage}</p>}
+                </div>
+                {divisionView.mode === 'edit' && currentDivisionIndex >= 0 && (
+                  <div className={s.editorSecondaryActions} aria-label="その他の操作">
+                    <AdminButton
+                      variant="tertiary"
+                      onClick={() => {
+                        if (canLeaveDivisionForm()) openDuplicateDivision(currentDivisionIndex);
+                      }}
+                    >
+                      この課を複製する
+                    </AdminButton>
+                    <AdminButton variant="danger" onClick={() => deleteDivision(currentDivisionIndex)}>
+                      この課を削除する
+                    </AdminButton>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </section>
@@ -1142,26 +1279,28 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
 
               <section className={`${s.formSection} ${s.questionSettingsSection}`}>
                 <div className={s.questionSettingsLine}>
-                  <label className={s.questionSettingField}>
+                  <div className={s.questionSettingField}>
                     <span>軸</span>
-                    <select
-                      className={showQuestionFormErrors && questionFormIssueFields.has('axis') ? s.invalid : undefined}
+                    <AdminSelect
+                      ariaLabel="軸"
+                      invalid={showQuestionFormErrors && questionFormIssueFields.has('axis')}
                       value={questionForm.axis}
-                      onChange={e => updateQuestionFormAxis(e.target.value as AxisKey)}
-                    >
-                      {AX.map(axis => <option key={axis} value={axis}>{axis}: {draft.axes[axis].label}</option>)}
-                    </select>
-                  </label>
-                  <label className={s.questionSettingField}>
+                      onChange={value => updateQuestionFormAxis(value as AxisKey)}
+                      options={AX.map(axis => ({ value: axis, label: `${axis}: ${draft.axes[axis].label}` }))}
+                    />
+                  </div>
+                  <div className={s.questionSettingField}>
                     <span>回答5が示す特性</span>
-                    <select
+                    <AdminSelect
+                      ariaLabel="回答5が示す特性"
                       value={questionForm.reversed ? 'minus' : 'plus'}
-                      onChange={e => updateQuestionForm('reversed', e.target.value === 'minus')}
-                    >
-                      <option value="plus">{draft.axes[questionForm.axis].plus}</option>
-                      <option value="minus">{draft.axes[questionForm.axis].minus}</option>
-                    </select>
-                  </label>
+                      onChange={value => updateQuestionForm('reversed', value === 'minus')}
+                      options={[
+                        { value: 'plus', label: draft.axes[questionForm.axis].plus },
+                        { value: 'minus', label: draft.axes[questionForm.axis].minus },
+                      ]}
+                    />
+                  </div>
                 </div>
               </section>
 
@@ -1190,12 +1329,14 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
 
                   <p className={s.quizOptionsPrompt}>この場面、あなたにはどのくらい合っていますか？</p>
                   <ol className={s.quizOptionEditList}>
-                    {questionForm.options.map((option, optionIndex) => (
+                    {questionForm.options.map((option, optionIndex) => {
+                      const optionAffinity = questionOptionLabel(questionForm, optionIndex, draft.axes);
+                      return (
                       <li key={optionIndex}>
                         <div className={s.quizOptionEditRow}>
                           <span className={s.quizOptionEditNumber}>{optionIndex + 1}</span>
                           <label className={s.quizOptionEditBody}>
-                            <span>{questionOptionLabel(questionForm, optionIndex, draft.axes)}</span>
+                            <span>{optionAffinity}</span>
                             <input
                               aria-label={`選択肢${optionIndex + 1}`}
                               className={showQuestionFormErrors && questionFormIssueFields.has(`option-${optionIndex}`) ? s.invalid : undefined}
@@ -1209,19 +1350,25 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                           </label>
                         </div>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ol>
                 </div>
               </section>
 
-              <FormFooter onSave={saveQuestionForm} savedMessage={questionSavedMessage} saveLabel="設問を保存" />
-              {questionView.mode === 'edit' && (
-                <DangerZone>
-                  <AdminButton variant="danger" onClick={() => deleteQuestion(questionView.index)}>
-                    この設問を削除する
-                  </AdminButton>
-                </DangerZone>
-              )}
+              <div className={s.editorActionBar}>
+                <div className={s.editorPrimaryActions}>
+                  <AdminButton variant="primary" onClick={saveQuestionForm}>設問を保存</AdminButton>
+                  {questionSavedMessage && <p className={s.formFooterMessage}>{questionSavedMessage}</p>}
+                </div>
+                {questionView.mode === 'edit' && (
+                  <div className={s.editorSecondaryActions} aria-label="その他の操作">
+                    <AdminButton variant="danger" onClick={() => deleteQuestion(questionView.index)}>
+                      この設問を削除する
+                    </AdminButton>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </section>
@@ -1247,7 +1394,6 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                   >
                     <span className={s.archetypeNameText}>{type.name}</span>
                     <span className={s.archetypeDescText}>{textPreview(type.desc, 58)}</span>
-                    <span className={s.archetypeCodeText}>{code}</span>
                   </DirectoryRow>
                 ))}
               </DirectoryList>
@@ -1288,10 +1434,6 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                 </section>
 
                 <section className={s.archetypeForm}>
-                  <div className={s.archetypeCodeLine}>
-                    <span>固定コード</span>
-                    <strong>{archetypeView.code}</strong>
-                  </div>
                   <div className={s.archetypeNameLineFields}>
                     <label>
                       名称 1行目
@@ -1352,7 +1494,6 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                   const item = draft.axes[axis];
                   return (
                     <DirectoryRow key={axis} className={s.axisDirectoryRow} onClick={() => openEditAxis(axis)}>
-                      <span className={s.axisCode}>{axis}</span>
                       <span className={s.axisNameText} style={{ color: item.dark }}>{item.label}</span>
                       <span className={s.axisVsText}>{item.minus} <span>vs.</span> {item.plus}</span>
                     </DirectoryRow>
@@ -1371,7 +1512,7 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                     ]}
                   />
                 }
-                title={`${axisView.axis} ${axisForm.axis.label}を編集`}
+                title={`${axisForm.axis.label}を編集`}
               />
 
               <ValidationSummary
@@ -1379,68 +1520,141 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                 issues={axisFormIssues.map(issue => issue.message)}
               />
 
-              <section className={s.axisResultPreview}>
-                <div className={s.axisPreviewHeader}>
-                  <span>{axisForm.axis.label}</span>
-                  <strong style={{ color: axisForm.axis.dark }}>{axisForm.axis.plus}</strong>
-                </div>
-                <div className={s.axisPreviewTrack} style={{ background: axisForm.axis.color }}>
-                  <span style={{ borderColor: axisForm.axis.dark }} />
-                </div>
-                <div className={s.axisPreviewPoles}>
-                  <span>{axisForm.axis.minus}</span>
-                  <span style={{ color: axisForm.axis.dark }}>{axisForm.axis.plus}</span>
-                </div>
-                <p>{axisForm.descriptions.strong_plus}</p>
-              </section>
-
               <section className={s.axisFormSection}>
-                <h3>結果表示</h3>
-                <div className={s.axisLabelGrid}>
-                  {AXIS_LABEL_FIELDS.map(field => (
-                    <label key={field.key}>
-                      {field.label}
+                <div className={s.axisSectionHead}>
+                  <h3>軸の意味</h3>
+                  <p>診断で比較する2つの方向を設定します。</p>
+                </div>
+                <div className={s.axisMeaningGrid}>
+                  <label className={s.axisNameField}>
+                    軸名
+                    <input
+                      className={showAxisFormErrors && axisFormIssueFields.has('axis.label') ? s.invalid : fieldClass(`axes.${axisView.axis}.label`)}
+                      value={axisForm.axis.label}
+                      onChange={e => updateAxisForm({ label: e.target.value })}
+                    />
+                  </label>
+                  <div className={s.axisPoleFields}>
+                    <label>
+                      左側の特性
                       <input
-                        className={showAxisFormErrors && axisFormIssueFields.has(`axis.${String(field.key)}`) ? s.invalid : fieldClass(`axes.${axisView.axis}.${field.key}`)}
-                        value={axisForm.axis[field.key]}
-                        onChange={e => updateAxisForm({ [field.key]: e.target.value })}
+                        className={showAxisFormErrors && axisFormIssueFields.has('axis.minus') ? s.invalid : fieldClass(`axes.${axisView.axis}.minus`)}
+                        value={axisForm.axis.minus}
+                        onChange={e => updateAxisForm({ minus: e.target.value })}
                       />
                     </label>
-                  ))}
-                </div>
-              </section>
-
-              <section className={s.axisFormSection}>
-                <h3>色</h3>
-                <div className={s.axisColorGrid}>
-                  {AXIS_COLOR_FIELDS.map(field => (
-                    <label key={field.key}>
-                      {field.label}
+                    <span className={s.axisVsDivider}>vs.</span>
+                    <label>
+                      右側の特性
                       <input
-                        className={showAxisFormErrors && axisFormIssueFields.has(`axis.${String(field.key)}`) ? s.invalid : fieldClass(`axes.${axisView.axis}.${field.key}`)}
-                        type="color"
-                        value={axisForm.axis[field.key]}
-                        onChange={e => updateAxisForm({ [field.key]: e.target.value })}
+                        className={showAxisFormErrors && axisFormIssueFields.has('axis.plus') ? s.invalid : fieldClass(`axes.${axisView.axis}.plus`)}
+                        value={axisForm.axis.plus}
+                        onChange={e => updateAxisForm({ plus: e.target.value })}
                       />
                     </label>
-                  ))}
+                  </div>
                 </div>
               </section>
 
               <section className={s.axisFormSection}>
-                <h3>診断説明文</h3>
-                <div className={s.axisDescriptionList}>
-                  {AXIS_DESCRIPTION_TIERS.map(tier => (
-                    <label key={tier}>
-                      {axisDescLabel(axisForm.axis, tier)}
+                <div className={s.axisSectionHead}>
+                  <h3>表示色</h3>
+                  <p>1つ選ぶと、文字色・基本色・背景色をまとめて設定します。</p>
+                </div>
+                <div className={s.axisColorChoiceGrid}>
+                  {AXIS_COLOR_PRESETS.map(preset => {
+                    const selected = matchingAxisColorPreset(axisForm.axis) === preset.id;
+                    const usedBy = axisUsingColorPreset(draft.axes, preset.id, axisView.axis);
+                    const unavailable = Boolean(usedBy) && !selected;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`${s.axisColorChoice} ${selected ? s.axisColorChoiceSelected : ''} ${unavailable ? s.axisColorChoiceDisabled : ''}`}
+                        onClick={() => updateAxisColorPreset(preset)}
+                        disabled={unavailable}
+                        aria-pressed={selected}
+                        title={usedBy ? `${draft.axes[usedBy].label}で使用中` : undefined}
+                      >
+                        <span className={s.axisColorChoiceName}>{preset.label}</span>
+                        <span className={s.axisColorSwatches} aria-hidden="true">
+                          <span style={{ background: preset.dark }} />
+                          <span style={{ background: preset.color }} />
+                          <span style={{ background: preset.tint }} />
+                        </span>
+                        {unavailable && usedBy && (
+                          <span className={s.axisColorUsedLabel}>{draft.axes[usedBy].label}で使用中</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className={s.axisColorPreview} style={{ background: axisForm.axis.tint }}>
+                  <span style={{ color: axisForm.axis.dark }}>{axisForm.axis.label}</span>
+                  <strong style={{ color: axisForm.axis.dark }}>{axisForm.axis.minus} vs. {axisForm.axis.plus}</strong>
+                </div>
+                {showAxisFormErrors && AXIS_COLOR_FIELDS.some(field => axisFormIssueFields.has(`axis.${String(field.key)}`)) && (
+                  <p className={s.fieldError}>表示色を選び直してください。</p>
+                )}
+              </section>
+
+              <section className={s.axisFormSection}>
+                <div className={s.axisSectionHead}>
+                  <h3>診断説明文</h3>
+                  <p>結果画面で、利用者の傾向に合わせて表示される文章です。</p>
+                </div>
+                <div className={s.axisDescriptionGroups}>
+                  <div className={s.axisDescriptionGroup}>
+                    <h4>{axisForm.axis.plus}側</h4>
+                    {(['strong_plus', 'mild_plus'] as const).map(tier => (
+                      <label key={tier}>
+                        {axisDescLabel(axisForm.axis, tier)}
+                        <textarea
+                          className={showAxisFormErrors && axisFormIssueFields.has(`descriptions.${tier}`) ? s.invalid : fieldClass(`axisDescriptions.${axisView.axis}.${tier}`)}
+                          rows={4}
+                          value={axisForm.descriptions[tier]}
+                          onChange={e => updateAxisFormDesc(tier, e.target.value)}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                  <div className={s.axisDescriptionGroup}>
+                    <h4>中立</h4>
+                    <label>
+                      {axisDescLabel(axisForm.axis, 'neutral')}
                       <textarea
-                        className={showAxisFormErrors && axisFormIssueFields.has(`descriptions.${tier}`) ? s.invalid : fieldClass(`axisDescriptions.${axisView.axis}.${tier}`)}
+                        className={showAxisFormErrors && axisFormIssueFields.has('descriptions.neutral') ? s.invalid : fieldClass(`axisDescriptions.${axisView.axis}.neutral`)}
                         rows={4}
-                        value={axisForm.descriptions[tier]}
-                        onChange={e => updateAxisFormDesc(tier, e.target.value)}
+                        value={axisForm.descriptions.neutral}
+                        onChange={e => updateAxisFormDesc('neutral', e.target.value)}
                       />
                     </label>
-                  ))}
+                  </div>
+                  <div className={s.axisDescriptionGroup}>
+                    <h4>{axisForm.axis.minus}側</h4>
+                    {(['mild_minus', 'strong_minus'] as const).map(tier => (
+                      <label key={tier}>
+                        {axisDescLabel(axisForm.axis, tier)}
+                        <textarea
+                          className={showAxisFormErrors && axisFormIssueFields.has(`descriptions.${tier}`) ? s.invalid : fieldClass(`axisDescriptions.${axisView.axis}.${tier}`)}
+                          rows={4}
+                          value={axisForm.descriptions[tier]}
+                          onChange={e => updateAxisFormDesc(tier, e.target.value)}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              <section className={s.axisResultPreview}>
+                <div className={s.axisSectionHead}>
+                  <h3>結果画面の見え方</h3>
+                </div>
+                <div className={s.axisResultCard} style={{ background: axisForm.axis.tint }}>
+                  <span style={{ color: axisForm.axis.dark }}>強い {axisForm.axis.plus}</span>
+                  <p>{axisForm.descriptions.strong_plus}</p>
+                  <strong style={{ color: axisForm.axis.dark }}>{axisForm.axis.plus}</strong>
                 </div>
               </section>
 
@@ -1486,6 +1700,12 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
             </div>
           )}
           <textarea className={s.jsonPreview} readOnly value={jsonPreview} />
+        </section>
+      )}
+
+      {activeTab === 'manual' && (
+        <section className={s.panel}>
+          <AdminManual />
         </section>
       )}
     </PageShell>

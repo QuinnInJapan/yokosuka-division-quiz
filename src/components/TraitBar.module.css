@@ -5,24 +5,11 @@
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--border-light);
-  border-radius: 6px;
   font: inherit;
   color: inherit;
   text-align: left;
-  cursor: pointer;
-  transition: background .15s ease-out;
 }
 .trait:last-child { border-bottom: none; }
-.trait:hover { background: var(--hover-wash-list); }
-.trait--active:hover { background: var(--indigo-tint); }
-.trait:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-.trait--active {
-  background: var(--indigo-tint);
-  border-bottom-color: transparent;
-}
 
 .trait-header {
   display: flex;
@@ -36,36 +23,21 @@
   font-weight: var(--fw-bold);
   color: var(--text);
 }
-.trait-pct {
-  font-size: var(--fs-base);
-  font-weight: var(--fw-black);
+.trait-tendency {
+  color: var(--sub);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
 }
 
-/* ── Bar ── */
-.trait-track {
-  position: relative;
-  width: 100%;
-  height: var(--bar-h);
-  border-radius: 999px;
-  overflow: visible;
-}
 .trait-poles {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   margin-top: 4px;
   font-size: var(--fs-xs);
   color: var(--sub);
 }
 .trait-pole { white-space: nowrap; }
-.trait-pole--win { font-weight: var(--fw-bold); }
-.trait-dot {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 2.5px solid;
-  box-shadow: 0 1px 3px rgba(0,0,0,.15);
-  z-index: 2;
+.trait-separator {
+  color: var(--border);
 }

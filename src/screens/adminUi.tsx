@@ -1,10 +1,23 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 
 import { ADMIN_SECTIONS, type AdminSection } from './adminShell';
 import s from './Admin.module.css';
 
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'danger';
 type ButtonSize = 'sm' | 'md';
+export type AdminSelectOption = {
+  value: string;
+  label: ReactNode;
+  intent?: 'default' | 'action';
+};
 
 type AdminButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant: ButtonVariant;
@@ -36,6 +49,107 @@ export function AdminButton({
 
 export function ActionGroup({ children }: { children: ReactNode }) {
   return <div className={s.actionGroup}>{children}</div>;
+}
+
+export function AdminSelect({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+  invalid = false,
+  disabled = false,
+}: {
+  value: string;
+  options: readonly AdminSelectOption[];
+  onChange: (value: string) => void;
+  ariaLabel: string;
+  invalid?: boolean;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const listboxId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const selected = options.find(option => option.value === value) ?? options[0];
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(event: PointerEvent): void {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    function onEscape(event: globalThis.KeyboardEvent): void {
+      if (event.key === 'Escape') setOpen(false);
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onEscape);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onEscape);
+    };
+  }, [open]);
+
+  function selectOption(nextValue: string): void {
+    onChange(nextValue);
+    setOpen(false);
+  }
+
+  function moveSelection(delta: number): void {
+    if (options.length === 0) return;
+    const index = Math.max(0, options.findIndex(option => option.value === value));
+    const nextIndex = (index + delta + options.length) % options.length;
+    selectOption(options[nextIndex].value);
+  }
+
+  function handleButtonKeyDown(event: KeyboardEvent<HTMLButtonElement>): void {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!open) setOpen(true);
+      else moveSelection(1);
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!open) setOpen(true);
+      else moveSelection(-1);
+    }
+  }
+
+  return (
+    <div className={s.adminSelect} ref={rootRef}>
+      <button
+        type="button"
+        className={[s.adminSelectButton, invalid ? s.invalid : undefined].filter(Boolean).join(' ')}
+        aria-label={ariaLabel}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listboxId}
+        disabled={disabled || options.length === 0}
+        onClick={() => setOpen(current => !current)}
+        onKeyDown={handleButtonKeyDown}
+      >
+        <span className={s.adminSelectValue}>{selected?.label ?? '選択してください'}</span>
+        <span className={s.adminSelectChevron} aria-hidden="true">⌄</span>
+      </button>
+      {open && (
+        <div className={s.adminSelectMenu} role="listbox" id={listboxId} aria-label={ariaLabel}>
+          {options.map(option => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={option.value === value}
+              className={[
+                s.adminSelectOption,
+                option.intent === 'action' ? s.adminSelectOptionAction : undefined,
+                option.value === value ? s.adminSelectOptionSelected : undefined,
+              ].filter(Boolean).join(' ')}
+              onClick={() => selectOption(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function PageShell({

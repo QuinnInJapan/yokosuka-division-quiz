@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   AdminButton,
+  AdminSelect,
   Breadcrumbs,
   DirectoryRow,
   FormFooter,
@@ -35,6 +36,26 @@ describe('admin UI primitives', () => {
     expect(html).not.toContain('保存する');
     expect(html).not.toContain('保存して一覧へ戻る');
     expect(html).not.toContain('保存して続けて編集');
+  });
+
+  it('renders custom selects without native select markup', () => {
+    const html = renderToStaticMarkup(
+      <AdminSelect
+        ariaLabel="部"
+        value="市長室"
+        onChange={() => undefined}
+        options={[
+          { value: '市長室', label: '市長室' },
+          { value: '__new_department__', label: '新しい部を作成', intent: 'action' },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('adminSelect');
+    expect(html).toContain('aria-haspopup="listbox"');
+    expect(html).toContain('市長室');
+    expect(html).not.toContain('<select');
+    expect(html).not.toContain('<option');
   });
 
   it('renders section header action separately from the title', () => {

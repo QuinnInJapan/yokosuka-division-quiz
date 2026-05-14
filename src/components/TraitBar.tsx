@@ -1,54 +1,30 @@
-import { useStore } from '../state/hooks';
 import type { AxisKey } from '../data/types';
-import { scoreToPct } from '../lib/scoring';
 import { useConfig } from '../config/ConfigProvider';
 import s from './TraitBar.module.css';
 
 export function TraitBar({
   axis,
   score,
-  active,
 }: {
   axis: AxisKey;
   score: number;
-  active: boolean;
+  active?: boolean;
 }) {
-  const { dispatch } = useStore();
   const config = useConfig();
   const a = config.axes[axis];
-  const { pct, isPlus } = scoreToPct(score);
-  const dotLeft = ((score + 2) / 4) * 100;
+  const tendency = score === 0 ? '中立' : `${score > 0 ? a.plus : a.minus}寄り`;
 
   return (
-    <button
-      type="button"
-      className={`${s.trait}${active ? ' ' + s['trait--active'] : ''}`}
-      onClick={() => dispatch({ type: 'TAXS', axis })}
-      aria-pressed={active}
-    >
+    <div className={s.trait}>
       <div className={s['trait-header']}>
         <span className={s['trait-label']}>{a.label}</span>
-      </div>
-      <div className={s['trait-track']} style={{ background: a.color }}>
-        <div
-          className={s['trait-dot']}
-          style={{ left: `${dotLeft.toFixed(0)}%`, borderColor: a.dark }}
-        />
+        <span className={s['trait-tendency']}>{tendency}</span>
       </div>
       <div className={s['trait-poles']}>
-        <span
-          className={`${s['trait-pole']}${!isPlus ? ' ' + s['trait-pole--win'] : ''}`}
-          style={!isPlus ? { color: a.dark } : undefined}
-        >
-          {!isPlus ? `${pct}% ${a.minus}` : a.minus}
-        </span>
-        <span
-          className={`${s['trait-pole']}${isPlus ? ' ' + s['trait-pole--win'] : ''}`}
-          style={isPlus ? { color: a.dark } : undefined}
-        >
-          {isPlus ? `${pct}% ${a.plus}` : a.plus}
-        </span>
+        <span className={s['trait-pole']}>{a.minus}</span>
+        <span className={s['trait-separator']} aria-hidden="true">/</span>
+        <span className={s['trait-pole']}>{a.plus}</span>
       </div>
-    </button>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-export type AdminSection = 'divisions' | 'questions' | 'archetypes' | 'axes' | 'json';
+export type AdminSection = 'divisions' | 'questions' | 'archetypes' | 'axes' | 'json' | 'manual';
 
 export const ADMIN_SECTION_STORAGE_KEY = 'yokosuka-division-quiz-admin-section';
 
@@ -8,6 +8,7 @@ export const ADMIN_SECTIONS: readonly { id: AdminSection; label: string }[] = [
   { id: 'archetypes', label: 'アーキタイプ' },
   { id: 'axes', label: '5軸・説明文' },
   { id: 'json', label: '書き出し確認' },
+  { id: 'manual', label: '使い方' },
 ];
 
 export function isAdminSection(value: unknown): value is AdminSection {

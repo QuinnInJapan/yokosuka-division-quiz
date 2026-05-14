@@ -14,8 +14,10 @@ describe('admin shell navigation', () => {
       'archetypes',
       'axes',
       'json',
+      'manual',
     ]);
     expect(isAdminSection('overview')).toBe(false);
+    expect(isAdminSection('manual')).toBe(true);
   });
 
   it('restores the last valid section from storage', () => {
@@ -29,6 +31,13 @@ describe('admin shell navigation', () => {
   it('falls back to 課データ when storage is empty or stale', () => {
     expect(getInitialAdminSection({ getItem: () => null })).toBe('divisions');
     expect(getInitialAdminSection({ getItem: () => 'overview' })).toBe('divisions');
+  });
+
+  it('keeps 使い方 as the bottom sidebar item', () => {
+    expect(ADMIN_SECTIONS.at(-1)).toEqual({
+      id: 'manual',
+      label: '使い方',
+    });
   });
 
   it('keeps 書き出し確認 as the finalization section', () => {
