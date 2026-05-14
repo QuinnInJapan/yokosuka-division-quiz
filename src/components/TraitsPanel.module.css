@@ -1,26 +1,7 @@
 .traits-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-md);
-  align-items: stretch;
-}
-@media (min-width: 840px) {
-  .traits-grid {
-    grid-template-columns: 320px 1fr;
-    gap: var(--sp-lg);
-  }
+  display: block;
 }
 
-/* Carousel pane (left) — soft white inset on the cream band, no chrome. */
-.tc-panel {
-  padding: var(--sp-lg);
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 14px;
-}
-
-/* Bar list pane (right) — same white inset. */
 .bars-panel {
   padding: var(--sp-md);
   background: rgba(255, 255, 255, 0.7);

@@ -1,5 +1,5 @@
 import s from './Slide3Scoring.module.css';
-import { AXES } from '../../../data/axes';
+import { useConfig } from '../../../config/ConfigProvider';
 import { TraitBar } from '../../TraitBar';
 
 /*
@@ -10,10 +10,8 @@ import { TraitBar } from '../../TraitBar';
   (the live product never shows per-question contributions).
 */
 
-const A = AXES.A;
-
 type Row = {
-  id: string;
+  num: number;
   label: string;
   reversed: boolean;
   pick: 1 | 2 | 3 | 4 | 5;
@@ -21,16 +19,19 @@ type Row = {
 };
 
 const ROWS: Row[] = [
-  { id: 'A1', label: '窓口で介護申請を一緒に進める',         reversed: false, pick: 4, signed:  1 },
-  { id: 'A2', label: '地域サークルで支援制度を直接説明',       reversed: false, pick: 4, signed:  1 },
-  { id: 'A3', label: '部署横断の業務フローを再設計',          reversed: true,  pick: 2, signed:  1 },
-  { id: 'A4', label: '財政データを分析して予算案を作成',       reversed: true,  pick: 3, signed:  0 },
+  { num: 1, label: '窓口で介護申請を一緒に進める',         reversed: false, pick: 4, signed:  1 },
+  { num: 2, label: '地域サークルで支援制度を直接説明',       reversed: false, pick: 4, signed:  1 },
+  { num: 3, label: '部署横断の業務フローを再設計',          reversed: true,  pick: 2, signed:  1 },
+  { num: 4, label: '財政データを分析して予算案を作成',       reversed: true,  pick: 3, signed:  0 },
 ];
 
 const MEAN = ROWS.reduce((acc, r) => acc + r.signed, 0) / ROWS.length;
 const pickToLeft = (pick: number) => ((pick - 1) / 4) * 100;
 
 export function Slide3Scoring() {
+  const config = useConfig();
+  const A = config.axes.A;
+
   return (
     <div className={s.slide}>
       <header className={s.head}>
@@ -46,7 +47,7 @@ export function Slide3Scoring() {
             style={{ background: A.tint, color: A.dark }}
             aria-hidden="true"
           >
-            {A.kanji_plus}
+            A
           </div>
           <div className={s.tagText}>
             <span className={s.tagPre}>軸の例</span>
@@ -61,12 +62,12 @@ export function Slide3Scoring() {
           {ROWS.map((r) => {
             const left = pickToLeft(r.pick);
             return (
-              <li key={r.id} className={s.row}>
-                <span className={s.rowId}>{r.id}</span>
+              <li key={r.num} className={s.row}>
+                <span className={s.rowId}>{r.num}</span>
                 <span className={s.rowLabel}>
                   {r.label}
                   {r.reversed ? (
-                    <span className={s.revFlag} title="逆転項目">R</span>
+                    <span className={s.revFlag} title="回答5が左側の特性を示す設問">方向</span>
                   ) : null}
                 </span>
                 <span

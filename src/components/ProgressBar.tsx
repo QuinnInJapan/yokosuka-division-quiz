@@ -1,26 +1,28 @@
-import { ORDER, QMAP } from '../data/questions';
-import { AXES } from '../data/axes';
+import { useConfig } from '../config/ConfigProvider';
 import s from './ProgressBar.module.css';
 
 export function ProgressBar({ step }: { step: number }) {
+  const config = useConfig();
+  const total = config.questions.length;
+
   return (
     <div className={s['prog-wrap']}>
       <div
         className={s['prog-bar']}
         role="progressbar"
         aria-valuemin={1}
-        aria-valuemax={ORDER.length}
+        aria-valuemax={total}
         aria-valuenow={step + 1}
-        aria-label={`進捗 ${step + 1} / ${ORDER.length}`}
+        aria-label={`進捗 ${step + 1} / ${total}`}
       >
-        {ORDER.map((id, i) => {
-          const c = AXES[QMAP[id].axis].color;
+        {config.questions.map((question, i) => {
+          const c = config.axes[question.axis].color;
           let cls = s.seg;
           if (i < step) cls += ' ' + s.done;
           else if (i === step) cls += ' ' + s.cur;
           return (
             <div
-              key={id}
+              key={i}
               className={cls}
               style={{ ['--c' as never]: c } as React.CSSProperties}
             />

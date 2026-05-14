@@ -1,17 +1,16 @@
 import { useStore } from '../state/hooks';
-import { ORDER, QMAP } from '../data/questions';
-import { AXES } from '../data/axes';
+import { useConfig } from '../config/ConfigProvider';
 import { ProgressBar } from '../components/ProgressBar';
 import s from './Quiz.module.css';
 
 export function Quiz() {
   const { state, dispatch } = useStore();
-  const qid = ORDER[state.step];
-  const q = QMAP[qid];
-  const ax = AXES[q.axis];
+  const config = useConfig();
+  const q = config.questions[state.step];
+  const ax = config.axes[q.axis];
 
-  const prev = state.resp[qid];
-  const total = ORDER.length;
+  const prev = state.resp[state.step];
+  const total = config.questions.length;
   const remaining = total - state.step - 1;
   let flourish = '';
   if (remaining === 1) flourish = 'あと2問';
@@ -22,7 +21,7 @@ export function Quiz() {
       <ProgressBar step={state.step} />
       <div className={s['quiz-meta']}>
         <span className={s['q-num']}>
-          Q.{state.step + 1} <span aria-hidden="true">/</span> {ORDER.length}
+          Q.{state.step + 1} <span aria-hidden="true">/</span> {total}
           {flourish && <span className={s['q-flourish']}>{flourish}</span>}
         </span>
         <span
@@ -51,7 +50,7 @@ export function Quiz() {
                   ? { borderColor: ax.dark, background: ax.tint }
                   : undefined
               }
-              onClick={() => dispatch({ type: 'ANSWER', value })}
+              onClick={() => dispatch({ type: 'ANSWER', questionIndex: state.step, value, isLast: remaining === 0 })}
               aria-pressed={isSelected}
             >
               <span

@@ -33,6 +33,15 @@ body[data-screen="results"] #root {
   padding: 0;
 }
 
+/* Admin screen is a dense maintenance form and needs the full browser width. */
+body[data-screen="admin"] {
+  align-items: stretch;
+}
+body[data-screen="admin"] #root {
+  max-width: none;
+  padding: 0;
+}
+
 .content-w {
   max-width: var(--content-max);
   margin-left: auto;

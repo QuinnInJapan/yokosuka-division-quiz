@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { scoreResp, axisScores, dist, fitPct, rankAll, determineType } from './scoring';
 import type { Responses, Division } from '../data/types';
+import { DEFAULT_RUNTIME_CONFIG } from '../config/appConfig';
 
 describe('scoreResp', () => {
   it('returns r-3 when not reversed', () => {
@@ -20,23 +21,23 @@ describe('axisScores', () => {
     expect(axisScores({})).toEqual({ A: 0, B: 0, C: 0, D: 0, E: 0 });
   });
   it('averages signed responses per axis, honoring reversed flag', () => {
-    const resp: Responses = { A1: 5, A3: 5 };
+    const resp: Responses = { 0: 5, 10: 5 };
     expect(axisScores(resp).A).toBeCloseTo(0);
     expect(axisScores(resp).B).toBeCloseTo(0);
   });
   it('produces 2 when only positive non-reversed answer is provided for axis', () => {
-    const resp: Responses = { A1: 5 };
+    const resp: Responses = { 0: 5 };
     expect(axisScores(resp).A).toBeCloseTo(2);
   });
   it('produces -2 when reversed Q1 answered as 5', () => {
-    const resp: Responses = { A3: 5 };
+    const resp: Responses = { 10: 5 };
     expect(axisScores(resp).A).toBeCloseTo(-2);
   });
 });
 
 describe('dist', () => {
   const u = { A: 0, B: 0, C: 0, D: 0, E: 0 };
-  const d: Division = { dept: 'X', name: 'Y', en: 'Z', A: 0, B: 0, C: 0, D: 0, E: 0 };
+  const d: Division = { dept: 'X', name: 'Y', A: 0, B: 0, C: 0, D: 0, E: 0 };
   it('returns 0 for identical vectors', () => {
     expect(dist(u, d)).toBe(0);
   });
@@ -57,15 +58,28 @@ describe('fitPct', () => {
 
 describe('rankAll', () => {
   it('returns ranked divisions sorted descending by fit', () => {
-    const ranked = rankAll({ A1: 5 });
+    const ranked = rankAll({ 0: 5 });
     expect(ranked.length).toBeGreaterThan(0);
     for (let i = 0; i < ranked.length - 1; i++) {
       expect(ranked[i].fit).toBeGreaterThanOrEqual(ranked[i + 1].fit);
     }
   });
   it('attaches user scores to every entry', () => {
-    const ranked = rankAll({ A1: 5 });
+    const ranked = rankAll({ 0: 5 });
     expect(ranked[0].user).toEqual({ A: 2, B: 0, C: 0, D: 0, E: 0 });
+  });
+  it('uses divisions from the provided runtime config', () => {
+    const customConfig = {
+      ...DEFAULT_RUNTIME_CONFIG,
+      divisions: [
+        { dept: 'X', name: 'A-fit', A: 2, B: 0, C: 0, D: 0, E: 0 },
+        { dept: 'X', name: 'A-miss', A: -2, B: 0, C: 0, D: 0, E: 0 },
+      ],
+    };
+
+    const ranked = rankAll({ 0: 5 }, customConfig);
+
+    expect(ranked.map(r => r.name)).toEqual(['A-fit', 'A-miss']);
   });
 });
 
@@ -75,7 +89,7 @@ describe('determineType', () => {
     expect(t.code).toBe('DASCG');
     expect(t.name).toBe('街のよろず屋');
   });
-  it('all-zero scores still pick letter_plus → DASCG', () => {
+  it('all-zero scores still pick the positive-side archetype key → DASCG', () => {
     const t = determineType({ A: 0, B: 0, C: 0, D: 0, E: 0 });
     expect(t.code).toBe('DASCG');
   });
@@ -87,5 +101,18 @@ describe('determineType', () => {
   it('returns a fallback Archetype with code preserved when TYPES has no entry', () => {
     const t = determineType({ A: 1, B: -1, C: 1, D: -1, E: 1 });
     expect(t.code.length).toBe(5);
+  });
+  it('uses archetype names from the provided runtime config', () => {
+    const customConfig = {
+      ...DEFAULT_RUNTIME_CONFIG,
+      archetypes: {
+        ...DEFAULT_RUNTIME_CONFIG.archetypes,
+        DASCG: { name: '外部タイプ', desc: '外部JSONのタイプ説明' },
+      },
+    };
+
+    const t = determineType({ A: 1, B: 1, C: 1, D: 1, E: 1 }, customConfig);
+
+    expect(t.name).toBe('外部タイプ');
   });
 });

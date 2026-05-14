@@ -1,6 +1,6 @@
-import type { AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
+import type { Axis, AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
-import { AXES } from '../data/axes';
+import { DEFAULT_RUNTIME_CONFIG } from '../config/appConfig';
 import { fitColor } from './scoring';
 
 export function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
@@ -68,6 +68,7 @@ export function axisDotPct(score: number): number {
 export type ExportData = {
   type: { code: string; name: string; desc: string; nameBreakAt?: number };
   userScores: Record<AxisKey, number>;
+  axes: Record<AxisKey, Axis>;
   best: RankedRow[];
   worst: RankedRow[];
   totalCount: number;
@@ -140,42 +141,6 @@ function drawHairline(
   ctx.lineTo(x + w, y + 0.5);
   ctx.stroke();
   ctx.restore();
-}
-
-function drawBar(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  trackColor: string,
-  dotBorderColor: string,
-  pct: number,
-): void {
-  const barH = 10;
-  const r = barH / 2;
-
-  // Full-saturated axis-color track (matches Results page)
-  ctx.fillStyle = trackColor;
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.arc(x + w - r, y + r, r, -Math.PI / 2, Math.PI / 2);
-  ctx.lineTo(x + r, y + barH);
-  ctx.arc(x + r, y + r, r, Math.PI / 2, -Math.PI / 2);
-  ctx.closePath();
-  ctx.fill();
-
-  // White dot w/ axis-dark border at score position
-  const dotR = 8;
-  const dotX = x + (pct / 100) * w;
-  const dotY = y + r;
-  ctx.fillStyle = '#FFFFFF';
-  ctx.beginPath();
-  ctx.arc(dotX, dotY, dotR, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.lineWidth = 2.5;
-  ctx.strokeStyle = dotBorderColor;
-  ctx.stroke();
 }
 
 function truncateToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
@@ -308,44 +273,24 @@ function drawProfileCol(
   const barW = colW;
 
   for (const ax of AX) {
-    const a = AXES[ax];
+    const a = data.axes[ax];
     const score = data.userScores[ax];
-    const isPlus = score >= 0;
-    const dotPct = axisDotPct(score);
-    const winningPct = isPlus ? dotPct : 100 - dotPct;
-    const pctStr = `${winningPct.toFixed(0)}%`;
+    const tendency = score === 0 ? '中立' : `${score > 0 ? a.plus : a.minus}寄り`;
 
-    // Header line: just axis label (neutral)
     ctx.fillStyle = INDIGO;
     setFont(ctx, 11, 600);
     ctx.textAlign = 'left';
     ctx.fillText(a.label, barX, y + 10);
 
-    // Bar: full-color track + white dot
-    drawBar(ctx, barX, y + 18, barW, a.color, a.dark, dotPct);
+    setFont(ctx, 10, 700);
+    ctx.fillStyle = TEXT_FAINT;
+    ctx.textAlign = 'right';
+    ctx.fillText(tendency, barX + barW, y + 10);
 
-    // Poles: pct prefixes the WINNING side. Winning bold+axis-dark, losing faint.
-    if (isPlus) {
-      setFont(ctx, 10, 400);
-      ctx.fillStyle = TEXT_FAINT;
-      ctx.textAlign = 'left';
-      ctx.fillText(a.minus, barX, y + 42);
-
-      setFont(ctx, 11, 700);
-      ctx.fillStyle = a.dark;
-      ctx.textAlign = 'right';
-      ctx.fillText(`${pctStr} ${a.plus}`, barX + barW, y + 42);
-    } else {
-      setFont(ctx, 11, 700);
-      ctx.fillStyle = a.dark;
-      ctx.textAlign = 'left';
-      ctx.fillText(`${pctStr} ${a.minus}`, barX, y + 42);
-
-      setFont(ctx, 10, 400);
-      ctx.fillStyle = TEXT_FAINT;
-      ctx.textAlign = 'right';
-      ctx.fillText(a.plus, barX + barW, y + 42);
-    }
+    setFont(ctx, 10, 400);
+    ctx.fillStyle = TEXT_FAINT;
+    ctx.textAlign = 'left';
+    ctx.fillText(`${a.minus} / ${a.plus}`, barX, y + 34);
     ctx.textAlign = 'left';
 
     y += PROFILE_ROW_H;
@@ -506,10 +451,12 @@ export function buildExportData(
   ranked: RankedDivision[],
   date: Date,
   sukarinImage?: HTMLImageElement | null,
+  axes: Record<AxisKey, Axis> = DEFAULT_RUNTIME_CONFIG.axes,
 ): ExportData {
   return {
     type: { code: type.code, name: type.name, desc: type.desc, nameBreakAt: type.nameBreakAt },
     userScores,
+    axes,
     best: topNBestFits(ranked, BEST_COUNT),
     // Reverse worst so the actual worst (highest rank number) appears first — list "climbs out".
     worst: bottomNWorstFits(ranked, WORST_COUNT).reverse(),

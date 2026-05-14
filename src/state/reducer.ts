@@ -1,6 +1,5 @@
 import type { AxisKey, Responses, Response } from '../data/types';
 import { AX } from '../data/types';
-import { ORDER } from '../data/questions';
 
 export type Screen = 'welcome' | 'quiz' | 'results';
 
@@ -14,7 +13,7 @@ export type State = {
 
 export type Action =
   | { type: 'START' }
-  | { type: 'ANSWER'; value: Response }
+  | { type: 'ANSWER'; questionIndex: number; value: Response; isLast: boolean }
   | { type: 'BACK' }
   | { type: 'SEL'; idx: number }
   | { type: 'TPREV' }
@@ -36,9 +35,8 @@ export function reducer(state: State, action: Action): State {
       return { ...state, screen: 'quiz', step: 0, resp: {} };
 
     case 'ANSWER': {
-      const id = ORDER[state.step];
-      const resp: Responses = { ...state.resp, [id]: action.value };
-      if (state.step < ORDER.length - 1) {
+      const resp: Responses = { ...state.resp, [action.questionIndex]: action.value };
+      if (!action.isLast) {
         return { ...state, resp, step: state.step + 1 };
       }
       return { ...state, resp, screen: 'results', sel: 0, traitIdx: 0 };

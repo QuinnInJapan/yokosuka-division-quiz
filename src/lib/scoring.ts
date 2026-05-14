@@ -1,19 +1,19 @@
 import type { AxisKey, Responses, Response, Division, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
-import { QMAP } from '../data/questions';
-import { DIVISIONS } from '../data/divisions';
-import { AXES } from '../data/axes';
-import { TYPES } from '../data/archetypes';
+import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from '../config/appConfig';
 
 export function scoreResp(r: Response, reversed: boolean): number {
   const v = r - 3;
   return reversed ? (v === 0 ? 0 : -v) : v;
 }
 
-export function axisScores(resp: Responses): Record<AxisKey, number> {
+export function axisScores(
+  resp: Responses,
+  config: RuntimeConfig = DEFAULT_RUNTIME_CONFIG,
+): Record<AxisKey, number> {
   const buckets: Record<AxisKey, number[]> = { A: [], B: [], C: [], D: [], E: [] };
-  for (const [id, r] of Object.entries(resp)) {
-    const q = QMAP[id];
+  for (const [index, r] of Object.entries(resp)) {
+    const q = config.questions[Number(index)];
     if (!q) continue;
     buckets[q.axis].push(scoreResp(r, q.reversed));
   }
@@ -27,6 +27,14 @@ export function axisScores(resp: Responses): Record<AxisKey, number> {
 
 export const MAX_D = Math.sqrt(5 * 16);
 
+const ARCHETYPE_CODE_LETTERS: Record<AxisKey, { plus: string; minus: string }> = {
+  A: { plus: 'D', minus: 'F' },
+  B: { plus: 'A', minus: 'P' },
+  C: { plus: 'S', minus: 'R' },
+  D: { plus: 'C', minus: 'I' },
+  E: { plus: 'G', minus: 'X' },
+};
+
 export function dist(
   u: Record<AxisKey, number>,
   d: Division | Record<AxisKey, number>,
@@ -38,20 +46,24 @@ export function fitPct(d: number): number {
   return Math.round((1 - d / MAX_D) * 1000) / 10;
 }
 
-export function rankAll(resp: Responses): RankedDivision[] {
-  const u = axisScores(resp);
-  return DIVISIONS
+export function rankAll(
+  resp: Responses,
+  config: RuntimeConfig = DEFAULT_RUNTIME_CONFIG,
+): RankedDivision[] {
+  const u = axisScores(resp, config);
+  return config.divisions
     .map((d): RankedDivision => ({ ...d, user: u, fit: fitPct(dist(u, d)) }))
     .sort((a, b) => b.fit - a.fit);
 }
 
 export function determineType(
   userScores: Record<AxisKey, number>,
+  config: RuntimeConfig = DEFAULT_RUNTIME_CONFIG,
 ): ResolvedArchetype {
   const code = AX.map(ax =>
-    userScores[ax] >= 0 ? AXES[ax].letter_plus : AXES[ax].letter_minus,
+    userScores[ax] >= 0 ? ARCHETYPE_CODE_LETTERS[ax].plus : ARCHETYPE_CODE_LETTERS[ax].minus,
   ).join('');
-  const t = TYPES[code] ?? {
+  const t = config.archetypes[code] ?? {
     name: '探究者',
     desc: 'あなたは独自のバランス感覚を持つタイプです。',
   };

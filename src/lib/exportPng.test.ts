@@ -46,7 +46,7 @@ describe('formatDateForDisplay', () => {
 });
 
 const mk = (name: string, fit: number): RankedDivision => ({
-  dept: 'X', name, en: '', A: 0, B: 0, C: 0, D: 0, E: 0,
+  dept: 'X', name, A: 0, B: 0, C: 0, D: 0, E: 0,
   user: { A: 0, B: 0, C: 0, D: 0, E: 0 },
   fit,
 });
@@ -118,7 +118,7 @@ describe('buildExportData', () => {
     const ranked: RankedDivision[] = [];
     for (let i = 0; i < 102; i++) {
       ranked.push({
-        dept: 'D', name: `課${i}`, en: '',
+        dept: 'D', name: `課${i}`,
         A: 0, B: 0, C: 0, D: 0, E: 0,
         user: { A: 0, B: 0, C: 0, D: 0, E: 0 },
         fit: 100 - i,

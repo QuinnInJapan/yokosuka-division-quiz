@@ -1,10 +1,11 @@
+import { useMemo } from 'react';
 import s from './Slide5Result.module.css';
 import { AX } from '../../../data/types';
 import type { AxisKey, RankedDivision } from '../../../data/types';
-import { DIVISIONS } from '../../../data/divisions';
 import { dist, fitPct, determineType } from '../../../lib/scoring';
 import { sukarinSrc } from '../../../lib/sukarinImages';
 import { archetypePalette } from '../../../lib/archetypePalette';
+import { useConfig } from '../../../config/ConfigProvider';
 import { SukarinCard } from '../../SukarinCard';
 import { TraitBar } from '../../TraitBar';
 import { MatchList } from '../../MatchList';
@@ -18,16 +19,19 @@ import { MatchList } from '../../MatchList';
 */
 
 const PROFILE: Record<AxisKey, number> = { A: 2, B: 1, C: 2, D: 1, E: 0 };
-const TYPE = determineType(PROFILE);
-const PALETTE = archetypePalette(TYPE.code);
-
-const RANKED: RankedDivision[] = DIVISIONS
-  .map((d) => ({ ...d, user: PROFILE, fit: fitPct(dist(PROFILE, d)) }))
-  .sort((a, b) => b.fit - a.fit);
-
-const TOP4 = RANKED.slice(0, 4);
 
 export function Slide5Result() {
+  const config = useConfig();
+  const type = useMemo(() => determineType(PROFILE, config), [config]);
+  const palette = archetypePalette(type.code);
+  const ranked: RankedDivision[] = useMemo(
+    () => config.divisions
+      .map((d) => ({ ...d, user: PROFILE, fit: fitPct(dist(PROFILE, d)) }))
+      .sort((a, b) => b.fit - a.fit),
+    [config.divisions],
+  );
+  const top4 = ranked.slice(0, 4);
+
   return (
     <div className={s.slide}>
       <header className={s.head}>
@@ -39,17 +43,17 @@ export function Slide5Result() {
       <div className={s.preview} aria-label="結果ページのプレビュー">
         <section
           className={`${s.region} ${s.regionHero}`}
-          style={{ background: PALETTE.baseGradient }}
+          style={{ background: palette.baseGradient }}
         >
           <span className={s.annot} aria-hidden="true">01</span>
           <div className={s.regionBody}>
             <div className={`${s.regionLabel} ${s.regionLabelOnHero}`}>アーキタイプ</div>
             <SukarinCard
-              name={TYPE.name}
-              desc={TYPE.desc}
+              name={type.name}
+              desc={type.desc}
               userScores={PROFILE}
-              imageSrc={sukarinSrc(TYPE.code)}
-              nameBreakAt={TYPE.nameBreakAt}
+              imageSrc={sukarinSrc(type.code)}
+              nameBreakAt={type.nameBreakAt}
             />
           </div>
         </section>
@@ -75,7 +79,7 @@ export function Slide5Result() {
           <span className={s.annot} aria-hidden="true">03</span>
           <div className={s.regionBody}>
             <div className={s.regionLabel}>部署ランキング（103課中）</div>
-            <MatchList items={TOP4} />
+            <MatchList items={top4} />
             <div className={s.allMore} aria-hidden="true">
               … 5位 〜 103位 まで続く
             </div>

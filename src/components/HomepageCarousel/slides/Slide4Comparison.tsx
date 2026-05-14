@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
 import s from './Slide4Comparison.module.css';
 import type { AxisKey, RankedDivision } from '../../../data/types';
-import { DIVISIONS } from '../../../data/divisions';
 import { dist, fitPct } from '../../../lib/scoring';
+import { useConfig } from '../../../config/ConfigProvider';
 import { MatchDetail } from '../../MatchDetail';
 import { MatchList } from '../../MatchList';
 
@@ -16,18 +17,22 @@ import { MatchList } from '../../MatchList';
 
 const PROFILE: Record<AxisKey, number> = { A: 2, B: 1, C: 2, D: 1, E: 0 };
 
-const RANKED: RankedDivision[] = DIVISIONS
-  .map((d) => ({ ...d, user: PROFILE, fit: fitPct(dist(PROFILE, d)) }))
-  .sort((a, b) => b.fit - a.fit);
-
 // Focal: a deliberately mediocre match so the ComparisonBars show real
 // gap on multiple axes (some "close" rows, some "wide"). Top-3 list still
 // shows actual best matches for context.
 const FOCAL_NAME = '観光課';
-const FOCAL = RANKED.find((d) => d.name === FOCAL_NAME) ?? RANKED[0];
-const TOP3 = RANKED.slice(0, 3);
 
 export function Slide4Comparison() {
+  const config = useConfig();
+  const ranked: RankedDivision[] = useMemo(
+    () => config.divisions
+      .map((d) => ({ ...d, user: PROFILE, fit: fitPct(dist(PROFILE, d)) }))
+      .sort((a, b) => b.fit - a.fit),
+    [config.divisions],
+  );
+  const focal = ranked.find((d) => d.name === FOCAL_NAME) ?? ranked[0];
+  const top3 = ranked.slice(0, 3);
+
   return (
     <div className={s.slide}>
       <header className={s.head}>
@@ -37,10 +42,10 @@ export function Slide4Comparison() {
       </header>
 
       <div className={s.mount}>
-        <MatchDetail division={FOCAL} />
+        <MatchDetail division={focal} />
         <div className={s.listWrap}>
           <div className={s.listHead}>近い順 · 上位3課（103課中）</div>
-          <MatchList items={TOP3} />
+          <MatchList items={top3} />
         </div>
       </div>
     </div>

@@ -38,8 +38,12 @@ export const AXIS_DESC: Record<AxisKey, AxisDescTiers> = {
   },
 };
 
-export function getAxisDesc(axis: AxisKey, score: number): string {
-  const d = AXIS_DESC[axis];
+export function getAxisDesc(
+  axis: AxisKey,
+  score: number,
+  descriptions: Record<AxisKey, AxisDescTiers> = AXIS_DESC,
+): string {
+  const d = descriptions[axis];
   if (score >= 1.0)   return d.strong_plus;
   if (score >= 0.25)  return d.mild_plus;
   if (score > -0.25)  return d.neutral;

@@ -26,7 +26,7 @@ const AXIS_MID: Record<AxisKey, string> = {
   E: '#EAB308',
 };
 
-// Letter → axis key (mirror of AXES[ax].letter_plus / letter_minus).
+// Letter → axis key for the fixed internal archetype-code convention.
 const LETTER_TO_AXIS: Record<string, AxisKey> = {
   D: 'A', F: 'A',
   A: 'B', P: 'B',

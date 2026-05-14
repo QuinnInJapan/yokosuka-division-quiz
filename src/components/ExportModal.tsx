@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useDerived } from '../state/hooks';
+import { useConfig } from '../config/ConfigProvider';
 import { buildExportData, renderExport, sanitizeFilename, loadImage } from '../lib/exportPng';
 import { sukarinSrc } from '../lib/sukarinImages';
 import s from './ExportModal.module.css';
@@ -9,6 +10,7 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const { type, userScores, results } = useDerived();
+  const config = useConfig();
 
   // Render canvas on open
   useEffect(() => {
@@ -25,14 +27,14 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
 
     Promise.all([fontsReady, imageReady]).then(([, img]) => {
       if (cancelled) return;
-      const data = buildExportData(type, userScores, results, new Date(), img);
+      const data = buildExportData(type, userScores, results, new Date(), img, config.axes);
       renderExport(canvas, data);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [open, type, userScores, results]);
+  }, [config.axes, open, type, userScores, results]);
 
   // Focus management + ESC to close
   useEffect(() => {
