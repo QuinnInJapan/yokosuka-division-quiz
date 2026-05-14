@@ -12,3 +12,6 @@ test-results/
 playwright-report/
 .worktrees/
 .vercel
+.codegraph/
+.agents/
+.impeccable-live/

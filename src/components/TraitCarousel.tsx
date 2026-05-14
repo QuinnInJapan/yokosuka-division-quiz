@@ -1,19 +1,20 @@
 import { useStore, useDerived } from '../state/hooks';
-import { AXES } from '../data/axes';
 import { AX } from '../data/types';
 import { getAxisDesc } from '../data/descriptions';
 import { scoreToPct } from '../lib/scoring';
+import { useConfig } from '../config/ConfigProvider';
 import s from './TraitCarousel.module.css';
 
 export function TraitCarousel() {
   const { state, dispatch } = useStore();
   const { userScores } = useDerived();
+  const config = useConfig();
   const ax = AX[state.traitIdx];
   const score = userScores[ax];
-  const a = AXES[ax];
+  const a = config.axes[ax];
   const { isPlus } = scoreToPct(score);
   const winLabel = isPlus ? a.plus : a.minus;
-  const desc = getAxisDesc(ax, score);
+  const desc = getAxisDesc(ax, score, config.axisDescriptions);
 
   return (
     <>

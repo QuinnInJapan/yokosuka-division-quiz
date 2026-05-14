@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AXES } from '../../../data/axes';
+import { useConfig } from '../../../config/ConfigProvider';
 import s from './Slide2Input.module.css';
 
 /*
@@ -10,7 +10,7 @@ import s from './Slide2Input.module.css';
   — the same visual contract the real quiz uses.
 */
 
-// Real question C1 from questions.json (axis C: 担う役割).
+// Real axis-C question from the bundled question set.
 const Q = {
   axis: 'C' as const,
   num: 1,
@@ -30,7 +30,8 @@ type Props = { onAdvance?: () => void };
 
 export function Slide2Input({ onAdvance }: Props = {}) {
   const [picked, setPicked] = useState<number | null>(null);
-  const ax = AXES[Q.axis];
+  const config = useConfig();
+  const ax = config.axes[Q.axis];
 
   return (
     <div className={s.slide}>

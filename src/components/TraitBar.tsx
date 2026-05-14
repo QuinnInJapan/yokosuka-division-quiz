@@ -1,7 +1,7 @@
 import { useStore } from '../state/hooks';
-import { AXES } from '../data/axes';
 import type { AxisKey } from '../data/types';
 import { scoreToPct } from '../lib/scoring';
+import { useConfig } from '../config/ConfigProvider';
 import s from './TraitBar.module.css';
 
 export function TraitBar({
@@ -14,7 +14,8 @@ export function TraitBar({
   active: boolean;
 }) {
   const { dispatch } = useStore();
-  const a = AXES[axis];
+  const config = useConfig();
+  const a = config.axes[axis];
   const { pct, isPlus } = scoreToPct(score);
   const dotLeft = ((score + 2) / 4) * 100;
 

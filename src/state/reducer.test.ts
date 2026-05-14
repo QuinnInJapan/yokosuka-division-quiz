@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { reducer, initial, type State } from './reducer';
-import { ORDER } from '../data/questions';
 
 describe('reducer', () => {
   it('initial state is welcome', () => {
@@ -10,21 +9,24 @@ describe('reducer', () => {
   });
 
   it('START moves to quiz and clears resp', () => {
-    const after = reducer({ ...initial, resp: { A1: 5 } }, { type: 'START' });
+    const after = reducer({ ...initial, resp: { 0: 5 } }, { type: 'START' });
     expect(after.screen).toBe('quiz');
     expect(after.step).toBe(0);
     expect(after.resp).toEqual({});
   });
 
   it('ANSWER records the response and advances step', () => {
-    const s1 = reducer({ ...initial, screen: 'quiz' }, { type: 'ANSWER', value: 5 });
-    expect(s1.resp[ORDER[0]]).toBe(5);
+    const s1 = reducer(
+      { ...initial, screen: 'quiz' },
+      { type: 'ANSWER', questionIndex: 0, value: 5, isLast: false },
+    );
+    expect(s1.resp[0]).toBe(5);
     expect(s1.step).toBe(1);
   });
 
   it('final ANSWER transitions to results screen', () => {
-    const s: State = { ...initial, screen: 'quiz', step: ORDER.length - 1 };
-    const last = reducer(s, { type: 'ANSWER', value: 4 });
+    const s: State = { ...initial, screen: 'quiz', step: 2 };
+    const last = reducer(s, { type: 'ANSWER', questionIndex: 2, value: 4, isLast: true });
     expect(last.screen).toBe('results');
     expect(last.sel).toBe(0);
     expect(last.traitIdx).toBe(0);
@@ -62,7 +64,7 @@ describe('reducer', () => {
 
   it('RETAKE resets to welcome and clears resp', () => {
     const s = reducer(
-      { screen: 'results', step: 19, resp: { A1: 5 }, sel: 3, traitIdx: 2 },
+      { screen: 'results', step: 19, resp: { 0: 5 }, sel: 3, traitIdx: 2 },
       { type: 'RETAKE' },
     );
     expect(s.screen).toBe('welcome');

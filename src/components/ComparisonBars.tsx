@@ -1,7 +1,7 @@
 import { AX } from '../data/types';
-import { AXES } from '../data/axes';
-import type { AxisKey } from '../data/types';
+import type { Axis, AxisKey } from '../data/types';
 import { fitColor } from '../lib/scoring';
+import { useConfig } from '../config/ConfigProvider';
 import s from './ComparisonBars.module.css';
 
 const NEAR_THRESHOLD = 0.4;
@@ -71,8 +71,8 @@ function buildRows(
   });
 }
 
-function joinAxes(axes: AxisKey[]): string {
-  const labels = axes.map(a => AXES[a].label);
+function joinAxes(axes: AxisKey[], axisConfig: Record<AxisKey, Axis>): string {
+  const labels = axes.map(a => axisConfig[a].label);
   if (labels.length === 0) return '';
   if (labels.length === 1) return labels[0];
   if (labels.length === 2) return `${labels[0]}と${labels[1]}`;
@@ -90,7 +90,11 @@ function pickAxes(rows: Row[], side: 'close' | 'far', cap = 2): AxisKey[] {
 
 type Narrative = { prefix: string; label: string; suffix: string };
 
-function buildNarrative(rows: Row[], tier: FitTier): Narrative {
+function buildNarrative(
+  rows: Row[],
+  tier: FitTier,
+  axisConfig: Record<AxisKey, Axis>,
+): Narrative {
   const buckets = new Set(rows.map(r => r.bucket));
   const uniform = buckets.size === 1;
   const label = TIER_LABEL[tier];
@@ -103,8 +107,8 @@ function buildNarrative(rows: Row[], tier: FitTier): Narrative {
     return { prefix: '全ての軸で大きな違いがあり、相性は', label, suffix: 'です。' };
   }
 
-  const closeAxes = joinAxes(pickAxes(rows, 'close'));
-  const farAxes = joinAxes(pickAxes(rows, 'far'));
+  const closeAxes = joinAxes(pickAxes(rows, 'close'), axisConfig);
+  const farAxes = joinAxes(pickAxes(rows, 'far'), axisConfig);
 
   switch (tier) {
     case 'great':
@@ -140,7 +144,7 @@ function buildNarrative(rows: Row[], tier: FitTier): Narrative {
   }
 }
 
-function summarize(rows: Row[]): string | null {
+function summarize(rows: Row[], axisConfig: Record<AxisKey, Axis>): string | null {
   if (rows.length < 2) return null;
   const sorted = [...rows].sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
   const widest = sorted[0];
@@ -149,9 +153,9 @@ function summarize(rows: Row[]): string | null {
     return `この課とは全ての軸でほぼ一致しています。`;
   }
   if (widest.bucket === 'match' || widest.bucket === 'close') {
-    return `この課とは${AXES[widest.ax].label}までも近く、全体的に相性が良い課です。`;
+    return `この課とは${axisConfig[widest.ax].label}までも近く、全体的に相性が良い課です。`;
   }
-  return `この課とは${AXES[closest.ax].label}が近く、${AXES[widest.ax].label}に違いがあります。`;
+  return `この課とは${axisConfig[closest.ax].label}が近く、${axisConfig[widest.ax].label}に違いがあります。`;
 }
 
 export function ComparisonBars({
@@ -165,10 +169,11 @@ export function ComparisonBars({
   divisionName: string;
   fit: number;
 }) {
+  const config = useConfig();
   const rows = buildRows(user, division);
-  const summary = summarize(rows);
+  const summary = summarize(rows, config.axes);
   const tier = fitTier(fit);
-  const narrative = buildNarrative(rows, tier);
+  const narrative = buildNarrative(rows, tier, config.axes);
   const tierColor = fitColor(fit).text;
 
   return (
@@ -190,7 +195,7 @@ export function ComparisonBars({
       </div>
       <div className={s.list}>
         {rows.map(row => {
-          const a = AXES[row.ax];
+          const a = config.axes[row.ax];
           const left = Math.min(row.userPct, row.divPct);
           const right = 100 - Math.max(row.userPct, row.divPct);
           return (

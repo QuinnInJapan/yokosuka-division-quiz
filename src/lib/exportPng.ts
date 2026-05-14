@@ -1,6 +1,6 @@
-import type { AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
+import type { Axis, AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
-import { AXES } from '../data/axes';
+import { DEFAULT_RUNTIME_CONFIG } from '../config/appConfig';
 import { fitColor } from './scoring';
 
 export function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
@@ -68,6 +68,7 @@ export function axisDotPct(score: number): number {
 export type ExportData = {
   type: { code: string; name: string; desc: string; nameBreakAt?: number };
   userScores: Record<AxisKey, number>;
+  axes: Record<AxisKey, Axis>;
   best: RankedRow[];
   worst: RankedRow[];
   totalCount: number;
@@ -308,7 +309,7 @@ function drawProfileCol(
   const barW = colW;
 
   for (const ax of AX) {
-    const a = AXES[ax];
+    const a = data.axes[ax];
     const score = data.userScores[ax];
     const isPlus = score >= 0;
     const dotPct = axisDotPct(score);
@@ -506,10 +507,12 @@ export function buildExportData(
   ranked: RankedDivision[],
   date: Date,
   sukarinImage?: HTMLImageElement | null,
+  axes: Record<AxisKey, Axis> = DEFAULT_RUNTIME_CONFIG.axes,
 ): ExportData {
   return {
     type: { code: type.code, name: type.name, desc: type.desc, nameBreakAt: type.nameBreakAt },
     userScores,
+    axes,
     best: topNBestFits(ranked, BEST_COUNT),
     // Reverse worst so the actual worst (highest rank number) appears first — list "climbs out".
     worst: bottomNWorstFits(ranked, WORST_COUNT).reverse(),
