@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { AX, type Archetype, type Axis, type AxisDescTiers, type AxisKey, type ConfigDivision, type Question } from '../data/types';
+import { AXIS_MAX, AXIS_MIN, AXIS_TICKS, axisValueToPct, roundAxisValue } from '../data/axisScale';
 import { type AppConfig, type RuntimeConfig } from '../config/appConfig';
 import {
   ADMIN_DRAFT_KEY,
-  exportAdminConfig,
+  exportAdminConfigJs,
   parseAdminConfigJson,
   runtimeToAppConfig,
   validateAdminConfig,
@@ -121,10 +122,10 @@ const AXIS_COLOR_PRESETS = [
 ] as const;
 
 const NEW_DEPT_OPTION = '__new_department__';
-const DIVISION_WEIGHT_TICKS = Array.from({ length: 21 }, (_, index) => index - 10);
+const DIVISION_WEIGHT_TICKS = AXIS_TICKS;
 
 function freshDraft(config: RuntimeConfig): AppConfig {
-  return JSON.parse(exportAdminConfig(runtimeToAppConfig(config))) as AppConfig;
+  return structuredClone(runtimeToAppConfig(config));
 }
 
 function draftFromStorage(initialConfig: RuntimeConfig): { draft: AppConfig; restored: boolean } {
@@ -135,13 +136,6 @@ function draftFromStorage(initialConfig: RuntimeConfig): { draft: AppConfig; res
   const result = parseAdminConfigJson(saved);
   if (!result.ok) return { draft: base, restored: false };
   return { draft: runtimeToAppConfig(result.config), restored: true };
-}
-
-function formatDownloadDate(d: Date): string {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}${mm}${dd}`;
 }
 
 function RowDeleteButton({ label, onClick }: { label: string; onClick: () => void }) {
@@ -376,13 +370,11 @@ function divisionFromForm(form: DivisionForm): ConfigDivision {
 }
 
 function divisionWeightPct(weight: number): number {
-  if (!Number.isFinite(weight)) return 50;
-  return ((Math.max(-10, Math.min(10, weight)) + 10) / 20) * 100;
+  return axisValueToPct(weight);
 }
 
 function divisionWeightValue(weight: number): number {
-  if (!Number.isFinite(weight)) return 0;
-  return Math.max(-10, Math.min(10, Math.round(weight)));
+  return roundAxisValue(weight);
 }
 
 function validateDivisionForm(
@@ -401,8 +393,8 @@ function validateDivisionForm(
 
   for (const axis of AX) {
     const weight = form[axis];
-    if (!Number.isFinite(weight) || !Number.isInteger(weight) || weight < -10 || weight > 10) {
-      issues.push({ field: axis, message: `${axis}は-10〜10の整数で入力してください。` });
+    if (!Number.isFinite(weight) || !Number.isInteger(weight) || weight < AXIS_MIN || weight > AXIS_MAX) {
+      issues.push({ field: axis, message: `${axis}は${AXIS_MIN}〜${AXIS_MAX}の整数で入力してください。` });
     }
   }
 
@@ -470,7 +462,7 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
   const orderedQuestions = draft.questions;
   const jsonPreview = useMemo(() => {
     try {
-      return validation.ok ? exportAdminConfig(draft) : `${JSON.stringify(draft, null, 2)}\n`;
+      return validation.ok ? exportAdminConfigJs(draft) : `${JSON.stringify(draft, null, 2)}\n`;
     } catch {
       return `${JSON.stringify(draft, null, 2)}\n`;
     }
@@ -968,16 +960,16 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
   function handleExport(): void {
     const result = validateAdminConfig(draft);
     if (!result.ok) return;
-    const blob = new Blob([exportAdminConfig(draft)], { type: 'application/json;charset=utf-8' });
+    const blob = new Blob([exportAdminConfigJs(draft)], { type: 'text/javascript;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `app-config-${formatDownloadDate(new Date())}.json`;
+    link.download = 'app-config.js';
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-    setStatusMessage({ kind: 'success', text: 'app-config.jsonを書き出しました。配布時はファイル名をapp-config.jsonにしてください。' });
+    setStatusMessage({ kind: 'success', text: 'app-config.jsを書き出しました。配布時はファイル名をapp-config.jsにしてください。' });
   }
 
   return (
@@ -1155,8 +1147,8 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
                               <input
                                 className={s.axisSlider}
                                 type="range"
-                                min="-10"
-                                max="10"
+                                min={AXIS_MIN}
+                                max={AXIS_MAX}
                                 step="1"
                                 value={value}
                                 onChange={e => updateDivisionForm(axis, Number(e.target.value))}
@@ -1685,7 +1677,7 @@ export function Admin({ initialConfig }: { initialConfig: RuntimeConfig }) {
             title="書き出し確認"
             action={
               <AdminButton variant="primary" onClick={handleExport} disabled={!validation.ok}>
-                app-config.jsonを書き出す
+                app-config.jsを書き出す
               </AdminButton>
             }
           />

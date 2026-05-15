@@ -81,14 +81,14 @@ describe('formatPct', () => {
 });
 
 describe('axisDotPct', () => {
-  it('maps -2..+2 to 0..100', () => {
-    expect(axisDotPct(-2)).toBe(0);
+  it('maps -3..+3 to 0..100', () => {
+    expect(axisDotPct(-3)).toBe(0);
     expect(axisDotPct(0)).toBe(50);
-    expect(axisDotPct(2)).toBe(100);
+    expect(axisDotPct(3)).toBe(100);
   });
   it('clamps out-of-range values', () => {
-    expect(axisDotPct(-3)).toBe(0);
-    expect(axisDotPct(3)).toBe(100);
+    expect(axisDotPct(-4)).toBe(0);
+    expect(axisDotPct(4)).toBe(100);
   });
 });
 

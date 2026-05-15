@@ -4,6 +4,7 @@ import { AX, type Archetype, type Axis, type AxisDescTiers, type AxisKey, type C
 import { AXIS_DESC } from '../data/descriptions';
 import { DIVISIONS } from '../data/divisions';
 import { QUESTIONS } from '../data/questions';
+import { AXIS_MAX, AXIS_MIN, roundAxisValue } from '../data/axisScale';
 
 const DESC_TIERS = [
   'strong_plus',
@@ -26,10 +27,7 @@ export type RuntimeConfig = Omit<AppConfig, 'divisions'> & {
   divisions: readonly Division[];
 };
 
-type FetchConfig = (
-  input: string,
-  init?: RequestInit,
-) => Promise<Pick<Response, 'ok' | 'json'>>;
+const GLOBAL_CONFIG_KEY = '__YOKOSUKA_APP_CONFIG__';
 
 export const DEFAULT_CONFIG: AppConfig = {
   version: 1,
@@ -62,16 +60,21 @@ export function normalizeAppConfig(input: unknown): RuntimeConfig {
 
 export const DEFAULT_RUNTIME_CONFIG = normalizeAppConfig(DEFAULT_CONFIG);
 
-export async function loadRuntimeConfig(
-  fetchConfig: FetchConfig = fetch,
-): Promise<RuntimeConfig> {
-  try {
-    const res = await fetchConfig('app-config.json', { cache: 'no-cache' });
-    if (!res.ok) return DEFAULT_RUNTIME_CONFIG;
-    return normalizeAppConfig(await res.json());
-  } catch {
-    return DEFAULT_RUNTIME_CONFIG;
+export async function loadRuntimeConfig(): Promise<RuntimeConfig> {
+  const globalConfig = readGlobalConfig();
+  if (globalConfig !== undefined) {
+    try {
+      return normalizeAppConfig(globalConfig);
+    } catch {
+      return DEFAULT_RUNTIME_CONFIG;
+    }
   }
+
+  return DEFAULT_RUNTIME_CONFIG;
+}
+
+function readGlobalConfig(): unknown {
+  return (globalThis as Record<string, unknown>)[GLOBAL_CONFIG_KEY];
 }
 
 function validateAxes(value: unknown): Record<AxisKey, Axis> {
@@ -198,18 +201,18 @@ function requireConfigWeight(value: unknown, label: string): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || !Number.isInteger(value)) {
     throw new Error(`${label} must be an integer`);
   }
-  if (value < -10 || value > 10) {
-    throw new Error(`${label} must be between -10 and 10`);
+  if (value < AXIS_MIN || value > AXIS_MAX) {
+    throw new Error(`${label} must be between ${AXIS_MIN} and ${AXIS_MAX}`);
   }
   return value;
 }
 
 export function configWeightToRuntime(weight: number): number {
-  return weight / 5;
+  return weight;
 }
 
 export function runtimeWeightToConfig(weight: number): number {
-  return Math.max(-10, Math.min(10, Math.round(weight * 5)));
+  return roundAxisValue(weight);
 }
 
 function toConfigDivision(division: Division): ConfigDivision {

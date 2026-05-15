@@ -1,9 +1,10 @@
 import type { AxisKey, Responses, Response, Division, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
 import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from '../config/appConfig';
+import { AXIS_ABS_MAX, AXIS_RANGE } from '../data/axisScale';
 
 export function scoreResp(r: Response, reversed: boolean): number {
-  const v = r - 3;
+  const v = (r - 3) * (AXIS_ABS_MAX / 2);
   return reversed ? (v === 0 ? 0 : -v) : v;
 }
 
@@ -25,7 +26,7 @@ export function axisScores(
   return out;
 }
 
-export const MAX_D = Math.sqrt(5 * 16);
+export const MAX_D = Math.sqrt(AX.length * (AXIS_RANGE ** 2));
 
 const ARCHETYPE_CODE_LETTERS: Record<AxisKey, { plus: string; minus: string }> = {
   A: { plus: 'D', minus: 'F' },
@@ -72,7 +73,7 @@ export function determineType(
 
 export function scoreToPct(score: number): { pct: number; isPlus: boolean } {
   const isPlus = score >= 0;
-  const pct = Math.round(50 + (Math.abs(score) / 2) * 50);
+  const pct = Math.round(50 + (Math.abs(score) / AXIS_ABS_MAX) * 50);
   return { pct, isPlus };
 }
 

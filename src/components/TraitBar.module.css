@@ -29,6 +29,36 @@
   font-weight: var(--fw-bold);
 }
 
+.trait-track {
+  position: relative;
+  width: 100%;
+  height: var(--bar-h);
+  margin: 8px 0 6px;
+  border-radius: 999px;
+}
+
+.trait-midline {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  width: 1px;
+  background: rgba(28, 35, 64, 0.28);
+  transform: translateX(-50%);
+}
+
+.trait-dot {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+  transform: translate(-50%, -50%);
+}
+
 .trait-poles {
   display: flex;
   align-items: center;

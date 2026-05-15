@@ -8,7 +8,7 @@ Source: `2026-05-14-admin-dashboard-ux-review.md`
 
 ### 1. Editing First, Export Last
 
-The admin dashboard is a content-editing workspace. Users should spend most of their time finding records, editing fields, saving changes, and only then writing out `app-config.json`.
+The admin dashboard is a content-editing workspace. Users should spend most of their time finding records, editing fields, saving changes, and only then writing out `app-config.js`.
 
 Rules:
 
@@ -23,7 +23,7 @@ Each screen should have one obvious next action. If two blue buttons are visible
 Rules:
 
 - Editors get one primary action: `保存する`.
-- `書き出し確認` gets one primary action: `app-config.jsonを書き出す`.
+- `書き出し確認` gets one primary action: `app-config.jsを書き出す`.
 - List pages may use one secondary action such as `新規作成`.
 - Utility and destructive actions never use the primary style.
 
@@ -45,7 +45,7 @@ The interface must preserve the distinction between saving to the browser draft 
 Rules:
 
 - `保存する` means "save this editor's changes into the browser draft."
-- `app-config.jsonを書き出す` means "download the deployable configuration file."
+- `app-config.jsを書き出す` means "download the deployable configuration file."
 - Do not call export "save."
 - Do not call browser draft autosave "export."
 
@@ -219,7 +219,7 @@ Rules:
 Recommended labels:
 
 - Primary save: `保存する`
-- Primary export: `app-config.jsonを書き出す`
+- Primary export: `app-config.jsを書き出す`
 - Secondary create: `新規作成`
 - Tertiary back: `一覧へ戻る`
 - Danger delete: `削除する`
@@ -420,7 +420,7 @@ Structure:
 Behavior:
 
 - Export is disabled while validation blocks it.
-- Export success message states that the downloaded file should be named `app-config.json` for distribution.
+- Export success message states that the downloaded file should be named `app-config.js` for distribution.
 
 ## Microcopy Rules
 
@@ -435,7 +435,7 @@ Behavior:
 Use:
 
 - `保存する`
-- `app-config.jsonを書き出す`
+- `app-config.jsを書き出す`
 - `ブラウザ内の下書きに保存しました。`
 - `配布用JSONを書き出しました。`
 
@@ -521,7 +521,7 @@ Avoid introducing global component abstractions until the admin system stabilize
 - A reviewer can identify the primary action on each admin view within two seconds.
 - No editor shows more than one primary button.
 - Sidebar and main content are visually distinct at first glance.
-- `保存する` and `app-config.jsonを書き出す` are never treated as the same kind of action.
+- `保存する` and `app-config.jsを書き出す` are never treated as the same kind of action.
 - All editor screens share the same save/back/danger pattern.
 - Destructive actions are visually separated from normal form actions.
 - Directory rows clearly look clickable.

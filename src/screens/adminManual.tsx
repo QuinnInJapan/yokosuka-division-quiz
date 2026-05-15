@@ -1,5 +1,6 @@
 import s from './Admin.module.css';
 import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import { AXIS_TICKS, axisValueToPct } from '../data/axisScale';
 
 type ManualExampleProps = {
   title: string;
@@ -62,7 +63,7 @@ const tocSections: TocSection[] = [
   {
     id: 'manual-export',
     title: '保存と書き出し',
-    children: ['各編集画面で保存する', '書き出し確認を開く', '入力内容を確認する', 'app-config.jsonを書き出す', '配布時のファイル名を確認する'],
+    children: ['各編集画面で保存する', '書き出し確認を開く', '入力内容を確認する', 'app-config.jsを書き出す', '配布時のファイル名を確認する'],
   },
   {
     id: 'manual-errors',
@@ -86,7 +87,7 @@ const manualSubtopicCopy: Record<string, string[]> = {
     '診断結果でおすすめ候補として表示される課の情報です。',
     '部と課名の組み合わせで課を探します。同じ組み合わせは重複して登録しません。',
     '診断で使う5つのものさしです。仕事の向きやすさの違いを表します。',
-    '各軸で左右どちらの特性にどの程度近いかを表します。',
+    '各軸で左右どちらの特性にどの程度近いかを、0〜3の強さで表します。',
     '利用者が回答する質問です。回答はどれか1つの軸に反映されます。',
     '5番目の選択肢を選んだとき、左右どちらの特性へ点数を寄せるかを指定します。',
     '5軸の組み合わせから表示される結果タイプです。',
@@ -105,7 +106,7 @@ const manualSubtopicCopy: Record<string, string[]> = {
     '一覧にない課を新しく登録するときに使います。',
     '課名の行を選び、部、課名、5軸、説明文を確認します。',
     '部は一覧から選びます。新しい部へ移すときだけ、部の選択肢の最後にある「新しい部を作成」を選びます。',
-    'バー上の点で、この課が左右どちらの特性にどの程度近いかを調整します。',
+    'バー上の点で、この課が左右どちらの特性にどの程度近いかを0〜3で調整します。',
     '診断結果でその課をすすめる理由として読まれる文章を確認・修正します。',
     '似た設定の課を新しく作るときだけ使います。',
     '結果候補から外したい課を削除します。削除前に対象を確認してください。',
@@ -138,7 +139,7 @@ const manualSubtopicCopy: Record<string, string[]> = {
     '配布用ファイルを作る前に、書き出し確認を開きます。',
     '空欄や重複など、書き出しを止める問題がないか確認します。',
     '問題がなければ配布用ファイルを保存します。',
-    '配布時のファイル名は app-config.json のままにします。',
+    '配布時のファイル名は app-config.js のままにします。',
   ],
   'manual-errors': [
     '赤い入力欄が修正対象です。',
@@ -153,10 +154,10 @@ const manualSubtopicCopy: Record<string, string[]> = {
   ],
 };
 
-const MANUAL_SLIDER_TICKS = Array.from({ length: 21 }, (_, index) => index - 10);
+const MANUAL_SLIDER_TICKS = AXIS_TICKS;
 
 function manualSliderTickPosition(tick: number): string {
-  return `${((tick + 10) / 20) * 100}%`;
+  return `${axisValueToPct(tick)}%`;
 }
 
 function childId(sectionId: string, index: number): string {
@@ -451,10 +452,10 @@ function DivisionEditExample() {
           label="人との関わり方"
           left="制度・仕組み"
           right="市民対話"
-          value="8"
+          value="2"
           color="#ea514d"
           dark="#b9332c"
-          pos="82%"
+          pos="83.333%"
           focus={{ number: '3', title: '適性の傾きを調整' }}
         />
         <AxisCard
@@ -764,7 +765,7 @@ function ExportExample() {
           <h2>書き出し確認</h2>
         </div>
         <div className={s.sectionHeaderAction}>
-          <StaticButton variant="primary" focus={{ number: '3', title: '配布用ファイルを書き出す' }}>app-config.jsonを書き出す</StaticButton>
+          <StaticButton variant="primary" focus={{ number: '3', title: '配布用ファイルを書き出す' }}>app-config.jsを書き出す</StaticButton>
         </div>
       </div>
       <div className={`${s.manualExportStatus} ${s.manualFocus}`} {...focusAttrs('1', '入力内容を確認する')}>
@@ -772,15 +773,15 @@ function ExportExample() {
         <span>保存済みの下書きは書き出しできます。</span>
       </div>
       <pre className={`${s.manualJsonPreview} ${s.manualFocus}`} {...focusAttrs('2', '配布用ファイルの確認欄を見る')}>
-{`{
+{`window.__YOKOSUKA_APP_CONFIG__ = {
   "divisions": [
     { "dept": "市長室", "name": "広報課" }
   ],
   "questions": [...]
-}`}
+};`}
       </pre>
       <p className={s.manualFileName}>通常、この確認欄を手で直す必要はありません。問題がないかの確認に使います。</p>
-      <p className={s.manualFileName}>ファイル名は <strong>app-config.json</strong> のまま配布します。</p>
+      <p className={s.manualFileName}>ファイル名は <strong>app-config.js</strong> のまま配布します。</p>
     </div>
   );
 }
@@ -803,7 +804,7 @@ function ErrorExample() {
         <strong>書き出し前に修正が必要です。</strong>
         <p>必須項目や重複を直すと、書き出しできるようになります。</p>
       </div>
-      <StaticButton variant="primary" disabled focus={{ number: '4', title: '問題が残る間は使えない' }}>app-config.jsonを書き出す</StaticButton>
+      <StaticButton variant="primary" disabled focus={{ number: '4', title: '問題が残る間は使えない' }}>app-config.jsを書き出す</StaticButton>
     </div>
   );
 }
@@ -817,7 +818,7 @@ export function AdminManual() {
         <p>
           この画面では、診断で使用する課データ、設問、アーキタイプ、5軸の説明文を編集できます。
           編集内容はブラウザ内の下書きとして保存されます。配布するときは「書き出し確認」から
-          app-config.json を書き出してください。
+          app-config.js を書き出してください。
         </p>
       </header>
 
@@ -892,7 +893,7 @@ export function AdminManual() {
           </div>
           <div>
             <dt>スコア</dt>
-            <dd>各軸で、どちらの特性にどの程度近いかを表す値です。中央は中立、端に近いほど傾向が強くなります。</dd>
+            <dd>各軸で、どちらの特性にどの程度近いかを表す値です。中央は中立、左右それぞれ0〜3で、端に近いほど傾向が強くなります。</dd>
           </div>
           <div>
             <dt>設問</dt>
@@ -914,11 +915,11 @@ export function AdminManual() {
 
         <ManualExample
           title="5軸とスコア"
-          note="スコアは、左右どちらの特性にどの程度近いかを示します。"
+          note="スコアは、左右どちらの特性にどの程度近いかを0〜3で示します。"
           points={[
             { number: '1', title: '軸名を見る', body: '何についての傾向を設定しているかを示します。' },
             { number: '2', title: '左右の特性を見る', body: '左と右は優劣ではなく、仕事の向きの違いです。' },
-            { number: '3', title: '点の位置を見る', body: '数字が大きいほど、その側の特性が強くなります。' },
+            { number: '3', title: '点の位置を見る', body: '0は中立、1〜3は数字が大きいほどその側の特性が強くなります。' },
           ]}
         >
           <div className={s.manualConceptGrid}>
@@ -942,7 +943,7 @@ export function AdminManual() {
                     </span>
                   ))}
                 </div>
-                <span className={s.manualAxisCardMarker}>8</span>
+                <span className={s.manualAxisCardMarker}>2</span>
               </div>
               <span>市民対話</span>
             </div>
@@ -1136,8 +1137,8 @@ export function AdminManual() {
         <ol className={s.manualSteps}>
           <li>各編集画面で保存すると、内容はブラウザ内の下書きになります。</li>
           <li>配布するときは「書き出し確認」を開きます。</li>
-          <li>入力内容に問題がないことを確認し、「app-config.jsonを書き出す」をクリックします。</li>
-          <li>配布時のファイル名は app-config.json のままにします。</li>
+          <li>入力内容に問題がないことを確認し、「app-config.jsを書き出す」をクリックします。</li>
+          <li>配布時のファイル名は app-config.js のままにします。</li>
         </ol>
         <div className={s.manualChecklist}>
           <h4>書き出し前の確認</h4>
@@ -1145,7 +1146,7 @@ export function AdminManual() {
             <li>課名の重複がない</li>
             <li>設問、選択肢、説明文に空欄がない</li>
             <li>結果画面の名称と説明文が読める</li>
-            <li>書き出すファイル名は app-config.json のままにする</li>
+            <li>書き出すファイル名は app-config.js のままにする</li>
           </ul>
         </div>
         <ManualExample
@@ -1154,7 +1155,7 @@ export function AdminManual() {
           points={[
             { number: '1', title: '入力内容を確認する', body: '書き出しできる状態かを確認します。問題がある場合は先に修正します。' },
             { number: '2', title: '配布用ファイルの確認欄を見る', body: '通常、この欄を手で直す必要はありません。問題がないかの確認に使います。' },
-            { number: '3', title: '配布用ファイルを書き出す', body: 'クリックすると app-config.json が保存されます。配布時はファイル名を変えません。' },
+            { number: '3', title: '配布用ファイルを書き出す', body: 'クリックすると app-config.js が保存されます。配布時はファイル名を変えません。' },
           ]}
         >
           <ExportExample />

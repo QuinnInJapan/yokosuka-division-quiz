@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   DEFAULT_CONFIG,
   DEFAULT_RUNTIME_CONFIG,
@@ -17,7 +17,7 @@ describe('normalizeAppConfig', () => {
     expect('questionMap' in runtime).toBe(false);
   });
 
-  it('turns the default JSON-shaped config into runtime lookup data', () => {
+  it('turns the default config object into runtime lookup data', () => {
     const config = normalizeAppConfig(DEFAULT_CONFIG);
 
     expect(config.version).toBe(1);
@@ -50,51 +50,50 @@ describe('normalizeAppConfig', () => {
 });
 
 describe('loadRuntimeConfig', () => {
-  it('loads valid external JSON when it is available', async () => {
+  const globalConfig = globalThis as typeof globalThis & {
+    __YOKOSUKA_APP_CONFIG__?: unknown;
+  };
+
+  afterEach(() => {
+    delete globalConfig.__YOKOSUKA_APP_CONFIG__;
+  });
+
+  it('loads valid external app-config.js data when it is available', async () => {
     const external = {
       ...DEFAULT_CONFIG,
       divisions: [
         {
           dept: 'テスト部',
           name: 'テスト課',
-          A: 10,
-          B: 6,
+          A: 3,
+          B: 2,
           C: 0,
-          D: -4,
-          E: -10,
-          about: '外部JSONから読み込まれた課です。',
+          D: -1,
+          E: -3,
+          about: 'app-config.jsから読み込まれた課です。',
         },
       ],
     };
-    const fetchConfig = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => external,
-    });
+    globalConfig.__YOKOSUKA_APP_CONFIG__ = external;
 
-    const config = await loadRuntimeConfig(fetchConfig);
+    const config = await loadRuntimeConfig();
 
-    expect(fetchConfig).toHaveBeenCalledWith('app-config.json', { cache: 'no-cache' });
     expect(config.divisions).toHaveLength(1);
     expect(config.divisions[0].name).toBe('テスト課');
-    expect(config.divisions[0].A).toBe(2);
-    expect(config.divisions[0].E).toBe(-2);
+    expect(config.divisions[0].A).toBe(3);
+    expect(config.divisions[0].E).toBe(-3);
   });
 
-  it('falls back to bundled defaults when external JSON is missing', async () => {
-    const fetchConfig = vi.fn().mockResolvedValue({ ok: false });
-
-    const config = await loadRuntimeConfig(fetchConfig);
+  it('falls back to bundled defaults when app-config.js data is missing', async () => {
+    const config = await loadRuntimeConfig();
 
     expect(config).toBe(DEFAULT_RUNTIME_CONFIG);
   });
 
-  it('falls back to bundled defaults when external JSON is invalid', async () => {
-    const fetchConfig = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: 1 }),
-    });
+  it('falls back to bundled defaults when app-config.js data is invalid', async () => {
+    globalConfig.__YOKOSUKA_APP_CONFIG__ = { version: 1 };
 
-    const config = await loadRuntimeConfig(fetchConfig);
+    const config = await loadRuntimeConfig();
 
     expect(config).toBe(DEFAULT_RUNTIME_CONFIG);
   });

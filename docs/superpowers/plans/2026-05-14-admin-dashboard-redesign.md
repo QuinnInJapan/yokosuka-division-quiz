@@ -599,13 +599,13 @@ In the `activeTab === 'json'` branch, use:
   title="書き出し確認"
   action={
     <AdminButton variant="primary" onClick={handleExport} disabled={!validation.ok}>
-      app-config.jsonを書き出す
+      app-config.jsを書き出す
     </AdminButton>
   }
 />
 ```
 
-Verify there is no `app-config.jsonを書き出す` button in the global header.
+Verify there is no `app-config.jsを書き出す` button in the global header.
 
 - [ ] **Step 6: Update sidebar/content CSS separation**
 

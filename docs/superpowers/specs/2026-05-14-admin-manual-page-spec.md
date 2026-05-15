@@ -44,7 +44,7 @@ Title:
 
 Opening copy:
 
-`この画面では、診断で使用する課データ、設問、アーキタイプ、5軸の説明文を編集できます。編集内容はブラウザ内の下書きとして保存されます。配布するときは「書き出し確認」から app-config.json を書き出してください。`
+`この画面では、診断で使用する課データ、設問、アーキタイプ、5軸の説明文を編集できます。編集内容はブラウザ内の下書きとして保存されます。配布するときは「書き出し確認」から app-config.js を書き出してください。`
 
 Copy rules:
 
@@ -110,7 +110,7 @@ The manual must include this anchored table of contents near the top:
    - `各編集画面で保存する`
    - `書き出し確認を開く`
    - `入力内容を確認する`
-   - `app-config.jsonを書き出す`
+   - `app-config.jsを書き出す`
    - `配布時のファイル名を確認する`
 9. `入力内容に問題がある場合`
    - `赤く表示された項目を直す`
@@ -210,7 +210,7 @@ Each procedure-oriented TOC item must have either a live HTML example, a simple 
 | `保存と書き出し` → `各編集画面で保存する` | Live save button excerpt | Save button, draft explanation |
 | `保存と書き出し` → `書き出し確認を開く` | Live sidebar/export excerpt | `書き出し確認` |
 | `保存と書き出し` → `入力内容を確認する` | Live export screen excerpt | Validation area, JSON preview |
-| `保存と書き出し` → `app-config.jsonを書き出す` | Live export screen excerpt | `app-config.jsonを書き出す` |
+| `保存と書き出し` → `app-config.jsを書き出す` | Live export screen excerpt | `app-config.jsを書き出す` |
 | `保存と書き出し` → `配布時のファイル名を確認する` | Text only or export excerpt | Export button or post-export copy |
 | `入力内容に問題がある場合` → `赤く表示された項目を直す` | Live invalid field excerpt | Red invalid field |
 | `入力内容に問題がある場合` → `必須項目を入力する` | Live invalid field excerpt | Required field |
@@ -264,11 +264,11 @@ Explain browser draft vs deployable/exported file:
 
 - `保存` means the draft inside the browser is updated.
 - `書き出し` means creating a distribution file.
-- Changes are not distributed until `app-config.json` is written out and placed in the distribution package.
+- Changes are not distributed until `app-config.js` is written out and placed in the distribution package.
 
 Suggested copy:
 
-`各編集画面で保存した内容は、まずブラウザ内の下書きに保存されます。利用者に配布するには、最後に「書き出し確認」で app-config.json を書き出してください。`
+`各編集画面で保存した内容は、まずブラウザ内の下書きに保存されます。利用者に配布するには、最後に「書き出し確認」で app-config.js を書き出してください。`
 
 #### 編集から配布までの流れ
 
@@ -278,7 +278,7 @@ Explain the whole sequence:
 2. 内容を修正する。
 3. 各画面で保存する。
 4. `書き出し確認`で問題がないか確認する。
-5. `app-config.jsonを書き出す`。
+5. `app-config.jsを書き出す`。
 6. 配布用ファイルとして差し替える。
 
 Display this as a simple numbered process, not a dense paragraph.
@@ -575,7 +575,7 @@ Callouts:
 - Description textareas
 - `軸設定を保存`
 
-### 8. app-config.jsonを書き出す
+### 8. app-config.jsを書き出す
 
 Purpose:
 
@@ -585,8 +585,8 @@ Instructions:
 
 1. 編集が終わったら`書き出し確認`を開く。
 2. 入力内容に問題がないことを確認する。
-3. `app-config.jsonを書き出す`をクリックする。
-4. 配布時はファイル名を`app-config.json`にする。
+3. `app-config.jsを書き出す`をクリックする。
+4. 配布時はファイル名を`app-config.js`にする。
 5. 既存の配布用ファイルと差し替える。
 
 Screenshot:
@@ -602,7 +602,7 @@ Callouts:
 
 Suggested copy:
 
-`この画面で保存した内容は、まずブラウザ内の下書きとして保存されます。実際に配布するには、最後に app-config.json を書き出してください。`
+`この画面で保存した内容は、まずブラウザ内の下書きとして保存されます。実際に配布するには、最後に app-config.js を書き出してください。`
 
 ### 9. 入力内容に問題がある場合
 
@@ -703,7 +703,7 @@ Do not implement these during the spec phase:
 
 - Authentication
 - Backend storage
-- Direct writing to deployed `app-config.json`
+- Direct writing to deployed `app-config.js`
 - Video walkthroughs
 - Server-side PDF generation
 - Admin editing tools for manual content
@@ -727,7 +727,7 @@ In scope:
 - Live examples are static and inert: no real buttons, links, inputs, selects, sliders, row hover behavior, or interactive affordances.
 - Highlighted elements use numbered markers, and each number maps to a nearby explanation that states the purpose of the element.
 - Examples show contiguous screen regions; any omitted vertical content is explicitly labeled.
-- Manual explains that browser save is a draft and distribution requires `app-config.json` export.
+- Manual explains that browser save is a draft and distribution requires `app-config.js` export.
 - Manual page prints cleanly from Microsoft Edge to PDF with readable text, visible examples, visible red focus outlines, and no clipped sidebar/content.
 - Existing editing pages still work.
 - `npm test`, `npm run build`, and `npm run build:single` pass after implementation.

@@ -5,6 +5,7 @@ import {
   type AppConfig,
   type RuntimeConfig,
 } from './appConfig';
+import { AXIS_MAX, AXIS_MIN } from '../data/axisScale';
 
 const AXIS_FIELDS = [
   'label',
@@ -25,7 +26,7 @@ const DESC_TIERS = [
 
 const HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
 
-export const ADMIN_DRAFT_KEY = 'yokosuka-quiz-admin-draft-v2';
+export const ADMIN_DRAFT_KEY = 'yokosuka-quiz-admin-draft-v3';
 
 export type AdminValidationError = {
   path: string;
@@ -68,9 +69,17 @@ export function validateAdminConfig(input: unknown): AdminValidationResult {
   return { ok: true, config: config!, errors: [] };
 }
 
-export function exportAdminConfig(input: AppConfig): string {
+export function exportAdminConfigJs(input: AppConfig): string {
+  return [
+    '/* 横須賀市役所 部署タイプ診断 設定ファイル */',
+    `window.__YOKOSUKA_APP_CONFIG__ = ${JSON.stringify(toExportableAppConfig(input), null, 2)};`,
+    '',
+  ].join('\n');
+}
+
+function toExportableAppConfig(input: AppConfig): AppConfig {
   const config = normalizeAppConfig(input);
-  const output: AppConfig = {
+  return {
     version: 1,
     axes: config.axes,
     questions: config.questions,
@@ -87,7 +96,6 @@ export function exportAdminConfig(input: AppConfig): string {
     archetypes: config.archetypes,
     axisDescriptions: config.axisDescriptions,
   };
-  return `${JSON.stringify(output, null, 2)}\n`;
 }
 
 export function runtimeToAppConfig(config: RuntimeConfig): AppConfig {
@@ -155,14 +163,14 @@ function collectAdminErrors(input: unknown): AdminValidationError[] {
         const weight = division[axis];
         const label = `課データ ${index + 1}行目 ${axis}`;
         if (typeof weight !== 'number' || !Number.isFinite(weight)) {
-          errors.push({ path: `divisions.${index}.${axis}`, message: `${label}は-10〜10の整数で入力してください。` });
+          errors.push({ path: `divisions.${index}.${axis}`, message: `${label}は${AXIS_MIN}〜${AXIS_MAX}の整数で入力してください。` });
           continue;
         }
         if (!Number.isInteger(weight)) {
           errors.push({ path: `divisions.${index}.${axis}`, message: `${label}は整数で入力してください。` });
         }
-        if (weight < -10 || weight > 10) {
-          errors.push({ path: `divisions.${index}.${axis}`, message: `${label}は-10〜10の範囲で入力してください。` });
+        if (weight < AXIS_MIN || weight > AXIS_MAX) {
+          errors.push({ path: `divisions.${index}.${axis}`, message: `${label}は${AXIS_MIN}〜${AXIS_MAX}の範囲で入力してください。` });
         }
       }
     });
@@ -249,6 +257,6 @@ function messageFromError(error: unknown): string {
   if (message.includes('must be boolean')) return '設問の方向を選択してください。';
   if (message.includes('Duplicate division')) return '部と課名の組み合わせが重複しています。';
   if (message.includes('must be an integer')) return '数値項目は整数で入力してください。';
-  if (message.includes('must be between -10 and 10')) return '課データのA〜Eは-10〜10の整数で入力してください。';
+  if (message.includes(`must be between ${AXIS_MIN} and ${AXIS_MAX}`)) return `課データのA〜Eは${AXIS_MIN}〜${AXIS_MAX}の整数で入力してください。`;
   return message;
 }

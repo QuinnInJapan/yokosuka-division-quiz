@@ -30,24 +30,16 @@ test('keyboard arrows navigate carousel slides', async ({ page }) => {
   await expect(page.getByTestId('carousel-slide-1')).toHaveAttribute('data-active', 'true');
 });
 
-test('explainer head: dots reflect active slide and chevrons navigate', async ({ page }) => {
+test('explainer head: chevrons navigate slides', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('explainer-head')).toBeVisible();
-  await expect(page.getByTestId('explainer-dot-1')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByTestId('carousel-slide-1')).toHaveAttribute('data-active', 'true');
   await expect(page.getByTestId('explainer-prev')).toBeDisabled();
   await page.getByTestId('explainer-next').click();
-  await expect(page.getByTestId('explainer-dot-2')).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByTestId('carousel-slide-2')).toHaveAttribute('data-active', 'true');
   await expect(page.getByTestId('explainer-prev')).toBeEnabled();
   await page.getByTestId('explainer-prev').click();
-  await expect(page.getByTestId('explainer-dot-1')).toHaveAttribute('aria-selected', 'true');
-});
-
-test('explainer dots: clicking dot jumps to that slide', async ({ page }) => {
-  await page.goto('/');
-  await page.getByTestId('explainer-dot-3').click();
-  await expect(page.getByTestId('carousel-slide-3')).toHaveAttribute('data-active', 'true');
-  await expect(page.getByTestId('explainer-dot-3')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByTestId('carousel-slide-1')).toHaveAttribute('data-active', 'true');
 });
 
 test('slide 1 option click advances to slide 2', async ({ page }) => {

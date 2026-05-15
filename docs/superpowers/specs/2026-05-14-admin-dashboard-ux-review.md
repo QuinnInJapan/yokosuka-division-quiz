@@ -2,7 +2,7 @@
 
 Date: 2026-05-14  
 Area: `/#/admin` browser-only configuration dashboard  
-Audience: nontechnical Japanese administrative users maintaining `app-config.json`
+Audience: nontechnical Japanese administrative users maintaining `app-config.js`
 
 ## Summary
 
@@ -94,7 +94,7 @@ This review is based on:
 
 - Shows validation errors if present.
 - Shows normalized JSON preview.
-- Provides `app-config.jsonを書き出す`.
+- Provides `app-config.jsを書き出す`.
 - Export is disabled when admin validation has blocking errors.
 
 ## Findings From UX Review Agent
@@ -244,7 +244,7 @@ Recommended default:
 
 - Remove the large global export button from normal editing pages.
 - Keep `書き出し確認` in the sidebar.
-- On `書き出し確認`, make `app-config.jsonを書き出す` the page primary action.
+- On `書き出し確認`, make `app-config.jsを書き出す` the page primary action.
 - Do not include a global utility menu unless a future deployment workflow proves it is needed.
 
 If a global export shortcut is retained:

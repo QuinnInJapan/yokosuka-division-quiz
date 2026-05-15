@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG, normalizeAppConfig } from './appConfig';
 import {
   ADMIN_DRAFT_KEY,
-  exportAdminConfig,
+  exportAdminConfigJs,
   parseAdminConfigJson,
   validateAdminConfig,
 } from './adminConfig';
@@ -48,22 +48,22 @@ describe('validateAdminConfig', () => {
     }
   });
 
-  it('rejects weights outside -10..10', () => {
+  it('rejects weights outside -3..3', () => {
     const config = {
       ...DEFAULT_CONFIG,
-      divisions: [{ ...DEFAULT_CONFIG.divisions[0], A: 11 }],
+      divisions: [{ ...DEFAULT_CONFIG.divisions[0], A: 4 }],
     };
 
     const result = validateAdminConfig(config);
 
     expect(result.ok).toBe(false);
-    expect(result.errors.some(error => error.message.includes('-10〜10'))).toBe(true);
+    expect(result.errors.some(error => error.message.includes('-3〜3'))).toBe(true);
   });
 
   it('rejects weights that are not integer values', () => {
     const config = {
       ...DEFAULT_CONFIG,
-      divisions: [{ ...DEFAULT_CONFIG.divisions[0], A: 7.5 }],
+      divisions: [{ ...DEFAULT_CONFIG.divisions[0], A: 1.5 }],
     };
 
     const result = validateAdminConfig(config);
@@ -101,10 +101,15 @@ describe('validateAdminConfig', () => {
   });
 });
 
-describe('exportAdminConfig', () => {
-  it('exports normalized JSON that runtime config can load', () => {
-    const json = exportAdminConfig(DEFAULT_CONFIG);
-    const parsed = JSON.parse(json);
+describe('exportAdminConfigJs', () => {
+  it('exports normalized app-config.js data that runtime config can load', () => {
+    const js = exportAdminConfigJs(DEFAULT_CONFIG);
+    const match = js.match(/window\.__YOKOSUKA_APP_CONFIG__ = ([\s\S]*);\n$/);
+
+    expect(match).not.toBeNull();
+    expect(js).toContain('window.__YOKOSUKA_APP_CONFIG__');
+
+    const parsed = JSON.parse(match?.[1] ?? '{}');
     const runtime = normalizeAppConfig(parsed);
 
     expect(parsed.questionMap).toBeUndefined();
@@ -122,6 +127,6 @@ describe('exportAdminConfig', () => {
   });
 
   it('uses a stable localStorage key', () => {
-    expect(ADMIN_DRAFT_KEY).toBe('yokosuka-quiz-admin-draft-v2');
+    expect(ADMIN_DRAFT_KEY).toBe('yokosuka-quiz-admin-draft-v3');
   });
 });

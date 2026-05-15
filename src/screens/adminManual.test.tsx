@@ -25,7 +25,7 @@ describe('AdminManual', () => {
     expect(html).toContain('id="manual-export-5"');
     expect(html).toContain('下書き');
     expect(html).toContain('保存しても利用者向け画面にはまだ反映されません');
-    expect(html).toContain('app-config.json');
+    expect(html).toContain('app-config.js');
   });
 
   it('uses live highlighted examples instead of coordinate callouts over screenshots', () => {

@@ -1,5 +1,8 @@
 import type { AxisKey, AxisDescTiers } from './types';
 
+const STRONG_THRESHOLD = 1.5;
+const MILD_THRESHOLD = 0.375;
+
 export const AXIS_DESC: Record<AxisKey, AxisDescTiers> = {
   A: {
     strong_plus:  'あなたは市民との直接的な対話に、大きな充実感を覚えるタイプです。窓口対応や地域活動など、人と向き合う場面で最も力を発揮します。相手の話に丁寧に耳を傾け、自然と信頼関係を築ける――それがあなたの持ち味です。',
@@ -44,9 +47,9 @@ export function getAxisDesc(
   descriptions: Record<AxisKey, AxisDescTiers> = AXIS_DESC,
 ): string {
   const d = descriptions[axis];
-  if (score >= 1.0)   return d.strong_plus;
-  if (score >= 0.25)  return d.mild_plus;
-  if (score > -0.25)  return d.neutral;
-  if (score > -1.0)   return d.mild_minus;
+  if (score >= STRONG_THRESHOLD)   return d.strong_plus;
+  if (score >= MILD_THRESHOLD)  return d.mild_plus;
+  if (score > -MILD_THRESHOLD)  return d.neutral;
+  if (score > -STRONG_THRESHOLD)   return d.mild_minus;
   return d.strong_minus;
 }

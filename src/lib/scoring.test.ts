@@ -4,15 +4,15 @@ import type { Responses, Division } from '../data/types';
 import { DEFAULT_RUNTIME_CONFIG } from '../config/appConfig';
 
 describe('scoreResp', () => {
-  it('returns r-3 when not reversed', () => {
+  it('maps responses onto the -3..3 axis when not reversed', () => {
     expect(scoreResp(3, false)).toBe(0);
-    expect(scoreResp(5, false)).toBe(2);
-    expect(scoreResp(1, false)).toBe(-2);
+    expect(scoreResp(5, false)).toBe(3);
+    expect(scoreResp(1, false)).toBe(-3);
   });
-  it('returns -(r-3) when reversed', () => {
+  it('maps responses onto the -3..3 axis when reversed', () => {
     expect(scoreResp(3, true)).toBe(0);
-    expect(scoreResp(5, true)).toBe(-2);
-    expect(scoreResp(1, true)).toBe(2);
+    expect(scoreResp(5, true)).toBe(-3);
+    expect(scoreResp(1, true)).toBe(3);
   });
 });
 
@@ -25,13 +25,13 @@ describe('axisScores', () => {
     expect(axisScores(resp).A).toBeCloseTo(0);
     expect(axisScores(resp).B).toBeCloseTo(0);
   });
-  it('produces 2 when only positive non-reversed answer is provided for axis', () => {
+  it('produces 3 when only positive non-reversed answer is provided for axis', () => {
     const resp: Responses = { 0: 5 };
-    expect(axisScores(resp).A).toBeCloseTo(2);
+    expect(axisScores(resp).A).toBeCloseTo(3);
   });
-  it('produces -2 when reversed Q1 answered as 5', () => {
+  it('produces -3 when reversed Q1 answered as 5', () => {
     const resp: Responses = { 10: 5 };
-    expect(axisScores(resp).A).toBeCloseTo(-2);
+    expect(axisScores(resp).A).toBeCloseTo(-3);
   });
 });
 
@@ -42,8 +42,8 @@ describe('dist', () => {
     expect(dist(u, d)).toBe(0);
   });
   it('is symmetric in shifted single axis', () => {
-    const d2: Division = { ...d, A: 2 };
-    expect(dist(u, d2)).toBeCloseTo(2);
+    const d2: Division = { ...d, A: 3 };
+    expect(dist(u, d2)).toBeCloseTo(3);
   });
 });
 
@@ -51,8 +51,8 @@ describe('fitPct', () => {
   it('returns 100 at distance 0', () => {
     expect(fitPct(0)).toBe(100);
   });
-  it('returns 0 at maximum distance sqrt(80)', () => {
-    expect(fitPct(Math.sqrt(80))).toBe(0);
+  it('returns 0 at maximum distance sqrt(180)', () => {
+    expect(fitPct(Math.sqrt(180))).toBe(0);
   });
 });
 
@@ -66,14 +66,14 @@ describe('rankAll', () => {
   });
   it('attaches user scores to every entry', () => {
     const ranked = rankAll({ 0: 5 });
-    expect(ranked[0].user).toEqual({ A: 2, B: 0, C: 0, D: 0, E: 0 });
+    expect(ranked[0].user).toEqual({ A: 3, B: 0, C: 0, D: 0, E: 0 });
   });
   it('uses divisions from the provided runtime config', () => {
     const customConfig = {
       ...DEFAULT_RUNTIME_CONFIG,
       divisions: [
-        { dept: 'X', name: 'A-fit', A: 2, B: 0, C: 0, D: 0, E: 0 },
-        { dept: 'X', name: 'A-miss', A: -2, B: 0, C: 0, D: 0, E: 0 },
+        { dept: 'X', name: 'A-fit', A: 3, B: 0, C: 0, D: 0, E: 0 },
+        { dept: 'X', name: 'A-miss', A: -3, B: 0, C: 0, D: 0, E: 0 },
       ],
     };
 
@@ -107,7 +107,7 @@ describe('determineType', () => {
       ...DEFAULT_RUNTIME_CONFIG,
       archetypes: {
         ...DEFAULT_RUNTIME_CONFIG.archetypes,
-        DASCG: { name: '外部タイプ', desc: '外部JSONのタイプ説明' },
+        DASCG: { name: '外部タイプ', desc: '外部設定のタイプ説明' },
       },
     };
 

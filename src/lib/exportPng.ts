@@ -1,6 +1,7 @@
 import type { Axis, AxisKey, RankedDivision, ResolvedArchetype } from '../data/types';
 import { AX } from '../data/types';
 import { DEFAULT_RUNTIME_CONFIG } from '../config/appConfig';
+import { axisValueToPct } from '../data/axisScale';
 import { fitColor } from './scoring';
 
 export function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
@@ -61,8 +62,7 @@ export function formatPct(p: number): string {
 }
 
 export function axisDotPct(score: number): number {
-  const clamped = Math.max(-2, Math.min(2, score));
-  return ((clamped + 2) / 4) * 100;
+  return axisValueToPct(score);
 }
 
 export type ExportData = {

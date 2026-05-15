@@ -15,13 +15,13 @@ type Row = {
   label: string;
   reversed: boolean;
   pick: 1 | 2 | 3 | 4 | 5;
-  signed: -2 | -1 | 0 | 1 | 2;
+  signed: number;
 };
 
 const ROWS: Row[] = [
-  { num: 1, label: '窓口で介護申請を一緒に進める',         reversed: false, pick: 4, signed:  1 },
-  { num: 2, label: '地域サークルで支援制度を直接説明',       reversed: false, pick: 4, signed:  1 },
-  { num: 3, label: '部署横断の業務フローを再設計',          reversed: true,  pick: 2, signed:  1 },
+  { num: 1, label: '窓口で介護申請を一緒に進める',         reversed: false, pick: 4, signed:  1.5 },
+  { num: 2, label: '地域サークルで支援制度を直接説明',       reversed: false, pick: 4, signed:  1.5 },
+  { num: 3, label: '部署横断の業務フローを再設計',          reversed: true,  pick: 2, signed:  1.5 },
   { num: 4, label: '財政データを分析して予算案を作成',       reversed: true,  pick: 3, signed:  0 },
 ];
 

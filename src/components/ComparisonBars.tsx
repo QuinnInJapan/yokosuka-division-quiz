@@ -2,11 +2,12 @@ import { AX } from '../data/types';
 import type { Axis, AxisKey } from '../data/types';
 import { fitColor } from '../lib/scoring';
 import { useConfig } from '../config/ConfigProvider';
+import { axisValueToPct } from '../data/axisScale';
 import s from './ComparisonBars.module.css';
 
-const NEAR_THRESHOLD = 0.4;
-const CLOSE_THRESHOLD = 1.0;
-const SOME_THRESHOLD = 1.8;
+const NEAR_THRESHOLD = 0.6;
+const CLOSE_THRESHOLD = 1.5;
+const SOME_THRESHOLD = 2.7;
 
 type GapBucket = 'match' | 'close' | 'some' | 'wide';
 
@@ -26,7 +27,7 @@ const BUCKET_LABEL: Record<GapBucket, string> = {
 };
 
 function toPct(v: number) {
-  return ((v + 2) / 4) * 100;
+  return axisValueToPct(v);
 }
 
 type FitTier = 'great' | 'good' | 'medium' | 'bad' | 'very_bad';
