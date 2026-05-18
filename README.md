@@ -20,6 +20,10 @@ npm run build
 npm run preview
 ```
 
+The tracked `dist/` package is also usable from the filesystem without a local
+server. Open `dist/index.html` in a browser and keep `dist/app-config.js` beside
+it; nontechnical editors can update that config file independently.
+
 ## GitHub Pages Preview
 
 This repo deploys the normal Vite `dist/` output to the `gh-pages` branch on
