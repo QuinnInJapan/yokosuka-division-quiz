@@ -24,12 +24,28 @@ The tracked `dist/` package is also usable from the filesystem without a local
 server. Open `dist/index.html` in a browser and keep `dist/app-config.js` beside
 it; nontechnical editors can update that config file independently.
 
+### Editable Config
+
+The runtime config is intentionally a JavaScript file, not JSON:
+
+```text
+dist/
+  index.html
+  app-config.js
+```
+
+When users open `index.html` directly from their filesystem, browsers can load a
+sibling JavaScript file with `<script src="./app-config.js"></script>`. Loading a
+sibling JSON file would require `fetch()` or module imports, which are not
+reliable from `file://` pages across browsers.
+
+The admin screen exports the editable config as `app-config.js`. Keep that exact
+filename beside `index.html` when distributing the local package.
+
 ## GitHub Pages Preview
 
-This repo deploys the normal Vite `dist/` output to the `gh-pages` branch on
-every push to `main`, using `.github/workflows/deploy-pages.yml`. The app is
-built with relative asset paths, so split JS/CSS/image files work under the
-repository Pages URL:
+This repo deploys the tracked `dist/` output to the `gh-pages` branch on every
+push to `main`, using `.github/workflows/deploy-pages.yml`.
 
 ```text
 https://quinninjapan.github.io/yokosuka-division-quiz/
