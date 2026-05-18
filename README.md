@@ -45,7 +45,9 @@ filename beside `index.html` when distributing the local package.
 ### Encoded Package
 
 `npm run build` also writes Base64-encoded text copies for systems that need the
-folder contents as text documents:
+folder contents as text documents. The encoder follows the same byte-preserving
+`Uint8Array` -> Latin-1 string -> `btoa()` logic as
+`yokosuka-html-encode-decode`:
 
 ```text
 dist-encoded/

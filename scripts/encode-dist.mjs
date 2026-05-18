@@ -17,8 +17,16 @@ export async function encodeDistFiles({
     const source = new URL(sourceName, directoryUrl(distDir));
     const output = new URL(outputName, directoryUrl(encodedDir));
     const content = await readFile(source);
-    await writeFile(output, content.toString('base64'), 'utf8');
+    await writeFile(output, encodeBytesWithBtoa(content), 'utf8');
   }));
+}
+
+export function encodeBytesWithBtoa(rawBytes) {
+  // Same byte-preserving approach as yokosuka-html-encode-decode:
+  // build a Latin-1 string from raw bytes, then btoa().
+  let bin = '';
+  for (let i = 0; i < rawBytes.length; i++) bin += String.fromCharCode(rawBytes[i]);
+  return btoa(bin);
 }
 
 function directoryUrl(value) {

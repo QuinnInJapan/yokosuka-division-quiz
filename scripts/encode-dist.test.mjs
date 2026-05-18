@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 
-import { encodeDistFiles } from './encode-dist.mjs';
+import { encodeBytesWithBtoa, encodeDistFiles } from './encode-dist.mjs';
 
 test('encodes dist index and app config as UTF-8 base64 text files', async () => {
   const root = await mkdtemp(join(tmpdir(), 'encode-dist-test-'));
@@ -21,4 +21,13 @@ test('encodes dist index and app config as UTF-8 base64 text files', async () =>
 
   assert.equal(Buffer.from(encodedIndex, 'base64').toString('utf8'), '<h1>横須賀</h1>');
   assert.equal(Buffer.from(encodedConfig, 'base64').toString('utf8'), 'window.x = "設定";');
+});
+
+test('uses byte-preserving btoa logic for binary data', () => {
+  const bytes = new Uint8Array([0, 1, 127, 128, 255]);
+
+  const encoded = encodeBytesWithBtoa(bytes);
+
+  assert.equal(encoded, btoa(String.fromCharCode(0, 1, 127, 128, 255)));
+  assert.deepEqual([...Buffer.from(encoded, 'base64')], [...bytes]);
 });
