@@ -20,6 +20,20 @@ npm run build
 npm run preview
 ```
 
+## GitHub Pages Preview
+
+This repo deploys the normal Vite `dist/` output to GitHub Pages on every push to
+`main`, using `.github/workflows/deploy-pages.yml`. The app is built with
+relative asset paths, so split JS/CSS/image files work under the repository Pages
+URL:
+
+```text
+https://quinninjapan.github.io/yokosuka-division-quiz/
+```
+
+In the GitHub repository settings, set **Pages** to deploy from **GitHub Actions**
+if it is not already enabled.
+
 ## Test
 
 ```bash
