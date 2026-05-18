@@ -42,6 +42,21 @@ reliable from `file://` pages across browsers.
 The admin screen exports the editable config as `app-config.js`. Keep that exact
 filename beside `index.html` when distributing the local package.
 
+### Encoded Package
+
+`npm run build` also writes Base64-encoded text copies for systems that need the
+folder contents as text documents:
+
+```text
+dist-encoded/
+  index.encoded.txt
+  app-config.encoded.txt
+```
+
+This repo uses the tracked `.githooks/pre-push` hook to rebuild `dist/` and
+`dist-encoded/` before pushing. If the build changes generated files, the hook
+stops the push so the regenerated files can be committed first.
+
 ## GitHub Pages Preview
 
 This repo deploys the tracked `dist/` output to the `gh-pages` branch on every

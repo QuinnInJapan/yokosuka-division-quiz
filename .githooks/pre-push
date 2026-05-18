@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+npm run build
+
+if ! git diff --quiet -- dist dist-encoded; then
+  echo "Generated dist files changed during pre-push."
+  echo "Commit the regenerated dist/ and dist-encoded/ files, then push again."
+  git status --short -- dist dist-encoded
+  exit 1
+fi

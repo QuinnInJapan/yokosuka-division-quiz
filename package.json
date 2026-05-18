@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build --config vite.config.single.ts && node scripts/prepare-local-dist.mjs",
+    "build": "tsc -b && vite build && vite build --config vite.config.single.ts && node scripts/prepare-local-dist.mjs && node scripts/encode-dist.mjs",
+    "build:encoded": "node scripts/encode-dist.mjs",
     "build:split": "tsc -b && vite build",
     "build:single": "tsc -b && vite build --config vite.config.single.ts",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run && node --test scripts/encode-dist.test.mjs",
     "test:watch": "vitest"
   },
   "dependencies": {
